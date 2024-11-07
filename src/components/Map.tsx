@@ -223,7 +223,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
   }
 
   const getEdges = () => {
-    const edges: [number, number, string, number][][] = []
+    const edges: any[] = []
     const addEdges = (entity: Migrant | Organization) => {
       entity.connections.forEach((connection) => {
         if (

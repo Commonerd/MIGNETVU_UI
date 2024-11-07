@@ -1,67 +1,69 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import styled from "styled-components";
-import axios from "axios";
-import { members } from "../members";
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import styled from 'styled-components'
+import axios from 'axios'
+import { members } from '../members'
 
 interface RegisterProps {
   setUser: React.Dispatch<
     React.SetStateAction<{ email: string; isLoggedIn: boolean }>
-  >;
+  >
 }
 
 const Register: React.FC<RegisterProps> = ({ setUser }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
+    id: 0,
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
-      alert(t("passwordMismatch"));
-      return;
+      alert(t('passwordMismatch'))
+      return
     }
     // Mock API call for registration (testing without real backend)
     const mockRegister = async () => {
       const existingUser = members.find(
         (member) => member.email === formData.email,
-      );
+      )
       if (existingUser) {
-        throw new Error("User already exists");
+        throw new Error('User already exists')
       }
       members.push({
+        id: formData.id,
         email: formData.email,
         name: formData.name,
         password: formData.password,
-      });
-      return true;
-    };
+      })
+      return true
+    }
 
     try {
-      await mockRegister();
-      alert(t("registerSuccess"));
-      setUser({ email: formData.email, isLoggedIn: true });
+      await mockRegister()
+      alert(t('registerSuccess'))
+      setUser({ email: formData.email, isLoggedIn: true })
     } catch (error) {
-      alert(t("registerError"));
+      alert(t('registerError'))
     }
-  };
+  }
 
   return (
     <Container>
       <RegisterBox>
-        <Title>{t("register")}</Title>
+        <Title>{t('register')}</Title>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name" className="block">
-              {t("name")}
+              {t('name')}
             </label>
             <Input
               type="text"
@@ -74,7 +76,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="email" className="block">
-              {t("email")}
+              {t('email')}
             </label>
             <Input
               type="email"
@@ -87,7 +89,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="password" className="block">
-              {t("password")}
+              {t('password')}
             </label>
             <Input
               type="password"
@@ -100,7 +102,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="confirmPassword" className="block">
-              {t("confirmPassword")}
+              {t('confirmPassword')}
             </label>
             <Input
               type="password"
@@ -111,12 +113,12 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
               required
             />
           </div>
-          <Button type="submit">{t("register")}</Button>
+          <Button type="submit">{t('register')}</Button>
         </form>
       </RegisterBox>
     </Container>
-  );
-};
+  )
+}
 
 const Container = styled.div`
   display: flex;
@@ -124,7 +126,7 @@ const Container = styled.div`
   justify-content: center;
   min-height: 80vh;
   background-color: #f3f4f6;
-`;
+`
 
 const RegisterBox = styled.div`
   background-color: ##e5e7eb;
@@ -132,14 +134,14 @@ const RegisterBox = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 32px;
   width: 20rem;
-`;
+`
 
 const Title = styled.h2`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 16px;
   text-align: center;
-`;
+`
 
 const Input = styled.input`
   width: 100%;
@@ -152,7 +154,7 @@ const Input = styled.input`
     border-color: #3b82f6;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
   }
-`;
+`
 
 const Button = styled.button`
   width: 100%;
@@ -166,6 +168,6 @@ const Button = styled.button`
   &:hover {
     background-color: #2563eb;
   }
-`;
+`
 
-export default Register;
+export default Register
