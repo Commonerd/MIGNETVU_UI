@@ -2,14 +2,8 @@ import { useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Auth } from './components/Auth'
 import { Todo } from './components/Todo'
-import "./i18n";
-
 import axios from 'axios'
 import { CsrfToken } from './types'
-import Header from './components/Header';
-import Footer from './components/Footer';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 
 function App() {
   useEffect(() => {
@@ -22,24 +16,12 @@ function App() {
     }
     getCsrfToken()
   }, [])
-
-    const { t } = useTranslation();
-  const [user, setUser] = useState<{ email: string; isLoggedIn: boolean }>({
-    email: "",
-    isLoggedIn: false,
-  });
   return (
     <BrowserRouter>
-          <div className="flex flex-col min-h-screen bg-gray-100">
-        <Header user={user} setUser={setUser} />{" "}
-        <main className="flex-grow">
       <Routes>
         <Route path="/" element={<Auth />} />
         <Route path="/todo" element={<Todo />} />
       </Routes>
-              </main>
-        <Footer />
-      </div>
     </BrowserRouter>
   )
 }
