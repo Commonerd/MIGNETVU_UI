@@ -11,7 +11,7 @@ export const Auth = () => {
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (isLogin) {
-      loginMutation.mutate({ 
+      loginMutation.mutate({
         email: email,
         password: pw,
       })
