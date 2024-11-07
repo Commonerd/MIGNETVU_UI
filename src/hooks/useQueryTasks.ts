@@ -8,7 +8,7 @@ export const useQueryTasks = () => {
   const getTasks = async () => {
     const { data } = await axios.get<Task[]>(
       `${process.env.REACT_APP_API_URL}/tasks`,
-      { withCredentials: true },
+      { withCredentials: true }
     )
     return data
   }
