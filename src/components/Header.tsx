@@ -1,29 +1,29 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { Globe, User, UserPlus, LogOut } from "lucide-react";
+import React from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { Globe, User, UserPlus, LogOut } from 'lucide-react'
 
 interface HeaderProps {
-  user: { email: string; isLoggedIn: boolean };
+  user: { email: string; isLoggedIn: boolean }
   setUser: React.Dispatch<
     React.SetStateAction<{ email: string; isLoggedIn: boolean }>
-  >;
+  >
 }
 
 const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
 
   const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
+    i18n.changeLanguage(lng)
+  }
 
   const handleLogout = () => {
-    setUser({ email: "", isLoggedIn: false }); // 로그아웃 시 사용자 상태 초기화
-    sessionStorage.removeItem("isLoggedIn"); // 로그인 정보 삭제
-    alert(t("logoutSuccess"));
-    navigate("/");    // 로그아웃 후 홈으로 이동
-  };
+    setUser({ email: '', isLoggedIn: false }) // 로그아웃 시 사용자 상태 초기화
+    sessionStorage.removeItem('isLoggedIn') // 로그인 정보 삭제
+    alert(t('logoutSuccess'))
+    navigate('/') // 로그아웃 후 홈으로 이동
+  }
 
   return (
     <header className="bg-blue-600 text-white p-4">
@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
         <Link to="/" className="flex items-center">
           <Globe className="mr-2" />
           <span className="text-xl font-bold">MigNetVu </span>
-          <span className="text-sm font-bold">　{t("appSubName")} </span>
+          <span className="text-sm font-bold">　{t('appSubName')} </span>
         </Link>
         <nav>
           <ul className="flex space-x-4">
@@ -39,19 +39,19 @@ const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
               <>
                 <li>
                   <span className="mr-2">
-                    {user.email.split("@")[0]}
-                    {t("welcome")}
+                    {user.email.split('@')[0]}
+                    {t('welcome')}
                   </span>
                 </li>
                 <li>
                   <Link to="/add-network" className="flex items-center">
                     <UserPlus className="mr-1" />
-                    {t("addNetwork")}
+                    {t('addNetwork')}
                   </Link>
                 </li>
                 <li>
                   <button onClick={handleLogout} className="flex items-center">
-                    <LogOut className="mr-1" /> {t("logout")}
+                    <LogOut className="mr-1" /> {t('logout')}
                   </button>
                 </li>
               </>
@@ -59,12 +59,12 @@ const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
               <>
                 <li>
                   <Link to="/login" className="flex items-center">
-                    <User className="mr-1" /> {t("login")}
+                    <User className="mr-1" /> {t('login')}
                   </Link>
                 </li>
                 <li>
                   <Link to="/register" className="flex items-center">
-                    <UserPlus className="mr-1" /> {t("register")}
+                    <UserPlus className="mr-1" /> {t('register')}
                   </Link>
                 </li>
               </>
@@ -87,7 +87,7 @@ const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
         </nav>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
