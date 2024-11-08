@@ -850,28 +850,32 @@ const LegendBox = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 9rem; /* 모바일에서 가로 길이 조정 */
-    font-size: 0.6rem;
+    position: relative;
+    left: 2.5rem;
+    width: 9rem; /* 모바일에서 가로 길이 조정 */ 
+    font-size: 0.7rem;
 
     h2 {
-      font-size: 0.6rem; /* 모바일에서 h2 태그의 글자 크기 조정 */
+      font-size: 0.7rem; /* 모바일에서 h2 태그의 글자 크기 조정 */
     }
 
     ul {
-      font-size: 0.5rem; /* 모바일에서 ul 태그의 글자 크기 조정 */
+      font-size: 0.6rem; /* 모바일에서 ul 태그의 글자 크기 조정 */
     }
   }
 
   @media (max-width: 480px) {
+    position: relative;
+    left: 3rem;
     width: 7rem; /* 더 작은 화면에서 가로 길이 조정 */
-    font-size: 0.5rem;
+    font-size: 0.6rem;
 
     h2 {
-      font-size: 0.5rem; /* 더 작은 화면에서 h2 태그의 글자 크기 조정 */
+      font-size: 0.6rem; /* 더 작은 화면에서 h2 태그의 글자 크기 조정 */
     }
 
     ul {
-      font-size: 0.4rem; /* 더 작은 화면에서 ul 태그의 글자 크기 조정 */
+      font-size: 0.5rem; /* 더 작은 화면에서 ul 태그의 글자 크기 조정 */
     }
   }
 `
