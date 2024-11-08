@@ -556,12 +556,12 @@ const Map: React.FC<MapProps> = ({ user }) => {
     <div className="h-[calc(85vh-64px)] relative">
 
       <div className="p-4 bg-white">
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-1 md:gap-4 items-center">
           <select
             value={filters.entityType}
             onChange={(e) => handleFilterChange('entityType', e.target.value)}
-            className="p-2 border rounded"
-          >
+            className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+            >
             <option value="all">{t('allEntityTypes')}</option>
             <option value="migrant">{t('migrant')}</option>
             <option value="organization">{t('organization')}</option>
@@ -573,8 +573,8 @@ const Map: React.FC<MapProps> = ({ user }) => {
                 onChange={(e) =>
                   handleFilterChange('nationality', e.target.value)
                 }
-                className="p-2 border rounded"
-              >
+                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+                >
                 <option value="all">{t('allNationalities')}</option>
                 {uniqueNationalities.map((nationality) => (
                   <option key={nationality} value={nationality}>
@@ -587,8 +587,8 @@ const Map: React.FC<MapProps> = ({ user }) => {
                 onChange={(e) =>
                   handleFilterChange('ethnicity', e.target.value)
                 }
-                className="p-2 border rounded"
-              >
+                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+                >
                 <option value="all">{t('allEthnicities')}</option>
                 {uniqueEthnicities.map((ethnicity) => (
                   <option key={ethnicity} value={ethnicity}>
@@ -603,7 +603,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
             onChange={(e) =>
               handleFilterChange('connectionType', e.target.value)
             }
-            className="p-2 border rounded"
+            className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
           >
             <option value="all">{t('allConnectionTypes')}</option>
             <option value="friend">{t('friend')}</option>
@@ -613,7 +613,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
             <option value="cultural">{t('cultural')}</option>
           </select>
           <div>
-            <label>{t('yearRange')}: </label>
+          <label className="text-xs md:text-sm">{t('yearRange')}: </label>
             <input
               type="number"
               value={filters.yearRange[0]}
@@ -623,9 +623,9 @@ const Map: React.FC<MapProps> = ({ user }) => {
                   filters.yearRange[1],
                 ])
               }
-              className="w-20 p-2 border rounded"
+              className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
             />
-            <span> - </span>
+            <span className="text-xs md:text-sm"> - </span>
             <input
               type="number"
               value={filters.yearRange[1]}
@@ -635,8 +635,8 @@ const Map: React.FC<MapProps> = ({ user }) => {
                   parseInt(e.target.value),
                 ])
               }
-              className="w-20 p-2 border rounded"
-            />
+              className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+              />
           </div>
           {user.isLoggedIn ? (
             <>
@@ -644,8 +644,8 @@ const Map: React.FC<MapProps> = ({ user }) => {
               <select
                 value={centralityType}
                 onChange={(e) => setCentralityType(e.target.value)}
-                className="p-2 border rounded"
-              >
+                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+                >
                 <option value="none">{t('selectCentrality')}</option>
                 <option value="degree">{t('degreeCentrality')}</option>
                 <option value="betweenness">{t('betweenessCentrality')}</option>
@@ -842,11 +842,37 @@ const LegendBox = styled.div`
   font-size: 0.7rem;
 
   h2 {
-    font-size: 0.9rem; /* h2 태그의 글자 크기 조정 */
+    font-size: 0.8rem; /* h2 태그의 글자 크기 조정 */
   }
 
   ul {
     font-size: 0.7rem; /* ul 태그의 글자 크기 조정 */
+  }
+
+  @media (max-width: 768px) {
+    width: 9rem; /* 모바일에서 가로 길이 조정 */
+    font-size: 0.6rem;
+
+    h2 {
+      font-size: 0.6rem; /* 모바일에서 h2 태그의 글자 크기 조정 */
+    }
+
+    ul {
+      font-size: 0.5rem; /* 모바일에서 ul 태그의 글자 크기 조정 */
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 7rem; /* 더 작은 화면에서 가로 길이 조정 */
+    font-size: 0.5rem;
+
+    h2 {
+      font-size: 0.5rem; /* 더 작은 화면에서 h2 태그의 글자 크기 조정 */
+    }
+
+    ul {
+      font-size: 0.4rem; /* 더 작은 화면에서 ul 태그의 글자 크기 조정 */
+    }
   }
 `
 
