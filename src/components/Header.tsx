@@ -23,7 +23,8 @@ const Header: React.FC<HeaderProps> = ({ user, setUser }) => {
     sessionStorage.removeItem('isLoggedIn') // 로그인 정보 삭제
     alert(t('logoutSuccess'))
     navigate('/') // 로그아웃 후 홈으로 이동
-  }
+    window.location.reload()
+  };
 
   return (
     <header className="bg-blue-600 text-white p-4">

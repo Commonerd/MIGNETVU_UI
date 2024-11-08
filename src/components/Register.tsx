@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import axios from 'axios'
 import { members } from '../members'
+import { useNavigate } from 'react-router-dom'
 
 interface RegisterProps {
   setUser: React.Dispatch<
@@ -19,6 +20,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
     password: '',
     confirmPassword: '',
   })
+  const navigate = useNavigate() // 페이지 이동을 위해 useNavigate 사용
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -51,6 +53,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
       await mockRegister()
       alert(t('registerSuccess'))
       setUser({ email: formData.email, isLoggedIn: true })
+      navigate('/') // 홈으로 리다이렉트
     } catch (error) {
       alert(t('registerError'))
     }
