@@ -554,17 +554,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
 
   return (
     <div className="h-[calc(85vh-64px)] relative">
-      <LegendBox>
-        <h2>{t('topRegistrants')}</h2>
-        <ul>
-          {topRegistrants.map((registrant) => (
-            <li key={registrant.registrantId}>
-              {registrant.medal} {registrant.name} : {registrant.count}{' '}
-              {t('nodeCount')}
-            </li>
-          ))}
-        </ul>
-      </LegendBox>
+
       <div className="p-4 bg-white">
         <div className="flex flex-wrap gap-4">
           <select
@@ -678,6 +668,17 @@ const Map: React.FC<MapProps> = ({ user }) => {
         {focusedNode && (
           <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
         )}
+        <LegendBox>
+          <h2>{t('topRegistrants')}</h2>
+          <ul>
+            {topRegistrants.map((registrant) => (
+              <li key={registrant.registrantId}>
+                {registrant.medal} {registrant.name} : {registrant.count}{' '}
+                {t('nodeCount')}
+              </li>
+            ))}
+          </ul>
+        </LegendBox>
         <Legend
           topMigrants={topMigrants}
           topOrganizations={topOrganizations}
@@ -828,23 +829,24 @@ const Map: React.FC<MapProps> = ({ user }) => {
 }
 
 const LegendBox = styled.div`
-  position: absolute;
-  top: 5rem;
-  left: 2.3rem;
+  position: relative;
+  top: 0.5rem;
+  left: 2rem;
+  width: 10rem; /* 가로 길이 설정 */
   background-color: rgba(255, 255, 255, 0.7);
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   z-index: 1000; /* 지도 위에 표시되도록 z-index 설정 */
-  font-size: 1rem;
+  font-size: 0.7rem;
 
   h2 {
-    font-size: 1rem; /* h2 태그의 글자 크기 조정 */
+    font-size: 0.9rem; /* h2 태그의 글자 크기 조정 */
   }
 
   ul {
-    font-size: 0.8rem; /* ul 태그의 글자 크기 조정 */
+    font-size: 0.7rem; /* ul 태그의 글자 크기 조정 */
   }
 `
 
