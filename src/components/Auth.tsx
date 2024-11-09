@@ -8,6 +8,7 @@ import styled from 'styled-components'
 export const Auth = () => {
   const { t, i18n } = useTranslation()
   const { setUser } = useStore()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
   const [isLogin, setIsLogin] = useState(true)
@@ -27,14 +28,16 @@ export const Auth = () => {
         },
       )
     } else {
-      await registerMutation.mutateAsync({ email, password: pw }).then(() =>
-        loginMutation.mutate(
-          { email, password: pw },
-          {
-            onSuccess: () => setUser({ email, isLoggedIn: true }),
-          },
-        ),
-      )
+      await registerMutation
+        .mutateAsync({ name, email, password: pw })
+        .then(() =>
+          loginMutation.mutate(
+            { email, password: pw },
+            {
+              onSuccess: () => setUser({ email, isLoggedIn: true }),
+            },
+          ),
+        )
     }
   }
 
@@ -48,6 +51,16 @@ export const Auth = () => {
         <span className="text-xs">{t('appSubName')}</span>
         <Title>{isLogin ? t('login') : t('register')}</Title>
         <form onSubmit={submitAuthHandler}>
+          {!isLogin && (
+            <Input
+              type="text"
+              name="name"
+              placeholder={t('name')}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          )}
           <Input
             type="email"
             name="email"
@@ -64,7 +77,7 @@ export const Auth = () => {
             onChange={(e) => setPw(e.target.value)}
             required
           />
-          <Button type="submit" disabled={!email || !pw}>
+          <Button type="submit" disabled={!email || !pw || (!isLogin && !name)}>
             {isLogin ? t('login') : t('register')}
           </Button>
         </form>
