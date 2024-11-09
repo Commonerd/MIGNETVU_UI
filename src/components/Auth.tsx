@@ -22,7 +22,7 @@ export const Auth = () => {
     e.preventDefault()
     if (isLogin) {
       loginMutation.mutate(
-        { email, password: pw, name },
+        { email, password: pw, name: '0' },
         {
           onSuccess: () => setUser({ email, isLoggedIn: true, name }),
         },
