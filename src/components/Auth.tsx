@@ -22,9 +22,9 @@ export const Auth = () => {
     e.preventDefault()
     if (isLogin) {
       loginMutation.mutate(
-        { email, password: pw },
+        { email, password: pw, name },
         {
-          onSuccess: () => setUser({ email, isLoggedIn: true }),
+          onSuccess: () => setUser({ email, isLoggedIn: true, name }),
         },
       )
     } else {
@@ -32,9 +32,9 @@ export const Auth = () => {
         .mutateAsync({ name, email, password: pw })
         .then(() =>
           loginMutation.mutate(
-            { email, password: pw },
+            { email, password: pw, name },
             {
-              onSuccess: () => setUser({ email, isLoggedIn: true }),
+              onSuccess: () => setUser({ email, isLoggedIn: true, name }),
             },
           ),
         )

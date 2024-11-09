@@ -26,9 +26,8 @@ export const useMutateAuth = () => {
     },
   )
   const registerMutation = useMutation(
-    async (
-      user: Credential & { name: string }, // Add 'name' to the user data
-    ) => await axios.post(`${process.env.REACT_APP_API_URL}/signup`, user),
+    async (user: Credential) =>
+      await axios.post(`${process.env.REACT_APP_API_URL}/signup`, user),
     {
       onError: (err: any) => {
         if (err.response.data.message) {
