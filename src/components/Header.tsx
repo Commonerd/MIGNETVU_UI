@@ -36,7 +36,7 @@ const Header: React.FC = () => {
               <>
                 <li>
                   <span className="mr-2 text-xs md:text-base">
-                    {user.email.split('@')[0]}
+                    {user.name}
                     {t('welcome')}
                   </span>
                 </li>

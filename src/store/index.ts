@@ -3,6 +3,7 @@ import { create } from 'zustand'
 type User = {
   email: string
   isLoggedIn: boolean
+  name: string
 }
 
 type EditedTask = {
@@ -19,7 +20,7 @@ type State = {
 }
 
 const useStore = create<State>((set) => ({
-  user: { email: '', isLoggedIn: false },
+  user: { email: '', isLoggedIn: false, name: '' },
   setUser: (user) => set({ user }), // setUser 함수 구현
   editedTask: { id: 0, title: '' },
   updateEditedTask: (payload) =>
