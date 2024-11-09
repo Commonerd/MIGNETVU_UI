@@ -20,13 +20,7 @@ import {
 import { mockMigrants, mockOrganizations } from '../mockData'
 import { members } from '../members'
 import styled from 'styled-components'
-
-interface MapProps {
-  user: { email: string; isLoggedIn: boolean }
-  setUser: React.Dispatch<
-    React.SetStateAction<{ email: string; isLoggedIn: boolean }>
-  >
-}
+import useStore from '../store'
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -157,7 +151,7 @@ const Legend = ({
   return null
 }
 
-const Map: React.FC<MapProps> = ({ user }) => {
+const Map: React.FC = () => {
   const { t } = useTranslation()
   const [migrants, setMigrants] = useState<Migrant[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
@@ -177,6 +171,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
     lat: number
     lng: number
   } | null>(null)
+  const { user } = useStore()
 
   useEffect(() => {
     setMigrants(mockMigrants)
@@ -554,14 +549,13 @@ const Map: React.FC<MapProps> = ({ user }) => {
 
   return (
     <div className="h-[calc(85vh-64px)] relative">
-
       <div className="p-4 bg-white">
         <div className="flex flex-wrap gap-1 md:gap-4 items-center">
           <select
             value={filters.entityType}
             onChange={(e) => handleFilterChange('entityType', e.target.value)}
             className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-            >
+          >
             <option value="all">{t('allEntityTypes')}</option>
             <option value="migrant">{t('migrant')}</option>
             <option value="organization">{t('organization')}</option>
@@ -574,7 +568,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
                   handleFilterChange('nationality', e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-                >
+              >
                 <option value="all">{t('allNationalities')}</option>
                 {uniqueNationalities.map((nationality) => (
                   <option key={nationality} value={nationality}>
@@ -588,7 +582,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
                   handleFilterChange('ethnicity', e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-                >
+              >
                 <option value="all">{t('allEthnicities')}</option>
                 {uniqueEthnicities.map((ethnicity) => (
                   <option key={ethnicity} value={ethnicity}>
@@ -613,7 +607,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
             <option value="cultural">{t('cultural')}</option>
           </select>
           <div>
-          <label className="text-xs md:text-sm">{t('yearRange')}: </label>
+            <label className="text-xs md:text-sm">{t('yearRange')}: </label>
             <input
               type="number"
               value={filters.yearRange[0]}
@@ -636,7 +630,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
                 ])
               }
               className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
-              />
+            />
           </div>
           {user.isLoggedIn ? (
             <>
@@ -645,7 +639,7 @@ const Map: React.FC<MapProps> = ({ user }) => {
                 value={centralityType}
                 onChange={(e) => setCentralityType(e.target.value)}
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-                >
+              >
                 <option value="none">{t('selectCentrality')}</option>
                 <option value="degree">{t('degreeCentrality')}</option>
                 <option value="betweenness">{t('betweenessCentrality')}</option>
@@ -852,7 +846,7 @@ const LegendBox = styled.div`
   @media (max-width: 768px) {
     position: relative;
     left: 2.5rem;
-    width: 9rem; /* 모바일에서 가로 길이 조정 */ 
+    width: 9rem; /* 모바일에서 가로 길이 조정 */
     font-size: 0.7rem;
 
     h2 {
