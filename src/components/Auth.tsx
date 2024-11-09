@@ -1,26 +1,33 @@
 import { useState, FormEvent } from 'react'
 import { CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { useMutateAuth } from '../hooks/useMutateAuth'
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next'
+import useStore from '../store'
 
 export const Auth = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation()
+  const { setUser } = useStore() // 인증용 플래그
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(true) // 로그인/회원가입 화면전환용 플래그
   const { loginMutation, registerMutation } = useMutateAuth()
 
   const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-  };
+    i18n.changeLanguage(lng)
+  }
 
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (isLogin) {
-      loginMutation.mutate({ 
-        email: email,
-        password: pw,
-      })
+      loginMutation.mutate(
+        {
+          email: email,
+          password: pw,
+        },
+        {
+          onSuccess: () => setUser({ email, isLoggedIn: true }), // 로그인 성공 시 상태 업데이트
+        },
+      )
     } else {
       await registerMutation
         .mutateAsync({
@@ -28,10 +35,15 @@ export const Auth = () => {
           password: pw,
         })
         .then(() =>
-          loginMutation.mutate({
-            email: email,
-            password: pw,
-          })
+          loginMutation.mutate(
+            {
+              email: email,
+              password: pw,
+            },
+            {
+              onSuccess: () => setUser({ email, isLoggedIn: true }), // 회원가입 후 로그인 성공 시 상태 업데이트
+            },
+          ),
         )
     }
   }
@@ -39,11 +51,9 @@ export const Auth = () => {
     <div className="flex justify-center items-center flex-col min-h-screen text-gray-600 font-mono">
       <div className="flex items-center">
         <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
-        <span className="text-center text-3xl font-extrabold">
-          MigNetVu 
-        </span>
-         <span className="text-sm font-bold">　{t("appSubName")} </span>
-        </div>
+        <span className="text-center text-3xl font-extrabold">MigNetVu</span>
+        <span className="text-sm font-bold">　{t('appSubName')} </span>
+      </div>
       <h2 className="my-6">{isLogin ? 'Login' : 'Create a new account'}</h2>
       <form onSubmit={submitAuthHandler}>
         <div>

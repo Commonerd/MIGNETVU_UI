@@ -14,6 +14,7 @@ import NetworkForm from './components/NetworkForm'
 import Register from './components/Register'
 import Login from './components/Login'
 import Map from './components/Map'
+import { Network } from './components/Network'
 
 function App() {
   useEffect(() => {
@@ -35,16 +36,17 @@ function App() {
   return (
     <BrowserRouter>
       <div className="flex flex-col min-h-screen bg-gray-100">
-        <Header user={user} setUser={setUser} />{' '}
+        <Header />{' '}
         <main className="flex-grow">
           <Routes>
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/login" element={<Auth />} />
+            <Route path="/network" element={<Network />} />
             <Route path="/todo" element={<Todo />} />
             {/* 잠정 */}
             <Route path="/" element={<Map user={user} setUser={setUser} />} />
             <Route path="/add-network" element={<NetworkForm />} />
-            <Route path="/login" element={<Login setUser={setUser} />} />
-            <Route path="/register" element={<Register setUser={setUser} />} />
+            {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
+            {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
           </Routes>
         </main>
         <Footer />
