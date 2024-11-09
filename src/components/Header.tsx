@@ -16,7 +16,6 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     setUser({ email: '', isLoggedIn: false, name: '' }) // 로그아웃 시 사용자 상태 초기화
     alert(t('logoutSuccess'))
-    
     navigate('/') // 로그아웃 후 홈으로 이동
     window.location.reload()
   }

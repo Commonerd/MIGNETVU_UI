@@ -24,11 +24,7 @@ export const Auth = () => {
       loginMutation.mutate(
         { email, password: pw, name: '0' },
         {
-          onSuccess: (response) => {
-            const user = response.data
-            setUser({ email, isLoggedIn: true, name: user.name }) // 유저 이름 설정
-            setName(user.name) // 유저 이름을 상태에 설정
-          },
+          onSuccess: () => setUser({ email, isLoggedIn: true, name }),
         },
       )
     } else {
