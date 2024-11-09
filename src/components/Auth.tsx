@@ -3,13 +3,14 @@ import { CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { useMutateAuth } from '../hooks/useMutateAuth'
 import { useTranslation } from 'react-i18next'
 import useStore from '../store'
+import styled from 'styled-components'
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
-  const { setUser } = useStore() // 인증용 플래그
+  const { setUser } = useStore()
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
-  const [isLogin, setIsLogin] = useState(true) // 로그인/회원가입 화면전환용 플래그
+  const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
 
   const changeLanguage = (lng: string) => {
@@ -20,77 +21,164 @@ export const Auth = () => {
     e.preventDefault()
     if (isLogin) {
       loginMutation.mutate(
+        { email, password: pw },
         {
-          email: email,
-          password: pw,
-        },
-        {
-          onSuccess: () => setUser({ email, isLoggedIn: true }), // 로그인 성공 시 상태 업데이트
+          onSuccess: () => setUser({ email, isLoggedIn: true }),
         },
       )
     } else {
-      await registerMutation
-        .mutateAsync({
-          email: email,
-          password: pw,
-        })
-        .then(() =>
-          loginMutation.mutate(
-            {
-              email: email,
-              password: pw,
-            },
-            {
-              onSuccess: () => setUser({ email, isLoggedIn: true }), // 회원가입 후 로그인 성공 시 상태 업데이트
-            },
-          ),
-        )
+      await registerMutation.mutateAsync({ email, password: pw }).then(() =>
+        loginMutation.mutate(
+          { email, password: pw },
+          {
+            onSuccess: () => setUser({ email, isLoggedIn: true }),
+          },
+        ),
+      )
     }
   }
+
   return (
-    <div className="flex justify-center items-center flex-col min-h-screen text-gray-600 font-mono">
-      <div className="flex items-center">
-        <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
-        <span className="text-center text-3xl font-extrabold">MigNetVu</span>
-        <span className="text-sm font-bold">　{t('appSubName')} </span>
-      </div>
-      <h2 className="my-6">{isLogin ? 'Login' : 'Create a new account'}</h2>
-      <form onSubmit={submitAuthHandler}>
-        <div>
-          <input
-            className="mb-3 px-3 text-sm py-2 border border-gray-300"
-            name="email"
+    <Container>
+      <LoginBox>
+        <Header>
+          <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
+          <span className="text-2xl font-extrabold">MigNetVu</span>
+        </Header>
+        <span className="text-xs">{t('appSubName')}</span>
+        <Title>{isLogin ? t('login') : t('register')}</Title>
+        <form onSubmit={submitAuthHandler}>
+          <Input
             type="email"
-            autoFocus
-            placeholder="Email address"
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            placeholder={t('email')}
             value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
-        </div>
-        <div>
-          <input
-            className="mb-3 px-3 text-sm py-2 border border-gray-300"
-            name="password"
+          <Input
             type="password"
-            placeholder="Password"
-            onChange={(e) => setPw(e.target.value)}
+            name="password"
+            placeholder={t('password')}
             value={pw}
+            onChange={(e) => setPw(e.target.value)}
+            required
           />
-        </div>
-        <div className="flex justify-center my-2">
-          <button
-            className="disabled:opacity-40 py-2 px-4 rounded text-white bg-indigo-600"
-            disabled={!email || !pw}
-            type="submit"
-          >
-            {isLogin ? 'Login' : 'Sign Up'}
-          </button>
-        </div>
-      </form>
-      <ArrowPathIcon
-        onClick={() => setIsLogin(!isLogin)}
-        className="h-6 w-6 my-2 text-blue-500 cursor-pointer"
-      />
-    </div>
+          <Button type="submit" disabled={!email || !pw}>
+            {isLogin ? t('login') : t('register')}
+          </Button>
+        </form>
+        <IconWrapper>
+          <SwitchModeIcon onClick={() => setIsLogin(!isLogin)} />
+        </IconWrapper>
+      </LoginBox>
+    </Container>
   )
 }
+
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  background-color: #f3f4f6;
+  padding: 1rem;
+`
+
+const LoginBox = styled.div`
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 20rem;
+  height: auto;
+  text-align: center;
+
+  @media (max-width: 600px) {
+    padding: 20px;
+    width: 90%;
+  }
+`
+
+const Header = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+
+  span {
+    font-size: 1.5rem;
+
+    @media (max-width: 600px) {
+      font-size: 1.25rem;
+    }
+  }
+`
+
+const Title = styled.h2`
+  font-size: 1.6rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+
+  @media (max-width: 600px) {
+    font-size: 1.2rem;
+  }
+`
+
+const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px;
+  }
+`
+
+const Button = styled.button`
+  width: 100%;
+  padding: 12px;
+  background-color: #2d3748;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+`
+
+const SwitchModeIcon = styled(ArrowPathIcon)`
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #3b82f6;
+  cursor: pointer;
+
+  &:hover {
+    color: #2563eb;
+  }
+`
+
+const IconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1rem;
+`
+
+export default Auth
