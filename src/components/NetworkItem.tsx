@@ -12,29 +12,43 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
+
   return (
-    <li className="my-3">
-      <span className="font-bold">{title}</span>
-      <div className="flex float-right ml-20">
-        <PencilIcon
-          className="h-5 w-5 mx-1 text-blue-500 cursor-pointer"
-          onClick={() => {
-            updateNetwork({
-              id: id,
-              title: title,
-              type: type,
-              nationality: nationality,
-            })
-          }}
-        />
-        <TrashIcon
-          className="h-5 w-5 text-blue-500 cursor-pointer"
-          onClick={() => {
-            deleteNetworkMutation.mutate(id)
-          }}
-        />
+    <li className="my-3 p-4 bg-white rounded shadow-md">
+      <div className="flex justify-between items-center">
+        <span className="font-bold text-lg">{title}</span>
+        <div className="flex ml-4">
+          <PencilIcon
+            className="h-5 w-5 mx-1 text-blue-500 cursor-pointer"
+            onClick={() => {
+              updateNetwork({
+                id: id,
+                title: title,
+                type: type,
+                nationality: nationality,
+              })
+            }}
+          />
+          <TrashIcon
+            className="h-5 w-5 text-red-500 cursor-pointer"
+            onClick={() => {
+              deleteNetworkMutation.mutate(id)
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Network Details: Type and Nationality */}
+      <div className="text-sm text-gray-600 mt-2">
+        <p>
+          <strong>Type:</strong> {type}
+        </p>
+        <p>
+          <strong>Nationality:</strong> {nationality}
+        </p>
       </div>
     </li>
   )
 }
+
 export const NetworkItem = memo(NetworkItemMemo)
