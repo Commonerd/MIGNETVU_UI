@@ -7,6 +7,8 @@ import { useMutateNetwork } from '../hooks/useMutateNetwork'
 const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   id,
   title,
+  type,
+  nationality,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -20,6 +22,8 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
             updateNetwork({
               id: id,
               title: title,
+              type: type,
+              nationality: nationality,
             })
           }}
         />

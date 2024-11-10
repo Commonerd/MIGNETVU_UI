@@ -7,6 +7,8 @@ export type Task = {
 export type Network = {
   id: number
   title: string
+  type: string
+  nationality: string
   created_at: Date
   updated_at: Date
 }
