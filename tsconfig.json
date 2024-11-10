@@ -22,5 +22,6 @@
   },
   "include": [
     "src"
-  ]
+  ],
+  "types": ["@types/react-i18next"]
 }
