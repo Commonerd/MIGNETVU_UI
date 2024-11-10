@@ -4,6 +4,12 @@ export type Task = {
   created_at: Date
   updated_at: Date
 }
+export type Network = {
+  id: number
+  title: string
+  created_at: Date
+  updated_at: Date
+}
 export type CsrfToken = {
   csrf_token: string
 }

@@ -42,7 +42,7 @@ const Header: React.FC = () => {
                 </li>
                 <li>
                   <Link
-                    to="/add-network"
+                    to="/network"
                     className="flex items-center text-xs md:text-base"
                   >
                     <UserPlus className="mr-1" />

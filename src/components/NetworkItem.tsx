@@ -1,15 +1,15 @@
 import { FC, memo } from 'react'
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid'
 import useStore from '../store'
-import { Task } from '../types'
-import { useMutateTask } from '../hooks/useMutateTask'
+import { Network } from '../types'
+import { useMutateNetwork } from '../hooks/useMutateNetwork'
 
-const NetworkItemMemo: FC<Omit<Task, 'created_at' | 'updated_at'>> = ({
+const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   id,
   title,
 }) => {
-  const updateTask = useStore((state) => state.updateEditedTask)
-  const { deleteTaskMutation } = useMutateTask()
+  const updateNetwork = useStore((state) => state.updateEditedNetwork)
+  const { deleteNetworkMutation } = useMutateNetwork()
   return (
     <li className="my-3">
       <span className="font-bold">{title}</span>
@@ -17,7 +17,7 @@ const NetworkItemMemo: FC<Omit<Task, 'created_at' | 'updated_at'>> = ({
         <PencilIcon
           className="h-5 w-5 mx-1 text-blue-500 cursor-pointer"
           onClick={() => {
-            updateTask({
+            updateNetwork({
               id: id,
               title: title,
             })
@@ -26,11 +26,11 @@ const NetworkItemMemo: FC<Omit<Task, 'created_at' | 'updated_at'>> = ({
         <TrashIcon
           className="h-5 w-5 text-blue-500 cursor-pointer"
           onClick={() => {
-            deleteTaskMutation.mutate(id)
+            deleteNetworkMutation.mutate(id)
           }}
         />
       </div>
     </li>
   )
 }
-export const TaskItem = memo(NetworkItemMemo)
+export const NetworkItem = memo(NetworkItemMemo)

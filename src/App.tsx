@@ -29,9 +29,14 @@ function App() {
   }, [])
 
   const { t } = useTranslation()
-  const [user, setUser] = useState<{ email: string; isLoggedIn: boolean }>({
+  const [user, setUser] = useState<{
+    email: string
+    isLoggedIn: boolean
+    name: string
+  }>({
     email: '',
     isLoggedIn: false,
+    name: '',
   })
   return (
     <BrowserRouter>
