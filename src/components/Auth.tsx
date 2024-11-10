@@ -1,197 +1,79 @@
 import { useState, FormEvent } from 'react'
 import { CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { useMutateAuth } from '../hooks/useMutateAuth'
-import { useTranslation } from 'react-i18next'
-import useStore from '../store'
-import styled from 'styled-components'
 
 export const Auth = () => {
-  const { t, i18n } = useTranslation()
-  const { setUser } = useStore()
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [pw, setPw] = useState('')
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
 
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng)
-  }
-
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (isLogin) {
-      loginMutation.mutate(
-        { email, password: pw, name: '0' },
-        {
-          onSuccess: () => setUser({ email, isLoggedIn: true, name }),
-        },
-      )
+      loginMutation.mutate({ 
+        email: email,
+        password: pw,
+      })
     } else {
       await registerMutation
-        .mutateAsync({ name, email, password: pw })
+        .mutateAsync({
+          email: email,
+          password: pw,
+        })
         .then(() =>
-          loginMutation.mutate(
-            { email, password: pw, name },
-            {
-              onSuccess: () => setUser({ email, isLoggedIn: true, name }),
-            },
-          ),
+          loginMutation.mutate({
+            email: email,
+            password: pw,
+          })
         )
     }
   }
-
   return (
-    <Container>
-      <LoginBox>
-        <Header>
-          <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
-          <span className="text-2xl font-extrabold">MigNetVu</span>
-        </Header>
-        <span className="text-xs">{t('appSubName')}</span>
-        <Title>{isLogin ? t('login') : t('register')}</Title>
-        <form onSubmit={submitAuthHandler}>
-          {!isLogin && (
-            <Input
-              type="text"
-              name="name"
-              placeholder={t('name')}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          )}
-          <Input
-            type="email"
+    <div className="flex justify-center items-center flex-col min-h-screen text-gray-600 font-mono">
+      <div className="flex items-center">
+        <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
+        <span className="text-center text-3xl font-extrabold">
+          Todo app by React/Go(Echo)
+        </span>
+      </div>
+      <h2 className="my-6">{isLogin ? 'Login' : 'Create a new account'}</h2>
+      <form onSubmit={submitAuthHandler}>
+        <div>
+          <input
+            className="mb-3 px-3 text-sm py-2 border border-gray-300"
             name="email"
-            placeholder={t('email')}
-            value={email}
+            type="email"
+            autoFocus
+            placeholder="Email address"
             onChange={(e) => setEmail(e.target.value)}
-            required
+            value={email}
           />
-          <Input
-            type="password"
+        </div>
+        <div>
+          <input
+            className="mb-3 px-3 text-sm py-2 border border-gray-300"
             name="password"
-            placeholder={t('password')}
-            value={pw}
+            type="password"
+            placeholder="Password"
             onChange={(e) => setPw(e.target.value)}
-            required
+            value={pw}
           />
-          <Button type="submit" disabled={!email || !pw || (!isLogin && !name)}>
-            {isLogin ? t('login') : t('register')}
-          </Button>
-        </form>
-        <IconWrapper>
-          <SwitchModeIcon onClick={() => setIsLogin(!isLogin)} />
-        </IconWrapper>
-      </LoginBox>
-    </Container>
+        </div>
+        <div className="flex justify-center my-2">
+          <button
+            className="disabled:opacity-40 py-2 px-4 rounded text-white bg-indigo-600"
+            disabled={!email || !pw}
+            type="submit"
+          >
+            {isLogin ? 'Login' : 'Sign Up'}
+          </button>
+        </div>
+      </form>
+      <ArrowPathIcon
+        onClick={() => setIsLogin(!isLogin)}
+        className="h-6 w-6 my-2 text-blue-500 cursor-pointer"
+      />
+    </div>
   )
 }
-
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-  background-color: #f3f4f6;
-  padding: 1rem;
-`
-
-const LoginBox = styled.div`
-  background-color: #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 32px;
-  width: 20rem;
-  height: auto;
-  text-align: center;
-
-  @media (max-width: 600px) {
-    padding: 20px;
-    width: 90%;
-  }
-`
-
-const Header = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-
-  span {
-    font-size: 1.5rem;
-
-    @media (max-width: 600px) {
-      font-size: 1.25rem;
-    }
-  }
-`
-
-const Title = styled.h2`
-  font-size: 1.6rem;
-  font-weight: bold;
-  margin-bottom: 16px;
-
-  @media (max-width: 600px) {
-    font-size: 1.2rem;
-  }
-`
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  margin-bottom: 16px;
-
-  &:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-  }
-
-  @media (max-width: 600px) {
-    padding: 10px;
-  }
-`
-
-const Button = styled.button`
-  width: 100%;
-  padding: 12px;
-  background-color: #2d3748;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 1rem;
-
-  &:hover {
-    background-color: #2563eb;
-  }
-
-  @media (max-width: 600px) {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-`
-
-const SwitchModeIcon = styled(ArrowPathIcon)`
-  width: 1.5rem;
-  height: 1.5rem;
-  color: #3b82f6;
-  cursor: pointer;
-
-  &:hover {
-    color: #2563eb;
-  }
-`
-
-const IconWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  margin-top: 1rem;
-`
-
-export default Auth

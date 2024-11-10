@@ -14,7 +14,7 @@ export const useMutateAuth = () => {
       await axios.post(`${process.env.REACT_APP_API_URL}/login`, user),
     {
       onSuccess: () => {
-        navigate('/')
+        navigate('/todo')
       },
       onError: (err: any) => {
         if (err.response.data.message) {
@@ -23,7 +23,7 @@ export const useMutateAuth = () => {
           switchErrorHandling(err.response.data)
         }
       },
-    },
+    }
   )
   const registerMutation = useMutation(
     async (user: Credential) =>
@@ -36,7 +36,7 @@ export const useMutateAuth = () => {
           switchErrorHandling(err.response.data)
         }
       },
-    },
+    }
   )
   const logoutMutation = useMutation(
     async () => await axios.post(`${process.env.REACT_APP_API_URL}/logout`),
@@ -52,7 +52,7 @@ export const useMutateAuth = () => {
           switchErrorHandling(err.response.data)
         }
       },
-    },
+    }
   )
   return { loginMutation, registerMutation, logoutMutation }
 }
