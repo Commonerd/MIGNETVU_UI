@@ -37,7 +37,7 @@ export const Network = () => {
   }
 
   return (
-    <div className="flex justify-center items-center flex-col min-h-screen text-gray-600 font-mono bg-gray-100">
+    <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
       <div className="flex items-center my-6">
         <ShieldCheckIcon className="h-8 w-8 mr-3 text-indigo-500 cursor-pointer" />
         <span className="text-center text-3xl font-extrabold">
@@ -52,10 +52,10 @@ export const Network = () => {
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-medium">Title</label>
+            <label className="block text-gray-700 font-medium">Name</label>
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter title"
+              placeholder="Enter name"
               type="text"
               onChange={(e) =>
                 updateNetwork({ ...editedNetwork, title: e.target.value })
