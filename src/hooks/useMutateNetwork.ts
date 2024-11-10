@@ -40,6 +40,8 @@ export const useMutateNetwork = () => {
         `${process.env.REACT_APP_API_URL}/networks/${network.id}`,
         {
           title: network.title,
+          type: network.type,
+          nationality: network.nationality,
         },
       ),
     {
