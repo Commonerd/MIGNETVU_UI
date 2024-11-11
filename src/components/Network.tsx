@@ -11,12 +11,12 @@ import { useMutateAuth } from '../hooks/useMutateAuth'
 import { NetworkItem } from './NetworkItem'
 
 export const Network = () => {
-  const queryClient = useQueryClient()
+  // const queryClient = useQueryClient()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { data, isLoading } = useQueryNetworks()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
-  const { logoutMutation } = useMutateAuth()
+  // const { logoutMutation } = useMutateAuth()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -28,9 +28,15 @@ export const Network = () => {
         type: editedNetwork.type,
         nationality: editedNetwork.nationality,
         ethnicity: editedNetwork.ethnicity,
+        latitude: Number(editedNetwork.latitude),
+        longitude: Number(editedNetwork.longitude),
       })
     } else {
-      updateNetworkMutation.mutate(editedNetwork)
+      updateNetworkMutation.mutate({
+        ...editedNetwork,
+        latitude: Number(editedNetwork.latitude),
+        longitude: Number(editedNetwork.longitude),
+      })
     }
   }
 
@@ -46,8 +52,17 @@ export const Network = () => {
       const text = e.target?.result as string
       const lines = text.split('\n')
       const importedData = lines.slice(1).map((line) => {
-        const [id, title, type, nationality, ethnicity] = line.split(',')
-        return { id: parseInt(id), title, type, nationality, ethnicity }
+        const [id, title, type, nationality, ethnicity, latitude, longitude] =
+          line.split(',')
+        return {
+          id: parseInt(id),
+          title,
+          type,
+          nationality,
+          ethnicity,
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+        }
       })
       importedData.forEach((network) => createNetworkMutation.mutate(network))
     }
@@ -58,9 +73,20 @@ export const Network = () => {
   const handleExportCSV = () => {
     if (!data) return
     const csvRows = [
-      ['ID', 'Title', 'Type', 'Nationality', 'Ethnicity'],
-      ...data.map(({ id, title, type, nationality, ethnicity }) =>
-        [id, title, type, nationality, ethnicity].join(','),
+      [
+        'ID',
+        'Title',
+        'Type',
+        'Nationality',
+        'Ethnicity',
+        'Latitude',
+        'Longitude',
+      ],
+      ...data.map(
+        ({ id, title, type, nationality, ethnicity, latitude, longitude }) =>
+          [id, title, type, nationality, ethnicity, latitude, longitude].join(
+            ',',
+          ),
       ),
     ]
     const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n')
@@ -134,13 +160,45 @@ export const Network = () => {
               value={editedNetwork.ethnicity || ''}
             />
           </div>
+          <div>
+            <label className="block text-gray-700 font-medium">Latitude</label>
+            <input
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter latitude"
+              type="number"
+              onChange={(e) =>
+                updateNetwork({
+                  ...editedNetwork,
+                  latitude: Number(e.target.value),
+                })
+              }
+              value={editedNetwork.latitude || ''}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium">Longitude</label>
+            <input
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter longitude"
+              type="number"
+              onChange={(e) =>
+                updateNetwork({
+                  ...editedNetwork,
+                  longitude: Number(e.target.value),
+                })
+              }
+              value={editedNetwork.longitude || ''}
+            />
+          </div>
           <button
             className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={
               !editedNetwork.title ||
               !editedNetwork.type ||
               !editedNetwork.nationality ||
-              !editedNetwork.ethnicity
+              !editedNetwork.ethnicity ||
+              !editedNetwork.latitude ||
+              !editedNetwork.longitude
             }
           >
             {editedNetwork.id === 0 ? 'Create' : 'Update'}
@@ -185,6 +243,8 @@ export const Network = () => {
               type={network.type}
               nationality={network.nationality}
               ethnicity={network.ethnicity}
+              latitude={network.latitude}
+              longitude={network.longitude}
             />
           ))}
         </ul>

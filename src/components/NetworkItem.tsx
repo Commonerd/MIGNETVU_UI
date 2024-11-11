@@ -10,6 +10,8 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   type,
   nationality,
   ethnicity,
+  latitude,
+  longitude,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -28,6 +30,8 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 type: type,
                 nationality: nationality,
                 ethnicity: ethnicity,
+                latitude: latitude,
+                longitude: longitude,
               })
               // Scroll to the top
               window.scrollTo({
@@ -58,6 +62,12 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
         </p>
         <p>
           <strong>Ethnicity:</strong> {ethnicity}
+        </p>
+        <p>
+          <strong>Latitude:</strong> {latitude}
+        </p>
+        <p>
+          <strong>Longitude:</strong> {longitude}
         </p>
       </div>
     </li>

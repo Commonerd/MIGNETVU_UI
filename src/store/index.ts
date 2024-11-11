@@ -17,6 +17,8 @@ type EditedNetwork = {
   type: string
   nationality: string
   ethnicity: string
+  latitude: number
+  longitude: number
 }
 
 type State = {
@@ -45,7 +47,15 @@ const useStore = create<State>((set) => ({
     set({ editedTask: { id: 0, title: '' } })
   },
   // 네트워크 수정 상태관리
-  editedNetwork: { id: 0, title: '', type: '', nationality: '', ethnicity: '' },
+  editedNetwork: {
+    id: 0,
+    title: '',
+    type: '',
+    nationality: '',
+    ethnicity: '',
+    latitude: 0,
+    longitude: 0,
+  },
   updateEditedNetwork: (payload) => {
     set({
       editedNetwork: payload,
@@ -59,6 +69,8 @@ const useStore = create<State>((set) => ({
         type: '',
         nationality: '',
         ethnicity: '',
+        latitude: 0,
+        longitude: 0,
       },
     })
   },
