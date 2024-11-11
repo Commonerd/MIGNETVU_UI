@@ -32,10 +32,10 @@ export const Network = () => {
     }
   }
 
-  const logout = async () => {
-    await logoutMutation.mutateAsync()
-    queryClient.removeQueries(['networks'])
-  }
+  // const logout = async () => {
+  //   await logoutMutation.mutateAsync()
+  //   queryClient.removeQueries(['networks'])
+  // }
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
@@ -45,10 +45,10 @@ export const Network = () => {
           Network Manager
         </span>
       </div>
-      <ArrowRightOnRectangleIcon
+      {/* <ArrowRightOnRectangleIcon
         onClick={logout}
         className="h-6 w-6 my-6 text-blue-500 cursor-pointer"
-      />
+      /> */}
 
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">

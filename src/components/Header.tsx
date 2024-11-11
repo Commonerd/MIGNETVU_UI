@@ -3,17 +3,22 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Globe, User, UserPlus, LogOut } from 'lucide-react'
 import useStore from '../store'
+import { useMutateAuth } from '../hooks/useMutateAuth'
+import { useQueryClient } from '@tanstack/react-query'
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { user, setUser } = useStore() // user 상태 가져오기
   const navigate = useNavigate()
-
+  const queryClient = useQueryClient()
+  const { logoutMutation } = useMutateAuth()
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
   }
 
-  const handleLogout = () => {
+  const logout = async () => {
+    await logoutMutation.mutateAsync()
+    queryClient.removeQueries(['networks'])
     setUser({ email: '', isLoggedIn: false, name: '' }) // 로그아웃 시 사용자 상태 초기화
     alert(t('logoutSuccess'))
     navigate('/') // 로그아웃 후 홈으로 이동
@@ -51,7 +56,7 @@ const Header: React.FC = () => {
                 </li>
                 <li>
                   <button
-                    onClick={handleLogout}
+                    onClick={logout}
                     className="flex items-center text-xs md:text-base"
                   >
                     <LogOut className="mr-1" /> {t('logout')}
