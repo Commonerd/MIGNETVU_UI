@@ -181,11 +181,12 @@ const Map: React.FC = () => {
   // Set Networks
   useEffect(() => {
     setNetworks(data)
+    console.log(data)
   }, [])
 
   useEffect(() => {
     const markersLayer = L.layerGroup()
-
+    console.log(networks)
     if (networks && networks.length > 0) {
       networks.forEach((network) => {
         const { latitude, longitude, title } = network
