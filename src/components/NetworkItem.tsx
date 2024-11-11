@@ -29,6 +29,11 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 nationality: nationality,
                 ethnicity: ethnicity,
               })
+              // Scroll to the top
+              window.scrollTo({
+                top: 0,
+                behavior: 'smooth',
+              })
             }}
           />
           <TrashIcon
