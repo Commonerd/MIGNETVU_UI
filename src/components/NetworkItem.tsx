@@ -34,7 +34,11 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
           <TrashIcon
             className="h-5 w-5 text-red-500 cursor-pointer"
             onClick={() => {
-              deleteNetworkMutation.mutate(id)
+              if (
+                window.confirm(`Are you sure you want to delete "${title}"?`)
+              ) {
+                deleteNetworkMutation.mutate(id)
+              }
             }}
           />
         </div>
