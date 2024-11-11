@@ -6,6 +6,7 @@ import {
   Polyline,
   useMap,
   Tooltip,
+  Popup,
 } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import 'leaflet/dist/leaflet.css'
@@ -16,11 +17,13 @@ import {
   EntityType,
   Connection,
   FilterOptions,
+  Network,
 } from '../types'
 import { mockMigrants, mockOrganizations } from '../mockData'
 import { members } from '../members'
 import styled from 'styled-components'
 import useStore from '../store'
+import { useQueryNetworks } from '../hooks/useQueryNetworks'
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -153,6 +156,7 @@ const Legend = ({
 
 const Map: React.FC = () => {
   const { t } = useTranslation()
+  const [networks, setNetworks] = useState<Network[]>()
   const [migrants, setMigrants] = useState<Migrant[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [filters, setFilters] = useState<FilterOptions>({
@@ -172,6 +176,37 @@ const Map: React.FC = () => {
     lng: number
   } | null>(null)
   const { user } = useStore()
+  const { data } = useQueryNetworks()
+
+  // Set Networks
+  useEffect(() => {
+    setNetworks(data)
+  }, [])
+
+  useEffect(() => {
+    const markersLayer = L.layerGroup()
+
+    if (networks && networks.length > 0) {
+      networks.forEach((network) => {
+        const { latitude, longitude, title } = network
+
+        // 마커 생성 및 팝업 설정
+        const marker = L.marker([latitude, longitude]).bindPopup(
+          `<b>${title}</b><br>Lat: ${latitude}, Lng: ${longitude}`,
+        )
+
+        markersLayer.addLayer(marker)
+      })
+
+      // LayerGroup을 지도에 추가
+      //markersLayer.addTo(Map)
+    }
+
+    // 컴포넌트 언마운트 시 마커 제거
+    return () => {
+      markersLayer.clearLayers()
+    }
+  }, [Map, networks])
 
   useEffect(() => {
     setMigrants(mockMigrants)
@@ -817,6 +852,24 @@ const Map: React.FC = () => {
             </Polyline>
           )
         })}
+        {/* 지도에 표시될 네트워크 데이터 */}
+        {networks &&
+          networks.length > 0 &&
+          networks.map((network) => (
+            <Marker
+              key={network.id}
+              position={[network.latitude, network.longitude]}
+            >
+              <Popup>
+                <div>
+                  <strong>{network.title}</strong>
+                  <p>
+                    Lat: {network.latitude}, Lng: {network.longitude}
+                  </p>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
       </MapContainer>
     </div>
   )
