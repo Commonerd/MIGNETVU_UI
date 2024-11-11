@@ -25,6 +25,7 @@ export const Network = () => {
         title: editedNetwork.title,
         type: editedNetwork.type,
         nationality: editedNetwork.nationality,
+        ethnicity: editedNetwork.ethnicity,
       })
     } else {
       updateNetworkMutation.mutate(editedNetwork)
