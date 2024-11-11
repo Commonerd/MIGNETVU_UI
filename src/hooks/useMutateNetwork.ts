@@ -42,6 +42,7 @@ export const useMutateNetwork = () => {
           title: network.title,
           type: network.type,
           nationality: network.nationality,
+          ethnicity: network.ethnicity,
         },
       ),
     {

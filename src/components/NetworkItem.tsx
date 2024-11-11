@@ -9,6 +9,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   title,
   type,
   nationality,
+  ethnicity,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -26,6 +27,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 title: title,
                 type: type,
                 nationality: nationality,
+                ethnicity: ethnicity,
               })
             }}
           />
@@ -38,13 +40,15 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
         </div>
       </div>
 
-      {/* Network Details: Type and Nationality */}
       <div className="text-sm text-gray-600 mt-2">
         <p>
           <strong>Type:</strong> {type}
         </p>
         <p>
           <strong>Nationality:</strong> {nationality}
+        </p>
+        <p>
+          <strong>Ethnicity:</strong> {ethnicity}
         </p>
       </div>
     </li>

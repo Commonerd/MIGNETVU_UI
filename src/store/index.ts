@@ -12,10 +12,11 @@ type EditedTask = {
 }
 
 type EditedNetwork = {
-  type: string
-  nationality: string
   id: number
   title: string
+  type: string
+  nationality: string
+  ethnicity: string
 }
 
 type State = {
@@ -44,14 +45,22 @@ const useStore = create<State>((set) => ({
     set({ editedTask: { id: 0, title: '' } })
   },
   // 네트워크 수정 상태관리
-  editedNetwork: { id: 0, title: '', type: '', nationality: '' },
+  editedNetwork: { id: 0, title: '', type: '', nationality: '', ethnicity: '' },
   updateEditedNetwork: (payload) => {
     set({
       editedNetwork: payload,
     })
   },
   resetEditedNetwork: () => {
-    set({ editedNetwork: { id: 0, title: '', type: '', nationality: '' } })
+    set({
+      editedNetwork: {
+        id: 0,
+        title: '',
+        type: '',
+        nationality: '',
+        ethnicity: '',
+      },
+    })
   },
 }))
 

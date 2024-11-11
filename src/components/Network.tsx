@@ -78,17 +78,15 @@ export const Network = () => {
           </div>
 
           <div>
-            <label className="block text-gray-700 font-medium">
-              Nationality
-            </label>
+            <label className="block text-gray-700 font-medium">Ethnicity</label>
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter nationality"
+              placeholder="Enter ethnicity"
               type="text"
               onChange={(e) =>
-                updateNetwork({ ...editedNetwork, nationality: e.target.value })
+                updateNetwork({ ...editedNetwork, ethnicity: e.target.value })
               }
-              value={editedNetwork.nationality || ''}
+              value={editedNetwork.ethnicity || ''}
             />
           </div>
 
@@ -97,7 +95,8 @@ export const Network = () => {
             disabled={
               !editedNetwork.title ||
               !editedNetwork.type ||
-              !editedNetwork.nationality
+              !editedNetwork.nationality ||
+              !editedNetwork.ethnicity
             }
           >
             {editedNetwork.id === 0 ? 'Create' : 'Update'}
@@ -116,6 +115,7 @@ export const Network = () => {
               title={network.title}
               type={network.type}
               nationality={network.nationality}
+              ethnicity={network.ethnicity}
             />
           ))}
         </ul>

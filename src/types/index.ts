@@ -9,6 +9,7 @@ export type Network = {
   title: string
   type: string
   nationality: string
+  ethnicity: string
   created_at: Date
   updated_at: Date
 }
