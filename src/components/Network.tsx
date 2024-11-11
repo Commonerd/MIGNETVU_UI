@@ -78,6 +78,21 @@ export const Network = () => {
           </div>
 
           <div>
+            <label className="block text-gray-700 font-medium">
+              Nationality
+            </label>
+            <input
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter nationality"
+              type="text"
+              onChange={(e) =>
+                updateNetwork({ ...editedNetwork, nationality: e.target.value })
+              }
+              value={editedNetwork.nationality || ''}
+            />
+          </div>
+
+          <div>
             <label className="block text-gray-700 font-medium">Ethnicity</label>
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
