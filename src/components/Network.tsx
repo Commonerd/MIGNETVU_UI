@@ -1,4 +1,4 @@
-import { FormEvent } from 'react'
+import { FormEvent, useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowRightOnRectangleIcon,
@@ -18,6 +18,8 @@ export const Network = () => {
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
   const { logoutMutation } = useMutateAuth()
 
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const submitNetworkHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (editedNetwork.id === 0) {
@@ -32,10 +34,44 @@ export const Network = () => {
     }
   }
 
-  // const logout = async () => {
-  //   await logoutMutation.mutateAsync()
-  //   queryClient.removeQueries(['networks'])
-  // }
+  // Handler for importing CSV data
+  const handleImportCSV = () => {
+    fileInputRef.current?.click()
+  }
+
+  // Process imported CSV file
+  const processFile = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const text = e.target?.result as string
+      const lines = text.split('\n')
+      const importedData = lines.slice(1).map((line) => {
+        const [id, title, type, nationality, ethnicity] = line.split(',')
+        return { id: parseInt(id), title, type, nationality, ethnicity }
+      })
+      importedData.forEach((network) => createNetworkMutation.mutate(network))
+    }
+    reader.readAsText(file)
+  }
+
+  // Handler for exporting current data to CSV
+  const handleExportCSV = () => {
+    if (!data) return
+    const csvRows = [
+      ['ID', 'Title', 'Type', 'Nationality', 'Ethnicity'],
+      ...data.map(({ id, title, type, nationality, ethnicity }) =>
+        [id, title, type, nationality, ethnicity].join(','),
+      ),
+    ]
+    const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n')
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', 'networks.csv')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
@@ -45,10 +81,6 @@ export const Network = () => {
           Network Manager
         </span>
       </div>
-      {/* <ArrowRightOnRectangleIcon
-        onClick={logout}
-        className="h-6 w-6 my-6 text-blue-500 cursor-pointer"
-      /> */}
 
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
@@ -64,7 +96,6 @@ export const Network = () => {
               value={editedNetwork.title || ''}
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium">Type</label>
             <input
@@ -77,7 +108,6 @@ export const Network = () => {
               value={editedNetwork.type || ''}
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium">
               Nationality
@@ -92,7 +122,6 @@ export const Network = () => {
               value={editedNetwork.nationality || ''}
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-medium">Ethnicity</label>
             <input
@@ -105,9 +134,8 @@ export const Network = () => {
               value={editedNetwork.ethnicity || ''}
             />
           </div>
-
           <button
-            className="w-full py-2 text-white bg-indigo-600 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={
               !editedNetwork.title ||
               !editedNetwork.type ||
@@ -120,10 +148,35 @@ export const Network = () => {
         </form>
       </div>
 
+      <div className="flex justify-center gap-2 my-4">
+        <button
+          onClick={handleImportCSV}
+          className="px-20 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+        >
+          Import
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          accept=".csv"
+          onChange={(e) => {
+            const file = e.target.files?.[0]
+            if (file) processFile(file)
+          }}
+        />
+        <button
+          onClick={handleExportCSV}
+          className="px-20 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+        >
+          Export
+        </button>
+      </div>
+
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <ul className="my-5 w-full max-w-md">
+        <ul className="my-0 w-full max-w-md">
           {data?.map((network) => (
             <NetworkItem
               key={network.id}
