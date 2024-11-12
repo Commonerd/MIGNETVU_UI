@@ -11,6 +11,13 @@ type EditedTask = {
   title: string
 }
 
+type Connection = {
+  targetId: number
+  targetType: string
+  strength: number
+  type: string
+}
+
 type EditedNetwork = {
   id: number
   title: string
@@ -19,11 +26,12 @@ type EditedNetwork = {
   ethnicity: string
   latitude: number
   longitude: number
+  connections: Connection[] // Add connections as an array
 }
 
 type State = {
   user: User
-  setUser: (user: User) => void // setUser 함수 추가
+  setUser: (user: User) => void
   editedTask: EditedTask
   updateEditedTask: (payload: EditedTask) => void
   resetEditedTask: () => void
@@ -36,7 +44,7 @@ const useStore = create<State>((set) => ({
   user: { email: '', isLoggedIn: false, name: '' },
   setUser: (user) => {
     set({ user })
-  }, // setUser 함수 구현
+  },
   editedTask: { id: 0, title: '' },
   updateEditedTask: (payload) => {
     set({
@@ -46,7 +54,6 @@ const useStore = create<State>((set) => ({
   resetEditedTask: () => {
     set({ editedTask: { id: 0, title: '' } })
   },
-  // 네트워크 수정 상태관리
   editedNetwork: {
     id: 0,
     title: '',
@@ -55,6 +62,7 @@ const useStore = create<State>((set) => ({
     ethnicity: '',
     latitude: 0,
     longitude: 0,
+    connections: [], // Initialize connections as an empty array
   },
   updateEditedNetwork: (payload) => {
     set({
@@ -71,6 +79,7 @@ const useStore = create<State>((set) => ({
         ethnicity: '',
         latitude: 0,
         longitude: 0,
+        connections: [], // Reset connections as an empty array
       },
     })
   },

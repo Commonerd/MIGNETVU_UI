@@ -11,7 +11,15 @@ export const useMutateNetwork = () => {
 
   const createNetworkMutation = useMutation(
     (network: Omit<Network, 'id' | 'created_at' | 'updated_at'>) =>
-      axios.post<Network>(`${process.env.REACT_APP_API_URL}/networks`, network),
+      axios.post<Network>(`${process.env.REACT_APP_API_URL}/networks`, {
+        title: network.title,
+        type: network.type,
+        nationality: network.nationality,
+        ethnicity: network.ethnicity,
+        latitude: network.latitude,
+        longitude: network.longitude,
+        connections: network.connections, // Include connections in the request
+      }),
     {
       onSuccess: (res) => {
         const previousNetworks = queryClient.getQueryData<Network[]>([
@@ -34,6 +42,7 @@ export const useMutateNetwork = () => {
       },
     },
   )
+
   const updateNetworkMutation = useMutation(
     (network: Omit<Network, 'created_at' | 'updated_at'>) =>
       axios.put<Network>(
@@ -45,6 +54,7 @@ export const useMutateNetwork = () => {
           ethnicity: network.ethnicity,
           latitude: network.latitude,
           longitude: network.longitude,
+          connections: network.connections, // Include connections in the request
         },
       ),
     {
@@ -71,6 +81,7 @@ export const useMutateNetwork = () => {
       },
     },
   )
+
   const deleteNetworkMutation = useMutation(
     (id: number) =>
       axios.delete(`${process.env.REACT_APP_API_URL}/networks/${id}`),
@@ -96,6 +107,7 @@ export const useMutateNetwork = () => {
       },
     },
   )
+
   return {
     createNetworkMutation,
     updateNetworkMutation,

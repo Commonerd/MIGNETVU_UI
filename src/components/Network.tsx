@@ -11,67 +11,130 @@ import { useMutateAuth } from '../hooks/useMutateAuth'
 import { NetworkItem } from './NetworkItem'
 
 export const Network = () => {
-  // const queryClient = useQueryClient()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { data, isLoading } = useQueryNetworks()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
-  // const { logoutMutation } = useMutateAuth()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const submitNetworkHandler = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (editedNetwork.id === 0) {
+    const {
+      id,
+      title,
+      type,
+      nationality,
+      ethnicity,
+      latitude,
+      longitude,
+      connections,
+    } = editedNetwork
+
+    // Ensure that connections is an empty array if it's undefined
+    const networkData = {
+      title,
+      type,
+      nationality,
+      ethnicity,
+      latitude: Number(latitude),
+      longitude: Number(longitude),
+      connections: connections || [], // Default to an empty array if no connections
+    }
+    if (id === 0) {
       createNetworkMutation.mutate({
-        title: editedNetwork.title,
-        type: editedNetwork.type,
-        nationality: editedNetwork.nationality,
-        ethnicity: editedNetwork.ethnicity,
-        latitude: Number(editedNetwork.latitude),
-        longitude: Number(editedNetwork.longitude),
+        title,
+        type,
+        nationality,
+        ethnicity,
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        connections: connections || [],
       })
     } else {
       updateNetworkMutation.mutate({
         ...editedNetwork,
-        latitude: Number(editedNetwork.latitude),
-        longitude: Number(editedNetwork.longitude),
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        connections: connections || [],
       })
     }
   }
 
-  // Handler for importing CSV data
   const handleImportCSV = () => {
     fileInputRef.current?.click()
   }
 
-  // Process imported CSV file
   const processFile = (file: File) => {
     const reader = new FileReader()
     reader.onload = (e) => {
       const text = e.target?.result as string
       const lines = text.split('\n')
       const importedData = lines.slice(1).map((line) => {
-        const [id, title, type, nationality, ethnicity, latitude, longitude] =
-          line.split(',')
+        const [
+          id,
+          title,
+          type,
+          nationality,
+          ethnicity,
+          latitude,
+          longitude,
+          connectionsString, // Added: The column for connection data
+        ] = line.split(',')
+
+        // Handle connectionsString: Try to parse the string as a JSON array
+        let connections: Array<{
+          targetId: number
+          targetType: string
+          strength: number
+          type: string
+        }> = []
+        try {
+          if (connectionsString) {
+            // Remove any surrounding whitespace (e.g., extra spaces or newlines)
+            const cleanedConnectionsString = connectionsString.trim()
+
+            // Try to parse it directly as a JSON array
+            connections = JSON.parse(cleanedConnectionsString)
+
+            // Optionally validate each object in the array if necessary
+            connections = connections.map((conn: any) => ({
+              targetId: conn.targetId || 0,
+              targetType: conn.targetType || '',
+              strength: conn.strength || 0,
+              type: conn.type || '',
+            }))
+          }
+        } catch (error) {
+          console.error(
+            'Error parsing connection data:',
+            connectionsString,
+            error,
+          )
+        }
+
         return {
-          id: parseInt(id),
+          id: parseInt(id, 10),
           title,
           type,
           nationality,
           ethnicity,
           latitude: Number(latitude),
           longitude: Number(longitude),
+          connections, // The processed connections array
         }
       })
+
+      // Import each network entry
       importedData.forEach((network) => createNetworkMutation.mutate(network))
     }
     reader.readAsText(file)
   }
 
-  // Handler for exporting current data to CSV
   const handleExportCSV = () => {
     if (!data) return
+
+    // CSV 헤더 정의
     const csvRows = [
       [
         'ID',
@@ -81,15 +144,42 @@ export const Network = () => {
         'Ethnicity',
         'Latitude',
         'Longitude',
+        'Connections', // Connections 컬럼
       ],
       ...data.map(
-        ({ id, title, type, nationality, ethnicity, latitude, longitude }) =>
-          [id, title, type, nationality, ethnicity, latitude, longitude].join(
-            ',',
-          ),
+        ({
+          id,
+          title,
+          type,
+          nationality,
+          ethnicity,
+          latitude,
+          longitude,
+          connections,
+        }) => {
+          // connections 배열을 쉼표로 구분된 문자열로 변환
+          const connectionsString = connections
+            ? connections.map((conn) => JSON.stringify(conn)).join('; ') // 각 커넥션 항목을 JSON 형식으로 변환하고 세미콜론으로 구분
+            : ''
+
+          return [
+            id,
+            title,
+            type,
+            nationality,
+            ethnicity,
+            latitude,
+            longitude,
+            `"${connectionsString}"`, // CSV에서 쉼표가 포함될 수 있으므로 따옴표로 감쌈
+          ].join(',') // 열 구분자로 쉼표 사용
+        },
       ),
     ]
+
+    // CSV 내용 생성
     const csvContent = 'data:text/csv;charset=utf-8,' + csvRows.join('\n')
+
+    // CSV 파일 다운로드 링크 생성
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
@@ -190,6 +280,102 @@ export const Network = () => {
               value={editedNetwork.longitude || ''}
             />
           </div>
+          {/* Connections section */}
+          <div>
+            <label className="block text-gray-700 font-medium">
+              Connections
+            </label>
+            <div className="space-y-2">
+              {editedNetwork.connections?.map((conn, idx) => (
+                <div key={idx} className="flex justify-between">
+                  <div className="space-y-1">
+                    <input
+                      type="number"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      value={conn.targetId || ''}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          connections: editedNetwork.connections?.map((c, i) =>
+                            i === idx
+                              ? { ...c, targetId: Number(e.target.value) }
+                              : c,
+                          ),
+                        })
+                      }
+                      placeholder="Target ID"
+                    />
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      value={conn.targetType || ''}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          connections: editedNetwork.connections?.map((c, i) =>
+                            i === idx
+                              ? { ...c, targetType: e.target.value }
+                              : c,
+                          ),
+                        })
+                      }
+                      placeholder="Target Type"
+                    />
+                    <input
+                      type="number"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      value={conn.strength || ''}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          connections: editedNetwork.connections?.map((c, i) =>
+                            i === idx
+                              ? { ...c, strength: Number(e.target.value) }
+                              : c,
+                          ),
+                        })
+                      }
+                      placeholder="Strength"
+                    />
+                    <input
+                      type="text"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      value={conn.type || ''}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          connections: editedNetwork.connections?.map((c, i) =>
+                            i === idx ? { ...c, type: e.target.value } : c,
+                          ),
+                        })
+                      }
+                      placeholder="Type"
+                    />
+                  </div>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="w-full py-2 px-4 bg-indigo-500 text-white rounded mt-3"
+                onClick={() =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    connections: [
+                      ...(editedNetwork.connections || []),
+                      {
+                        targetId: 0,
+                        targetType: '',
+                        strength: 0,
+                        type: '',
+                      },
+                    ],
+                  })
+                }
+              >
+                Add Connection
+              </button>
+            </div>
+          </div>
           <button
             className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={
@@ -209,7 +395,7 @@ export const Network = () => {
       <div className="flex justify-center gap-2 my-4">
         <button
           onClick={handleImportCSV}
-          className="px-20 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
         >
           Import
         </button>
@@ -225,7 +411,7 @@ export const Network = () => {
         />
         <button
           onClick={handleExportCSV}
-          className="px-20 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
         >
           Export
         </button>
@@ -245,6 +431,7 @@ export const Network = () => {
               ethnicity={network.ethnicity}
               latitude={network.latitude}
               longitude={network.longitude}
+              connections={network.connections}
             />
           ))}
         </ul>

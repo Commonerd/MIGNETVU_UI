@@ -14,6 +14,12 @@ export type Network = {
   longitude: number
   created_at: Date
   updated_at: Date
+  connections: Array<{
+    targetId: number
+    targetType: string
+    strength: number
+    type: string
+  }>
 }
 export type CsrfToken = {
   csrf_token: string

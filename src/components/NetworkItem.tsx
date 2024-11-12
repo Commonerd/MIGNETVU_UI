@@ -12,6 +12,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   ethnicity,
   latitude,
   longitude,
+  connections,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -32,6 +33,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 ethnicity: ethnicity,
                 latitude: latitude,
                 longitude: longitude,
+                connections: connections,
               })
               // Scroll to the top
               window.scrollTo({
@@ -69,6 +71,33 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
         <p>
           <strong>Longitude:</strong> {longitude}
         </p>
+
+        {/* Render the connections */}
+        <div className="mt-4">
+          <strong>Connections:</strong>
+          <ul className="list-disc ml-4 mt-2">
+            {connections.length > 0 ? (
+              connections.map((connection) => (
+                <li key={connection.targetId}>
+                  <p>
+                    <strong>Target ID:</strong> {connection.targetId}
+                  </p>
+                  <p>
+                    <strong>Target Type:</strong> {connection.targetType}
+                  </p>
+                  <p>
+                    <strong>Strength:</strong> {connection.strength}
+                  </p>
+                  <p>
+                    <strong>Connection Type:</strong> {connection.type}
+                  </p>
+                </li>
+              ))
+            ) : (
+              <p>No connections available.</p>
+            )}
+          </ul>
+        </div>
       </div>
     </li>
   )
