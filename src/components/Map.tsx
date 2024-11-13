@@ -23,7 +23,10 @@ import { mockMigrants, mockOrganizations } from '../mockData'
 import { members } from '../members'
 import styled from 'styled-components'
 import useStore from '../store'
-import { useQueryNetworks } from '../hooks/useQueryNetworks'
+import {
+  useQueryAllNetworksOnMap,
+  useQueryNetworks,
+} from '../hooks/useQueryNetworks'
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -49,16 +52,19 @@ L.Icon.Default.mergeOptions({
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
 })
 
-// 범례 컴포넌트 생성
+// Legend Component
 const Legend = ({
-  topMigrants,
-  topOrganizations,
+  topEntities,
   onEntityClick,
   centralityType,
 }: {
-  topMigrants: { id: number; name: string; centrality: number }[]
-  topOrganizations: { id: number; name: string; centrality: number }[]
-  onEntityClick: (id: number, type: EntityType) => void
+  topEntities: {
+    id: number
+    name: string
+    centrality: number
+    type: 'migrant' | 'organization'
+  }[]
+  onEntityClick: (id: number, type: 'migrant' | 'organization') => void
   centralityType: string
 }) => {
   const map = useMap()
@@ -101,32 +107,15 @@ const Legend = ({
 
       div.innerHTML = labels.join('<br>')
       if (centralityType !== 'none') {
-        const topMigrantsHtml = topMigrants
+        const topEntitiesHtml = topEntities
           .map(
             (entity, index) =>
-              `<div style="cursor: pointer;" data-id="${
-                entity.id
-              }" data-type="migrant">${index + 1}. ${
+              `<div style="cursor: pointer;" data-id="${entity.id}" data-type="${entity.type}">${index + 1}. ${
                 entity.name
               }: ${entity.centrality.toFixed(2)}</div>`,
           )
           .join('')
-        const topOrganizationsHtml = topOrganizations
-          .map(
-            (entity, index) =>
-              `<div style="cursor: pointer;" data-id="${
-                entity.id
-              }" data-type="organization">${index + 1}. ${
-                entity.name
-              }: ${entity.centrality.toFixed(2)}</div>`,
-          )
-          .join('')
-        div.innerHTML += `<br><br><strong>${t(
-          'topMigrants',
-        )}</strong><br>${topMigrantsHtml}`
-        div.innerHTML += `<br><strong>${t(
-          'topOrganizations',
-        )}</strong><br>${topOrganizationsHtml}`
+        div.innerHTML += `<br><br><strong>${t('topEntities')}</strong><br>${topEntitiesHtml}`
       }
 
       return div
@@ -137,7 +126,9 @@ const Legend = ({
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
       const id = target.getAttribute('data-id')
-      const type = target.getAttribute('data-type') as EntityType
+      const type = target.getAttribute('data-type') as
+        | 'migrant'
+        | 'organization'
       if (id && type) {
         onEntityClick(Number(id), type)
       }
@@ -149,7 +140,7 @@ const Legend = ({
       map.getContainer().removeEventListener('click', handleClick)
       legend.remove()
     }
-  }, [map, t, topMigrants, topOrganizations, centralityType, onEntityClick])
+  }, [map, t, topEntities, centralityType, onEntityClick])
 
   return null
 }
@@ -176,7 +167,7 @@ const Map: React.FC = () => {
     lng: number
   } | null>(null)
   const { user } = useStore()
-  const { data } = useQueryNetworks()
+  const { data } = useQueryAllNetworksOnMap()
 
   // Set Networks
   useEffect(() => {
@@ -209,13 +200,14 @@ const Map: React.FC = () => {
     }
   }, [Map, networks])
 
-  useEffect(() => {
-    setMigrants(mockMigrants)
-    setOrganizations(mockOrganizations)
-  }, [])
+  // useEffect(() => {
+  //   setMigrants(mockMigrants)
+  //   setOrganizations(mockOrganizations)
+  // }, [])
 
-  const handleEntityClick = (id: number, type: EntityType) => {
-    const entity = getEntityById(id, type)
+  // Example usage in handleEntityClick
+  const handleEntityClick = (id: number, type: 'migrant' | 'organization') => {
+    const entity = getEntityById(id)
     if (entity) {
       setFocusedNode({ lat: entity.latitude, lng: entity.longitude })
     }
@@ -227,47 +219,43 @@ const Map: React.FC = () => {
     })
   }
 
-  const getEntityById = (
-    id: number,
-    type: EntityType,
-  ): Migrant | Organization | undefined => {
-    return type === 'migrant'
-      ? migrants.find((m) => m.id === id)
-      : organizations.find((o) => o.id === id)
+  // Update getEntityById function
+  const getEntityById = (id: number) => {
+    return networks?.find((n) => n.id === id) || null
   }
 
-  const getConnectionColor = (type: Connection['type']) => {
+  const getConnectionColor = (type: Network['connections'][number]['type']) => {
     switch (type) {
-      case 'friend':
-        return 'blue'
-      case 'colleague':
-        return 'green'
-      case 'family':
-        return 'red'
-      case 'professional':
-        return 'purple'
-      case 'cultural':
-        return 'orange'
+      // case 'friend':
+      //   return 'blue'
+      // case 'colleague':
+      //   return 'green'
+      // case 'family':
+      //   return 'red'
+      // case 'professional':
+      //   return 'purple'
+      // case 'cultural':
+      //   return 'orange'
       default:
         return 'gray'
     }
   }
 
+  // Updated getEdges function
   const getEdges = () => {
     const edges: any[] = []
-    const addEdges = (entity: Migrant | Organization) => {
-      entity.connections.forEach((connection) => {
+
+    const addEdges = (network: Network) => {
+      network.connections.forEach((connection) => {
         if (
           filters.connectionType === 'all' ||
           connection.type === filters.connectionType
         ) {
-          const target = getEntityById(
-            connection.targetId,
-            connection.targetType,
-          )
+          const target = networks?.find((n) => n.id === connection.targetId)
+
           if (target) {
             edges.push([
-              [entity.latitude, entity.longitude],
+              [network.latitude, network.longitude],
               [target.latitude, target.longitude],
               getConnectionColor(connection.type),
               connection.strength,
@@ -278,31 +266,22 @@ const Map: React.FC = () => {
       })
     }
 
-    if (filters.entityType === 'all' || filters.entityType === 'migrant') {
-      migrants.forEach((migrant) => {
-        if (
-          (filters.nationality === 'all' ||
-            migrant.nationality === filters.nationality) &&
-          (filters.ethnicity === 'all' ||
-            migrant.ethnicity === filters.ethnicity) &&
-          migrant.migrationYear >= filters.yearRange[0] &&
-          migrant.migrationYear <= filters.yearRange[1]
-        ) {
-          addEdges(migrant)
-        }
-      })
-    }
+    // Filter and add edges for Network entities based on filters
+    networks?.forEach((network) => {
+      const createdAt = new Date(network.created_at)
 
-    if (filters.entityType === 'all' || filters.entityType === 'organization') {
-      organizations.forEach((org) => {
-        if (
-          org.foundationYear >= filters.yearRange[0] &&
-          org.foundationYear <= filters.yearRange[1]
-        ) {
-          addEdges(org)
-        }
-      })
-    }
+      if (
+        (filters.entityType === 'all' || filters.entityType === network.type) &&
+        (filters.nationality === 'all' ||
+          network.nationality === filters.nationality) &&
+        (filters.ethnicity === 'all' ||
+          network.ethnicity === filters.ethnicity) &&
+        createdAt.getFullYear() >= filters.yearRange[0] &&
+        createdAt.getFullYear() <= filters.yearRange[1]
+      ) {
+        addEdges(network)
+      }
+    })
 
     return edges
   }
@@ -558,19 +537,20 @@ const Map: React.FC = () => {
   }
 
   // 등록자별 노드 수 계산
-  const registrantNodeCounts = [...migrants, ...organizations].reduce(
-    (acc, entity) => {
-      acc[entity.registrantId] = (acc[entity.registrantId] || 0) + 1
-      return acc
-    },
-    {} as { [registrantId: number]: number },
-  )
+  const registrantNodeCounts =
+    networks?.reduce(
+      (acc, entity) => {
+        acc[entity.user_id] = (acc[entity.user_id] || 0) + 1
+        return acc
+      },
+      {} as { [registrantId: number]: number },
+    ) || {}
 
   // 등록자 이름을 매핑하는 함수
-  const getRegistrantName = (id: number) => {
-    const registrant = members.find((r) => r.id === id)
-    return registrant ? registrant?.name : 'Unknown'
-  }
+  // const getRegistrantName = (id: number) => {
+  //   const registrant = members.find((r) => r.id === id)
+  //   return registrant ? registrant?.name : 'Unknown'
+  // }
 
   // 상위 3명의 등록자 추출 및 정렬
   const topRegistrants = Object.entries(registrantNodeCounts)
@@ -578,7 +558,7 @@ const Map: React.FC = () => {
     .slice(0, 3)
     .map(([registrantId, count], index) => ({
       registrantId: Number(registrantId),
-      name: getRegistrantName(Number(registrantId)),
+      // name: getRegistrantName(Number(registrantId)),
       count,
       medal: index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉',
     }))
@@ -703,18 +683,18 @@ const Map: React.FC = () => {
           <ul>
             {topRegistrants.map((registrant) => (
               <li key={registrant.registrantId}>
-                {registrant.medal} {registrant.name} : {registrant.count}{' '}
-                {t('nodeCount')}
+                {registrant.medal} {registrant.registrantId} :{' '}
+                {registrant.count} {t('nodeCount')}
               </li>
             ))}
           </ul>
         </LegendBox>
-        <Legend
-          topMigrants={topMigrants}
-          topOrganizations={topOrganizations}
+        {/* <Legend
+          // topMigrants={topMigrants}
+          // topOrganizations={topOrganizations}
           onEntityClick={handleEntityClick}
           centralityType={centralityType}
-        />
+        /> */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -856,21 +836,81 @@ const Map: React.FC = () => {
         {/* 지도에 표시될 네트워크 데이터 */}
         {networks &&
           networks.length > 0 &&
-          networks.map((network) => (
-            <Marker
-              key={network.id}
-              position={[network.latitude, network.longitude]}
+          networks.map((network) => {
+            const size = getNodeSize(
+              centralityValues[network.id] || 0,
+              centralityType,
+            )
+            const isHighlighted =
+              highlightedNode && highlightedNode.id === network.id
+            // highlightedNode.type === 'organization'
+            return (
+              <Marker
+                key={network.id}
+                position={[network.latitude, network.longitude]}
+                icon={L.divIcon({
+                  className: 'custom-marker',
+                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
+                    isHighlighted ? 'yellow' : 'red'
+                  }; border-radius: 50%;"></div>`,
+                  iconSize: [size, size],
+                })}
+              >
+                <Tooltip>
+                  <div className="p-4">
+                    <strong className="text-lg font-semibold block mb-2">
+                      {network.title}
+                    </strong>
+                    <div className="text-gray-700 text-sm space-y-1">
+                      <p>
+                        <span className="font-medium">Creator ID:</span>{' '}
+                        {network.user_id}
+                      </p>
+                      <p>
+                        <span className="font-medium">Nationality:</span>{' '}
+                        {network.nationality}
+                      </p>
+                      <p>
+                        <span className="font-medium">Ethnicity:</span>{' '}
+                        {network.ethnicity}
+                      </p>
+                      <p>
+                        <span className="font-medium">Latitude:</span>{' '}
+                        {network.latitude}
+                      </p>
+                      <p>
+                        <span className="font-medium">Longitude:</span>{' '}
+                        {network.longitude}
+                      </p>
+                    </div>
+                  </div>
+                </Tooltip>
+              </Marker>
+            )
+          })}
+        {getEdges().map((edge, index) => {
+          const positions = edge.slice(0, 2) as unknown as [number, number][]
+          const color = edge[2] as unknown as string
+          const opacity = (edge[3] as unknown as number) * 0.16 + 0.2
+
+          return (
+            <Polyline
+              key={index}
+              positions={positions}
+              color={color}
+              weight={2}
+              opacity={opacity}
             >
-              <Popup>
-                <div>
-                  <strong>{network.title}</strong>
-                  <p>
-                    Lat: {network.latitude}, Lng: {network.longitude}
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+              <Tooltip>
+                <span>
+                  {`${t('connectionType')}: ${t(String(edge[4]))}`}
+                  <br />
+                  {`${t('connectionStrength')}: ${edge[3]}`}{' '}
+                </span>
+              </Tooltip>
+            </Polyline>
+          )
+        })}
       </MapContainer>
     </div>
   )

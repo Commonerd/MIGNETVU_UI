@@ -31,6 +31,12 @@ export const Network = () => {
       connections,
     } = editedNetwork
 
+    // Ensure type is either 'Migrant' or 'Organization'
+    if (type !== 'Migrant' && type !== 'Organization') {
+      alert('Type must be either "Migrant" or "Organization".')
+      return
+    }
+
     // Ensure that connections is an empty array if it's undefined
     const networkData = {
       title,
@@ -41,6 +47,7 @@ export const Network = () => {
       longitude: Number(longitude),
       connections: connections || [], // Default to an empty array if no connections
     }
+
     if (id === 0) {
       createNetworkMutation.mutate({
         title,
@@ -221,15 +228,17 @@ export const Network = () => {
           </div>
           <div>
             <label className="block text-gray-700 font-medium">Type</label>
-            <input
+            <select
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter type"
-              type="text"
               onChange={(e) =>
                 updateNetwork({ ...editedNetwork, type: e.target.value })
               }
               value={editedNetwork.type || ''}
-            />
+            >
+              <option value="">Select Type</option>
+              <option value="Migrant">Migrant</option>
+              <option value="Organization">Organization</option>
+            </select>
           </div>
           <div>
             <label className="block text-gray-700 font-medium">
@@ -314,8 +323,7 @@ export const Network = () => {
                       }
                       placeholder="Target ID"
                     />
-                    <input
-                      type="text"
+                    <select
                       className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
                       value={conn.targetType || ''}
                       onChange={(e) =>
@@ -328,8 +336,11 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Target Type"
-                    />
+                    >
+                      <option value="">Select Type</option>
+                      <option value="Migrant">Migrant</option>
+                      <option value="Organization">Organization</option>
+                    </select>
                     <input
                       type="number"
                       className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"

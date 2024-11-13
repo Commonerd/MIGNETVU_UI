@@ -25,3 +25,27 @@ export const useQueryNetworks = () => {
     },
   })
 }
+
+export const useQueryAllNetworksOnMap = () => {
+  const { switchErrorHandling } = useError()
+  const getAllNetworksOnMap = async () => {
+    const { data } = await axios.get<Network[]>(
+      `${process.env.REACT_APP_API_URL}/networks/map`,
+      { withCredentials: true }, // No credentials needed since it's fetching all networks
+    )
+    return data
+  }
+
+  return useQuery<Network[], Error>({
+    queryKey: ['networks'],
+    queryFn: getAllNetworksOnMap,
+    staleTime: Infinity,
+    onError: (err: any) => {
+      if (err.response.data.message) {
+        switchErrorHandling(err.response.data.message)
+      } else {
+        switchErrorHandling(err.response.data)
+      }
+    },
+  })
+}

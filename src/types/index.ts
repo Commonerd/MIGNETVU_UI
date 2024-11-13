@@ -6,6 +6,7 @@ export type Task = {
 }
 export type Network = {
   id: number
+  user_id: number
   title: string
   type: string
   nationality: string
@@ -68,7 +69,6 @@ export interface Connection {
   strength: number // 1 to 5
   type: 'friend' | 'colleague' | 'family' | 'professional' | 'cultural'
 }
-
 export type EntityType = 'migrant' | 'organization'
 
 export type FilterOptions = {

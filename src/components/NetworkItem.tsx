@@ -20,7 +20,9 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   return (
     <li className="my-3 p-4 bg-white rounded shadow-md text-sm">
       <div className="flex justify-between items-center">
-        <span className="font-bold text-base">{title}</span>
+        <span className="font-bold text-base">
+          No.{id} : {title}
+        </span>
         <div className="flex ml-4">
           <PencilIcon
             className="h-4 w-4 mx-1 text-blue-500 cursor-pointer"
