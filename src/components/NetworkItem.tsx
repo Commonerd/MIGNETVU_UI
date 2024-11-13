@@ -18,12 +18,12 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   const { deleteNetworkMutation } = useMutateNetwork()
 
   return (
-    <li className="my-3 p-4 bg-white rounded shadow-md">
+    <li className="my-3 p-4 bg-white rounded shadow-md text-sm">
       <div className="flex justify-between items-center">
-        <span className="font-bold text-lg">{title}</span>
+        <span className="font-bold text-base">{title}</span>
         <div className="flex ml-4">
           <PencilIcon
-            className="h-5 w-5 mx-1 text-blue-500 cursor-pointer"
+            className="h-4 w-4 mx-1 text-blue-500 cursor-pointer"
             onClick={() => {
               updateNetwork({
                 id: id,
@@ -43,7 +43,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
             }}
           />
           <TrashIcon
-            className="h-5 w-5 text-red-500 cursor-pointer"
+            className="h-4 w-4 text-red-500 cursor-pointer"
             onClick={() => {
               if (
                 window.confirm(`Are you sure you want to delete "${title}"?`)
@@ -55,48 +55,90 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
         </div>
       </div>
 
-      <div className="text-sm text-gray-600 mt-2">
-        <p>
-          <strong>Type:</strong> {type}
-        </p>
-        <p>
-          <strong>Nationality:</strong> {nationality}
-        </p>
-        <p>
-          <strong>Ethnicity:</strong> {ethnicity}
-        </p>
-        <p>
-          <strong>Latitude:</strong> {latitude}
-        </p>
-        <p>
-          <strong>Longitude:</strong> {longitude}
-        </p>
+      <div className="mt-2">
+        <table className="table-auto w-full mt-2 border-collapse text-xs">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 border font-semibold text-center">
+                Type
+              </th>
+              <th className="px-2 py-1 border font-semibold text-center">
+                Nationality
+              </th>
+              <th className="px-2 py-1 border font-semibold text-center">
+                Ethnicity
+              </th>
+              <th className="px-2 py-1 border font-semibold text-center">
+                Latitude
+              </th>
+              <th className="px-2 py-1 border font-semibold text-center">
+                Longitude
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="px-2 py-1 border text-center">{type}</td>
+              <td className="px-2 py-1 border text-center">{nationality}</td>
+              <td className="px-2 py-1 border text-center">{ethnicity}</td>
+              <td className="px-2 py-1 border text-center">{latitude}</td>
+              <td className="px-2 py-1 border text-center">{longitude}</td>
+            </tr>
+          </tbody>
+        </table>
 
         {/* Render the connections */}
         <div className="mt-4">
           <strong>Connections:</strong>
-          <ul className="list-disc ml-4 mt-2">
-            {connections.length > 0 ? (
-              connections.map((connection) => (
-                <li key={connection.targetId}>
-                  <p>
-                    <strong>Target ID:</strong> {connection.targetId}
-                  </p>
-                  <p>
-                    <strong>Target Type:</strong> {connection.targetType}
-                  </p>
-                  <p>
-                    <strong>Strength:</strong> {connection.strength}
-                  </p>
-                  <p>
-                    <strong>Connection Type:</strong> {connection.type}
-                  </p>
-                </li>
-              ))
-            ) : (
-              <p>No connections available.</p>
-            )}
-          </ul>
+          {connections.length > 0 ? (
+            <div className="mt-2">
+              {connections.map((connection, index) => (
+                <div key={connection.targetId}>
+                  <table className="table-auto w-full mt-2 border-collapse text-xs">
+                    <thead>
+                      <tr>
+                        <th className="px-2 py-1 border font-semibold text-center">
+                          Target ID
+                        </th>
+                        <th className="px-2 py-1 border font-semibold text-center">
+                          Target Type
+                        </th>
+                        <th className="px-2 py-1 border font-semibold text-center">
+                          Strength
+                        </th>
+                        <th className="px-2 py-1 border font-semibold text-center">
+                          Connection Type
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="px-2 py-1 border text-center">
+                          {connection.targetId}
+                        </td>
+                        <td className="px-2 py-1 border text-center">
+                          {connection.targetType}
+                        </td>
+                        <td className="px-2 py-1 border text-center">
+                          {connection.strength}
+                        </td>
+                        <td className="px-2 py-1 border text-center">
+                          {connection.type}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  {/* Add a separator between connections */}
+                  {index < connections.length - 1 && (
+                    <div className="border-t my-2"></div> // Divider between connections
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs">No connections available.</p>
+          )}
         </div>
       </div>
     </li>

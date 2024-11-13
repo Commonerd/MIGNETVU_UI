@@ -189,6 +189,13 @@ export const Network = () => {
     document.body.removeChild(link)
   }
 
+  const deleteConnection = (idx: number) => {
+    updateNetwork({
+      ...editedNetwork,
+      connections: editedNetwork.connections?.filter((_, i) => i !== idx),
+    })
+  }
+
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
       <div className="flex items-center my-6">
@@ -285,13 +292,15 @@ export const Network = () => {
             <label className="block text-gray-700 font-medium">
               Connections
             </label>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {editedNetwork.connections?.map((conn, idx) => (
-                <div key={idx} className="flex justify-between">
-                  <div className="space-y-1">
+                <div key={idx}>
+                  {idx > 0 && <hr className="my-4 border-gray-300" />}{' '}
+                  <div className="flex justify-between space-x-2">
+                    {' '}
                     <input
                       type="number"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
                       value={conn.targetId || ''}
                       onChange={(e) =>
                         updateNetwork({
@@ -307,7 +316,7 @@ export const Network = () => {
                     />
                     <input
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
                       value={conn.targetType || ''}
                       onChange={(e) =>
                         updateNetwork({
@@ -323,7 +332,7 @@ export const Network = () => {
                     />
                     <input
                       type="number"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
                       value={conn.strength || ''}
                       onChange={(e) =>
                         updateNetwork({
@@ -339,7 +348,7 @@ export const Network = () => {
                     />
                     <input
                       type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
                       value={conn.type || ''}
                       onChange={(e) =>
                         updateNetwork({
@@ -349,8 +358,15 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Type"
+                      placeholder="Edge Type"
                     />
+                    <button
+                      type="button"
+                      className="px-4 py-2 text-red-500 text-sm"
+                      onClick={() => deleteConnection(idx)}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}
@@ -376,6 +392,7 @@ export const Network = () => {
               </button>
             </div>
           </div>
+
           <button
             className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             disabled={
