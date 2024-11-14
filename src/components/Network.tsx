@@ -372,7 +372,7 @@ export const Network = () => {
                   <div className="flex justify-between space-x-2">
                     {/* Target ID */}
                     <div className="flex-1">
-                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Target ID
                       </label>
                       <input
@@ -396,7 +396,7 @@ export const Network = () => {
 
                     {/* Target Type */}
                     <div className="flex-1">
-                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Target Type
                       </label>
                       <select
@@ -421,7 +421,7 @@ export const Network = () => {
 
                     {/* Strength */}
                     <div className="flex-1">
-                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Strength
                       </label>
                       <input
@@ -447,7 +447,7 @@ export const Network = () => {
 
                     {/* Edge Type */}
                     <div className="flex-1">
-                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Edge Type
                       </label>
                       <input
@@ -470,7 +470,7 @@ export const Network = () => {
                     {/* Delete Button */}
                     <button
                       type="button"
-                      className="px-3 py-2 text-red-500 text-xs font-bold"
+                      className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
                       onClick={() => deleteConnection(idx)}
                     >
                       Delete
