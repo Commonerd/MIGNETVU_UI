@@ -7,10 +7,11 @@ import {
   useMap,
   Tooltip,
   Popup,
+  useMapEvents,
 } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import 'leaflet/dist/leaflet.css'
-import L from 'leaflet'
+import L, { LatLng } from 'leaflet'
 import {
   Migrant,
   Organization,
@@ -30,6 +31,8 @@ import {
 } from '../hooks/useQueryNetworks'
 import { useError } from '../hooks/useError'
 import axios from 'axios'
+import { LatLngExpression } from 'leaflet'
+import ClipboardJS from 'clipboard'
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -171,6 +174,8 @@ const Map: React.FC = () => {
   } | null>(null)
   const { user } = useStore()
   const { data } = useQueryAllNetworksOnMap()
+  const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     axios.defaults.withCredentials = true
@@ -577,6 +582,32 @@ const Map: React.FC = () => {
       medal: index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉',
     }))
 
+  // 마우스 우클릭 시 위도와 경도 표시
+  const HandleRightClick = () => {
+    const map = useMapEvents({
+      contextmenu(e) {
+        setLatLng(e.latlng) // 우클릭 위치의 latlng을 상태로 설정
+      },
+    })
+
+    return null
+  }
+
+  // 복사 버튼 클릭 시 클립보드에 위도와 경도 복사
+  const copyToClipboard = () => {
+    if (latLng) {
+      // latLng가 null이 아닐 때만 실행
+      const clipboard = new ClipboardJS('.copy-btn', {
+        text: () => `${latLng.lat}, ${latLng.lng}`,
+      })
+
+      clipboard.on('success', () => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000) // 2초 후에 '복사됨' 메시지를 사라지게
+      })
+    }
+  }
+
   return (
     <div className="h-[calc(85vh-64px)] relative">
       <div className="p-4 bg-white">
@@ -689,6 +720,42 @@ const Map: React.FC = () => {
         zoom={2}
         style={{ height: 'calc(100% - 60px)', width: '100%' }}
       >
+        <HandleRightClick />
+        {latLng && (
+          <Marker position={latLng}>
+            <Popup>
+              <div style={{ textAlign: 'center' }}>
+                <p style={{ marginBottom: '10px' }}>
+                  <strong>Lat:</strong> {latLng.lat}
+                </p>
+                <p style={{ marginBottom: '20px' }}>
+                  <strong>Lng:</strong> {latLng.lng}
+                </p>
+                <button
+                  className="copy-btn"
+                  data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
+                  onClick={copyToClipboard}
+                  style={{
+                    padding: '10px 20px',
+                    fontSize: '16px',
+                    backgroundColor: copied ? 'green' : '#007BFF', // 복사 후 버튼 색상은 녹색
+                    color: copied ? '#fff' : '#fff', // 글자 색상은 흰색으로 고정
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.3s ease', // 부드러운 배경색 변화
+                  }}
+                >
+                  {copied ? (
+                    <span>Copied!</span> // 복사 후 상태 표시
+                  ) : (
+                    'Copy'
+                  )}
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        )}
         {focusedNode && (
           <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
         )}
