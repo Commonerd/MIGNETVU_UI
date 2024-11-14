@@ -218,13 +218,15 @@ export const Network = () => {
     updateNetwork({
       id: 0,
       title: '',
-      type: '',
+      type: 'Migrant',
       nationality: '',
       ethnicity: '',
       migration_year: 0,
       latitude: 0,
       longitude: 0,
-      connections: [],
+      connections: [
+        { targetType: 'Migrant', targetId: 0, strength: 0, type: '' },
+      ],
       user_id: 0,
     })
   }

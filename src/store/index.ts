@@ -61,13 +61,15 @@ const useStore = create<State>((set) => ({
     id: 0,
     user_id: 0,
     title: '',
-    type: '',
+    type: 'Migrant',
     nationality: '',
     ethnicity: '',
     migration_year: 0,
     latitude: 0,
     longitude: 0,
-    connections: [], // Initialize connections as an empty array
+    connections: [
+      { targetType: 'Migrant', targetId: 0, strength: 0, type: '' },
+    ],
   },
   updateEditedNetwork: (payload) => {
     set({
@@ -80,13 +82,15 @@ const useStore = create<State>((set) => ({
         id: 0,
         user_id: 0,
         title: '',
-        type: '',
+        type: 'Migrant',
         nationality: '',
         ethnicity: '',
         migration_year: 0,
         latitude: 0,
         longitude: 0,
-        connections: [], // Reset connections as an empty array
+        connections: [
+          { targetType: 'Migrant', targetId: 0, strength: 0, type: '' },
+        ],
       },
     })
   },
