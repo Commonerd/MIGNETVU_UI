@@ -26,9 +26,11 @@ export const Network = () => {
       type,
       nationality,
       ethnicity,
+      migration_year,
       latitude,
       longitude,
       connections,
+      user_id,
     } = editedNetwork
 
     // Ensure type is either 'Migrant' or 'Organization'
@@ -43,9 +45,11 @@ export const Network = () => {
       type,
       nationality,
       ethnicity,
+      migration_year: Number(migration_year),
       latitude: Number(latitude),
       longitude: Number(longitude),
       connections: connections || [], // Default to an empty array if no connections
+      user_id,
     }
 
     if (id === 0) {
@@ -54,13 +58,16 @@ export const Network = () => {
         type,
         nationality,
         ethnicity,
+        migration_year: Number(migration_year),
         latitude: Number(latitude),
         longitude: Number(longitude),
         connections: connections || [],
+        user_id: Number(user_id),
       })
     } else {
       updateNetworkMutation.mutate({
         ...editedNetwork,
+        migration_year: Number(migration_year),
         latitude: Number(latitude),
         longitude: Number(longitude),
         connections: connections || [],
@@ -80,13 +87,15 @@ export const Network = () => {
       const importedData = lines.slice(1).map((line) => {
         const [
           id,
+          user_id,
           title,
           type,
           nationality,
           ethnicity,
+          migartion_year,
           latitude,
           longitude,
-          connectionsString, // Added: The column for connection data
+          connectionsString,
         ] = line.split(',')
 
         // Handle connectionsString: Try to parse the string as a JSON array
@@ -122,10 +131,12 @@ export const Network = () => {
 
         return {
           id: parseInt(id, 10),
+          user_id,
           title,
           type,
           nationality,
           ethnicity,
+          migration_year: Number(migartion_year),
           latitude: Number(latitude),
           longitude: Number(longitude),
           connections, // The processed connections array
@@ -264,6 +275,23 @@ export const Network = () => {
                 updateNetwork({ ...editedNetwork, ethnicity: e.target.value })
               }
               value={editedNetwork.ethnicity || ''}
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 font-medium">
+              Migration Year
+            </label>
+            <input
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Enter migration year"
+              type="number"
+              onChange={(e) =>
+                updateNetwork({
+                  ...editedNetwork,
+                  migration_year: Number(e.target.value),
+                })
+              }
+              value={editedNetwork.migration_year || ''}
             />
           </div>
           <div>
@@ -411,6 +439,7 @@ export const Network = () => {
               !editedNetwork.type ||
               !editedNetwork.nationality ||
               !editedNetwork.ethnicity ||
+              !editedNetwork.migration_year ||
               !editedNetwork.latitude ||
               !editedNetwork.longitude
             }
@@ -457,9 +486,11 @@ export const Network = () => {
               type={network.type}
               nationality={network.nationality}
               ethnicity={network.ethnicity}
+              migration_year={network.migration_year}
               latitude={network.latitude}
               longitude={network.longitude}
               connections={network.connections}
+              user_id={0}
             />
           ))}
         </ul>

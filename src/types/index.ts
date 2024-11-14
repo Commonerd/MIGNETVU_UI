@@ -11,6 +11,7 @@ export type Network = {
   type: string
   nationality: string
   ethnicity: string
+  migration_year: number
   latitude: number
   longitude: number
   created_at: Date

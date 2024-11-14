@@ -20,10 +20,12 @@ type Connection = {
 
 type EditedNetwork = {
   id: number
+  user_id: number
   title: string
   type: string
   nationality: string
   ethnicity: string
+  migration_year: number
   latitude: number
   longitude: number
   connections: Connection[] // Add connections as an array
@@ -54,12 +56,15 @@ const useStore = create<State>((set) => ({
   resetEditedTask: () => {
     set({ editedTask: { id: 0, title: '' } })
   },
+  // network
   editedNetwork: {
     id: 0,
+    user_id: 0,
     title: '',
     type: '',
     nationality: '',
     ethnicity: '',
+    migration_year: 0,
     latitude: 0,
     longitude: 0,
     connections: [], // Initialize connections as an empty array
@@ -73,10 +78,12 @@ const useStore = create<State>((set) => ({
     set({
       editedNetwork: {
         id: 0,
+        user_id: 0,
         title: '',
         type: '',
         nationality: '',
         ethnicity: '',
+        migration_year: 0,
         latitude: 0,
         longitude: 0,
         connections: [], // Reset connections as an empty array

@@ -10,6 +10,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   type,
   nationality,
   ethnicity,
+  migration_year,
   latitude,
   longitude,
   connections,
@@ -33,9 +34,11 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 type: type,
                 nationality: nationality,
                 ethnicity: ethnicity,
+                migration_year: migration_year,
                 latitude: latitude,
                 longitude: longitude,
                 connections: connections,
+                user_id: 0,
               })
               // Scroll to the top
               window.scrollTo({
@@ -71,6 +74,9 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 Ethnicity
               </th>
               <th className="px-2 py-1 border font-semibold text-center">
+                Migration Year
+              </th>
+              <th className="px-2 py-1 border font-semibold text-center">
                 Latitude
               </th>
               <th className="px-2 py-1 border font-semibold text-center">
@@ -83,6 +89,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
               <td className="px-2 py-1 border text-center">{type}</td>
               <td className="px-2 py-1 border text-center">{nationality}</td>
               <td className="px-2 py-1 border text-center">{ethnicity}</td>
+              <td className="px-2 py-1 border text-center">{migration_year}</td>
               <td className="px-2 py-1 border text-center">{latitude}</td>
               <td className="px-2 py-1 border text-center">{longitude}</td>
             </tr>
