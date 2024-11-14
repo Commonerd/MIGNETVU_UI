@@ -92,7 +92,7 @@ export const Network = () => {
           type,
           nationality,
           ethnicity,
-          migartion_year,
+          migration_year,
           latitude,
           longitude,
           connectionsString,
@@ -107,13 +107,8 @@ export const Network = () => {
         }> = []
         try {
           if (connectionsString) {
-            // Remove any surrounding whitespace (e.g., extra spaces or newlines)
             const cleanedConnectionsString = connectionsString.trim()
-
-            // Try to parse it directly as a JSON array
             connections = JSON.parse(cleanedConnectionsString)
-
-            // Optionally validate each object in the array if necessary
             connections = connections.map((conn: any) => ({
               targetId: conn.targetId || 0,
               targetType: conn.targetType || '',
@@ -131,15 +126,15 @@ export const Network = () => {
 
         return {
           id: parseInt(id, 10),
-          user_id,
+          user_id: Number(user_id), // Convert user_id to number
           title,
           type,
           nationality,
           ethnicity,
-          migration_year: Number(migartion_year),
+          migration_year: Number(migration_year),
           latitude: Number(latitude),
           longitude: Number(longitude),
-          connections, // The processed connections array
+          connections,
         }
       })
 
