@@ -354,6 +354,9 @@ export const Network = () => {
               {editedNetwork.connections?.map((conn, idx) => (
                 <div key={idx}>
                   {idx > 0 && <hr className="my-4 border-gray-300" />}{' '}
+                  <label className="block text-gray-700 font-semibold text-xs mt-1 mb-1">
+                    Target ID
+                  </label>
                   <div className="flex justify-between space-x-2">
                     {' '}
                     <input
@@ -374,7 +377,7 @@ export const Network = () => {
                     />
                     <select
                       className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
-                      value={conn.targetType || ''}
+                      value={conn.targetType || 'Migrant'}
                       onChange={(e) =>
                         updateNetwork({
                           ...editedNetwork,
@@ -422,7 +425,7 @@ export const Network = () => {
                     />
                     <button
                       type="button"
-                      className="px-4 py-2 text-red-500 text-sm"
+                      className="px-3 py-2 text-red-500 text-xs font-bold"
                       onClick={() => deleteConnection(idx)}
                     >
                       Delete
