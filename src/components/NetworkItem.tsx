@@ -19,7 +19,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
   const { deleteNetworkMutation } = useMutateNetwork()
 
   return (
-    <li className="my-3 p-4 bg-white rounded shadow-md text-sm">
+    <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs">
       <div className="flex justify-between items-center">
         <span className="font-bold text-base">
           No.{id} : {title}
@@ -74,28 +74,35 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
                 Ethnicity
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Migration Year
+                Mig. Year
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Latitude
+                Lat
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Longitude
+                Lng
               </th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="px-1 py-1 border text-center">{type}</td>
-              <td className="px-1 py-1 border text-center">{nationality}</td>
-              <td className="px-1 py-1 border text-center">{ethnicity}</td>
+              <td className="px-1 py-1 border text-center truncate">
+                {nationality}
+              </td>
+              <td className="px-1 py-1 border text-center truncate">
+                {ethnicity}
+              </td>
               <td className="px-1 py-1 border text-center">{migration_year}</td>
-              <td className="px-1 py-1 border text-center">{latitude}</td>
-              <td className="px-1 py-1 border text-center">{longitude}</td>
+              <td className="px-1 py-1 border text-center truncate">
+                {latitude.toFixed(5)}
+              </td>
+              <td className="px-1 py-1 border text-center truncate">
+                {longitude.toFixed(5)}
+              </td>
             </tr>
           </tbody>
         </table>
-
         {/* Render the connections */}
         <div className="mt-4">
           <strong>Connections:</strong>
