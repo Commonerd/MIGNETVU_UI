@@ -360,82 +360,114 @@ export const Network = () => {
             </div>
           </div>
           {/* Connections section */}
+          {/* Connections section */}
           <div>
-            <label className="block text-gray-700 font-semibold text-sm">
+            <label className="block text-gray-700 font-semibold text-sm mb-2">
               Connections
             </label>
             <div className="space-y-3">
               {editedNetwork.connections?.map((conn, idx) => (
                 <div key={idx}>
-                  {idx > 0 && <hr className="my-4 border-gray-300" />}{' '}
-                  <label className="block text-gray-700 font-semibold text-xs mt-1 mb-1">
-                    Target ID
-                  </label>
+                  {idx > 0 && <hr className="my-1 border-gray-300" />}
                   <div className="flex justify-between space-x-2">
-                    {' '}
-                    <input
-                      type="number"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
-                      value={conn.targetId || ''}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          connections: editedNetwork.connections?.map((c, i) =>
-                            i === idx
-                              ? { ...c, targetId: Number(e.target.value) }
-                              : c,
-                          ),
-                        })
-                      }
-                      placeholder="Target ID"
-                    />
-                    <select
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
-                      value={conn.targetType || 'Migrant'}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          connections: editedNetwork.connections?.map((c, i) =>
-                            i === idx
-                              ? { ...c, targetType: e.target.value }
-                              : c,
-                          ),
-                        })
-                      }
-                    >
-                      <option value="Migrant">Migrant</option>
-                      <option value="Organization">Organization</option>
-                    </select>
-                    <input
-                      type="number"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
-                      value={conn.strength || ''}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          connections: editedNetwork.connections?.map((c, i) =>
-                            i === idx
-                              ? { ...c, strength: Number(e.target.value) }
-                              : c,
-                          ),
-                        })
-                      }
-                      placeholder="Strength"
-                    />
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
-                      value={conn.type || ''}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          connections: editedNetwork.connections?.map((c, i) =>
-                            i === idx ? { ...c, type: e.target.value } : c,
-                          ),
-                        })
-                      }
-                      placeholder="Edge Type"
-                    />
+                    {/* Target ID */}
+                    <div className="flex-1">
+                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                        Target ID
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={conn.targetId || ''}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            connections: editedNetwork.connections?.map(
+                              (c, i) =>
+                                i === idx
+                                  ? { ...c, targetId: Number(e.target.value) }
+                                  : c,
+                            ),
+                          })
+                        }
+                        placeholder="ID"
+                      />
+                    </div>
+
+                    {/* Target Type */}
+                    <div className="flex-1">
+                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                        Target Type
+                      </label>
+                      <select
+                        className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={conn.targetType || 'Migrant'}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            connections: editedNetwork.connections?.map(
+                              (c, i) =>
+                                i === idx
+                                  ? { ...c, targetType: e.target.value }
+                                  : c,
+                            ),
+                          })
+                        }
+                      >
+                        <option value="Migrant">Migrant</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    </div>
+
+                    {/* Strength */}
+                    <div className="flex-1">
+                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                        Strength
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={conn.strength || ''}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            connections: editedNetwork.connections?.map(
+                              (c, i) =>
+                                i === idx
+                                  ? { ...c, strength: Number(e.target.value) }
+                                  : c,
+                            ),
+                          })
+                        }
+                        placeholder="1~5"
+                        min="1"
+                        max="5"
+                      />
+                    </div>
+
+                    {/* Edge Type */}
+                    <div className="flex-1">
+                      <label className="block text-gray-700 font-semibold text-xs mb-1">
+                        Edge Type
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={conn.type || ''}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            connections: editedNetwork.connections?.map(
+                              (c, i) =>
+                                i === idx ? { ...c, type: e.target.value } : c,
+                            ),
+                          })
+                        }
+                        placeholder="family"
+                      />
+                    </div>
+
+                    {/* Delete Button */}
                     <button
                       type="button"
                       className="px-3 py-2 text-red-500 text-xs font-bold"
@@ -446,6 +478,7 @@ export const Network = () => {
                   </div>
                 </div>
               ))}
+
               <button
                 type="button"
                 className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white rounded mt-3"
