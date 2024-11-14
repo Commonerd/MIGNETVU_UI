@@ -108,13 +108,18 @@ export const Network = () => {
         try {
           if (connectionsString) {
             const cleanedConnectionsString = connectionsString.trim()
-            connections = JSON.parse(cleanedConnectionsString)
-            connections = connections.map((conn: any) => ({
-              targetId: conn.targetId || 0,
-              targetType: conn.targetType || '',
-              strength: conn.strength || 0,
-              type: conn.type || '',
-            }))
+            // Connections 데이터를 세미콜론 구분자로 분리한 후 각 항목을 JSON.parse로 복원
+            const connectionItems = cleanedConnectionsString
+              .split(';')
+              .map((item) => {
+                try {
+                  return JSON.parse(item.trim())
+                } catch (error) {
+                  console.error('Error parsing connection item:', item, error)
+                  return {}
+                }
+              })
+            connections = connectionItems.filter(Boolean) // 유효한 connection만 필터링
           }
         } catch (error) {
           console.error(
