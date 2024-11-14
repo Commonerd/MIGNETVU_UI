@@ -151,39 +151,49 @@ export const Network = () => {
     const csvRows = [
       [
         'ID',
+        'User ID',
         'Title',
         'Type',
         'Nationality',
         'Ethnicity',
+        'Migration Year',
         'Latitude',
         'Longitude',
-        'Connections', // Connections 컬럼
+        'Connections',
       ],
       ...data.map(
         ({
           id,
+          user_id,
           title,
           type,
           nationality,
           ethnicity,
+          migration_year,
           latitude,
           longitude,
           connections,
         }) => {
-          // connections 배열을 쉼표로 구분된 문자열로 변환
+          // connections 배열을 문자열로 변환
           const connectionsString = connections
-            ? connections.map((conn) => JSON.stringify(conn)).join('; ') // 각 커넥션 항목을 JSON 형식으로 변환하고 세미콜론으로 구분
+            ? connections
+                .map((conn) => JSON.stringify(conn))
+                .join('; ') // 각 커넥션을 세미콜론으로 구분
+                .replace(/[\r\n]/g, ' ') // 줄 바꿈 제거
+                .replace(/,/g, ' ') // 쉼표 제거
             : ''
 
           return [
             id,
+            user_id,
             title,
             type,
             nationality,
             ethnicity,
+            migration_year,
             latitude,
             longitude,
-            `"${connectionsString}"`, // CSV에서 쉼표가 포함될 수 있으므로 따옴표로 감쌈
+            `"${connectionsString}"`, // Connections 값을 따옴표로 감싸기
           ].join(',') // 열 구분자로 쉼표 사용
         },
       ),
