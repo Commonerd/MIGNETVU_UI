@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   MapContainer,
   TileLayer,
@@ -11,7 +11,8 @@ import {
 } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
 import 'leaflet/dist/leaflet.css'
-import L, { LatLng } from 'leaflet'
+import L, { LatLng, LatLngExpression, LeafletMouseEvent } from 'leaflet'
+import 'leaflet-polylinedecorator'
 import {
   Migrant,
   Organization,
@@ -31,7 +32,6 @@ import {
 } from '../hooks/useQueryNetworks'
 import { useError } from '../hooks/useError'
 import axios from 'axios'
-import { LatLngExpression } from 'leaflet'
 import ClipboardJS from 'clipboard'
 
 // 중심 노드로 포커스 이동
@@ -608,6 +608,95 @@ const Map: React.FC = () => {
     }
   }
 
+  const CustomMapComponent = () => {
+    const map = useMap()
+    const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
+
+    useEffect(() => {
+      const edges = getEdges() // 각 엣지의 정보를 가져오는 함수
+
+      edges.forEach((edge) => {
+        const positions = edge.slice(0, 2) as LatLngExpression[]
+        const color = edge[2] as string
+        const opacity = (edge[3] as number) * 0.16 + 0.2
+        const connectionType = edge[4] as string
+        const connectionStrength = edge[3] as number
+
+        // Leaflet Polyline 객체 생성
+        const leafletPolyline = L.polyline(positions, {
+          color: color,
+          weight: 2,
+          opacity: opacity,
+        }).addTo(map)
+
+        // Tooltip 내용 정의
+        const tooltipContent = `<span>${t('connectionType')}: ${t(connectionType)}<br/>${t('connectionStrength')}: ${connectionStrength}</span>`
+
+        // 마우스를 올렸을 때만 툴팁 표시
+        leafletPolyline.bindTooltip(tooltipContent, {
+          permanent: false,
+          direction: 'top',
+          opacity: 0.9,
+        })
+
+        // 클릭 이벤트 리스너 추가: 클릭 시 툴팁 고정
+        leafletPolyline.on('click', (e: LeafletMouseEvent) => {
+          if (activeTooltip) {
+            activeTooltip.remove()
+          }
+          const tooltip = leafletPolyline
+            .bindTooltip(tooltipContent, {
+              permanent: true,
+              direction: 'top',
+              opacity: 0.9,
+            })
+            .openTooltip(e.latlng)
+          setActiveTooltip(tooltip)
+        })
+
+        // 더블 클릭 이벤트 리스너 추가: 더블 클릭 시 툴팁 닫기
+        leafletPolyline.on('dblclick', () => {
+          if (activeTooltip) {
+            activeTooltip.remove()
+            setActiveTooltip(null)
+          }
+        })
+
+        // arrowHead가 정의되어 있는지 확인
+        if (L.Symbol && L.Symbol.arrowHead) {
+          const decorator = L.polylineDecorator(leafletPolyline, {
+            patterns: [
+              {
+                offset: 0,
+                repeat: 10,
+                symbol: L.Symbol.arrowHead({
+                  pixelSize: 10,
+                  polygon: false,
+                  pathOptions: {
+                    stroke: true,
+                    color: color,
+                    weight: 2,
+                  },
+                }),
+              },
+            ],
+          })
+
+          decorator.addTo(map)
+
+          return () => {
+            map.removeLayer(leafletPolyline)
+            map.removeLayer(decorator)
+          }
+        } else {
+          console.error('L.Symbol.arrowHead is not defined')
+        }
+      })
+    }, [map, activeTooltip])
+
+    return null
+  }
+
   return (
     <div className="h-[calc(85vh-64px)] relative">
       <div className="p-4 bg-white">
@@ -961,11 +1050,11 @@ const Map: React.FC = () => {
                       </p>
                       <p>
                         <span className="font-medium">Latitude:</span>{' '}
-                        {network.latitude}
+                        {network.latitude.toFixed(5)}
                       </p>
                       <p>
                         <span className="font-medium">Longitude:</span>{' '}
-                        {network.longitude}
+                        {network.longitude.toFixed(5)}
                       </p>
                     </div>
                   </div>
@@ -973,29 +1062,7 @@ const Map: React.FC = () => {
               </Marker>
             )
           })}
-        {getEdges().map((edge, index) => {
-          const positions = edge.slice(0, 2) as unknown as [number, number][]
-          const color = edge[2] as unknown as string
-          const opacity = (edge[3] as unknown as number) * 0.16 + 0.2
-
-          return (
-            <Polyline
-              key={index}
-              positions={positions}
-              color={color}
-              weight={2}
-              opacity={opacity}
-            >
-              <Tooltip>
-                <span>
-                  {`${t('connectionType')}: ${t(String(edge[4]))}`}
-                  <br />
-                  {`${t('connectionStrength')}: ${edge[3]}`}{' '}
-                </span>
-              </Tooltip>
-            </Polyline>
-          )
-        })}
+        <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
       </MapContainer>
     </div>
   )
