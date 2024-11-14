@@ -214,6 +214,21 @@ export const Network = () => {
     })
   }
 
+  const clearFormHandler = () => {
+    updateNetwork({
+      id: 0,
+      title: '',
+      type: '',
+      nationality: '',
+      ethnicity: '',
+      migration_year: 0,
+      latitude: 0,
+      longitude: 0,
+      connections: [],
+      user_id: 0,
+    })
+  }
+
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
       <div className="flex items-center my-6">
@@ -253,7 +268,6 @@ export const Network = () => {
                 }
                 value={editedNetwork.type || 'Migrant'}
               >
-                <option value="">Select Type</option>
                 <option value="Migrant">Migrant</option>
                 <option value="Organization">Organization</option>
               </select>
@@ -389,7 +403,6 @@ export const Network = () => {
                         })
                       }
                     >
-                      <option value="">Select Type</option>
                       <option value="Migrant">Migrant</option>
                       <option value="Organization">Organization</option>
                     </select>
@@ -455,21 +468,28 @@ export const Network = () => {
               </button>
             </div>
           </div>
-
-          <button
-            className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            disabled={
-              !editedNetwork.title ||
-              !editedNetwork.type ||
-              !editedNetwork.nationality ||
-              !editedNetwork.ethnicity ||
-              !editedNetwork.migration_year ||
-              !editedNetwork.latitude ||
-              !editedNetwork.longitude
-            }
-          >
-            {editedNetwork.id === 0 ? 'Create' : 'Update'}
-          </button>
+          <div className="flex justify-between mt-4">
+            <button
+              type="button"
+              onClick={clearFormHandler}
+              className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
+            >
+              Clear
+            </button>
+            <button
+              className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              disabled={
+                !editedNetwork.title ||
+                !editedNetwork.nationality ||
+                !editedNetwork.ethnicity ||
+                !editedNetwork.migration_year ||
+                !editedNetwork.latitude ||
+                !editedNetwork.longitude
+              }
+            >
+              {editedNetwork.id === 0 ? 'Create' : 'Update'}
+            </button>
+          </div>
         </form>
       </div>
 
