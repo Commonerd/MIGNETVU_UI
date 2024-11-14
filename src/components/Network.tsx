@@ -226,7 +226,9 @@ export const Network = () => {
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-medium">Name</label>
+            <label className="block text-gray-700 font-semibold text-sm">
+              Name
+            </label>
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Enter name"
@@ -237,96 +239,115 @@ export const Network = () => {
               value={editedNetwork.title || ''}
             />
           </div>
-          <div>
-            <label className="block text-gray-700 font-medium">Type</label>
-            <select
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              onChange={(e) =>
-                updateNetwork({ ...editedNetwork, type: e.target.value })
-              }
-              value={editedNetwork.type || ''}
-            >
-              <option value="">Select Type</option>
-              <option value="Migrant">Migrant</option>
-              <option value="Organization">Organization</option>
-            </select>
+
+          {/* Type, Nationality, and Ethnicity in a single row */}
+          <div className="flex space-x-4">
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Type
+              </label>
+              <select
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onChange={(e) =>
+                  updateNetwork({ ...editedNetwork, type: e.target.value })
+                }
+                value={editedNetwork.type || 'Migrant'}
+              >
+                <option value="">Select Type</option>
+                <option value="Migrant">Migrant</option>
+                <option value="Organization">Organization</option>
+              </select>
+            </div>
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Nationality
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="ex) U.S.A"
+                type="text"
+                onChange={(e) =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    nationality: e.target.value,
+                  })
+                }
+                value={editedNetwork.nationality || ''}
+              />
+            </div>
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Ethnicity
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="ex) Korean"
+                type="text"
+                onChange={(e) =>
+                  updateNetwork({ ...editedNetwork, ethnicity: e.target.value })
+                }
+                value={editedNetwork.ethnicity || ''}
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Nationality
-            </label>
-            <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter nationality"
-              type="text"
-              onChange={(e) =>
-                updateNetwork({ ...editedNetwork, nationality: e.target.value })
-              }
-              value={editedNetwork.nationality || ''}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium">Ethnicity</label>
-            <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter ethnicity"
-              type="text"
-              onChange={(e) =>
-                updateNetwork({ ...editedNetwork, ethnicity: e.target.value })
-              }
-              value={editedNetwork.ethnicity || ''}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium">
-              Migration Year
-            </label>
-            <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter migration year"
-              type="number"
-              onChange={(e) =>
-                updateNetwork({
-                  ...editedNetwork,
-                  migration_year: Number(e.target.value),
-                })
-              }
-              value={editedNetwork.migration_year || ''}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium">Latitude</label>
-            <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter latitude"
-              type="number"
-              onChange={(e) =>
-                updateNetwork({
-                  ...editedNetwork,
-                  latitude: Number(e.target.value),
-                })
-              }
-              value={editedNetwork.latitude || ''}
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 font-medium">Longitude</label>
-            <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Enter longitude"
-              type="number"
-              onChange={(e) =>
-                updateNetwork({
-                  ...editedNetwork,
-                  longitude: Number(e.target.value),
-                })
-              }
-              value={editedNetwork.longitude || ''}
-            />
+
+          {/* Migration Year, Latitude, and Longitude in a single row */}
+          <div className="flex space-x-4">
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Migration Year
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="ex) 2024"
+                type="number"
+                onChange={(e) =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    migration_year: Number(e.target.value),
+                  })
+                }
+                value={editedNetwork.migration_year || ''}
+              />
+            </div>
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Latitude
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="ex) 43.587"
+                type="number"
+                onChange={(e) =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    latitude: Number(e.target.value),
+                  })
+                }
+                value={editedNetwork.latitude || ''}
+              />
+            </div>
+            <div className="w-1/3">
+              <label className="block text-gray-700 font-semibold text-sm">
+                Longitude
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="ex) 123.587"
+                type="number"
+                onChange={(e) =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    longitude: Number(e.target.value),
+                  })
+                }
+                value={editedNetwork.longitude || ''}
+              />
+            </div>
           </div>
           {/* Connections section */}
           <div>
-            <label className="block text-gray-700 font-medium">
+            <label className="block text-gray-700 font-semibold text-sm">
               Connections
             </label>
             <div className="space-y-3">
@@ -411,7 +432,7 @@ export const Network = () => {
               ))}
               <button
                 type="button"
-                className="w-full py-2 px-4 bg-indigo-500 text-white rounded mt-3"
+                className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white rounded mt-3"
                 onClick={() =>
                   updateNetwork({
                     ...editedNetwork,
