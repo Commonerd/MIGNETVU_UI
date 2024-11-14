@@ -1,9 +1,11 @@
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import { CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
 import { useMutateAuth } from '../hooks/useMutateAuth'
 import { useTranslation } from 'react-i18next'
 import useStore from '../store'
 import styled from 'styled-components'
+import { CsrfToken } from '../types'
+import axios from 'axios'
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
@@ -17,6 +19,17 @@ export const Auth = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
   }
+
+  useEffect(() => {
+    axios.defaults.withCredentials = true
+    const getCsrfToken = async () => {
+      const { data } = await axios.get<CsrfToken>(
+        `${process.env.REACT_APP_API_URL}/csrf`,
+      )
+      axios.defaults.headers.common['X-CSRF-Token'] = data.csrf_token
+    }
+    getCsrfToken()
+  }, [])
 
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

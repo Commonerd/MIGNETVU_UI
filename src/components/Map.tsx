@@ -18,6 +18,7 @@ import {
   Connection,
   FilterOptions,
   Network,
+  CsrfToken,
 } from '../types'
 import { mockMigrants, mockOrganizations } from '../mockData'
 import { members } from '../members'
@@ -27,6 +28,8 @@ import {
   useQueryAllNetworksOnMap,
   useQueryNetworks,
 } from '../hooks/useQueryNetworks'
+import { useError } from '../hooks/useError'
+import axios from 'axios'
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -168,6 +171,17 @@ const Map: React.FC = () => {
   } | null>(null)
   const { user } = useStore()
   const { data } = useQueryAllNetworksOnMap()
+
+  useEffect(() => {
+    axios.defaults.withCredentials = true
+    const getCsrfToken = async () => {
+      const { data } = await axios.get<CsrfToken>(
+        `${process.env.REACT_APP_API_URL}/csrf`,
+      )
+      axios.defaults.headers.common['X-CSRF-Token'] = data.csrf_token
+    }
+    getCsrfToken()
+  }, [])
 
   // Set Networks
   useEffect(() => {
@@ -859,7 +873,7 @@ const Map: React.FC = () => {
                 <Tooltip>
                   <div className="p-4">
                     <strong className="text-lg font-semibold block mb-2">
-                      {network.title}
+                      No.{network.id} : {network.title}
                     </strong>
                     <div className="text-gray-700 text-sm space-y-1">
                       <p>
@@ -873,6 +887,10 @@ const Map: React.FC = () => {
                       <p>
                         <span className="font-medium">Ethnicity:</span>{' '}
                         {network.ethnicity}
+                      </p>
+                      <p>
+                        <span className="font-medium">Migration Year:</span>{' '}
+                        {network.migration_year}
                       </p>
                       <p>
                         <span className="font-medium">Latitude:</span>{' '}
