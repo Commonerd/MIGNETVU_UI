@@ -80,74 +80,111 @@ export const Network = () => {
   }
 
   const processFile = (file: File) => {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const text = e.target?.result as string
-      const lines = text.split('\n')
-      const importedData = lines.slice(1).map((line) => {
-        const [
-          id,
-          user_id,
-          title,
-          type,
-          nationality,
-          ethnicity,
-          migration_year,
-          latitude,
-          longitude,
-          connectionsString,
-        ] = line.split(',')
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target?.result as string;
+    const lines = text.split('\n');
+    const importedData = lines.slice(1).map((line, index) => {
+      const [
+        id,
+        user_id,
+        title,
+        type,
+        nationality,
+        ethnicity,
+        migration_year,
+        latitude,
+        longitude,
+        connectionsString,
+      ] = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/); // CSV 쉼표 구분
 
-        // Handle connectionsString: Try to parse the string as a JSON array
-        let connections: Array<{
-          targetId: number
-          targetType: string
-          strength: number
-          type: string
-        }> = []
-        try {
-          if (connectionsString) {
-            const cleanedConnectionsString = connectionsString.trim()
-            // Connections 데이터를 세미콜론 구분자로 분리한 후 각 항목을 JSON.parse로 복원
-            const connectionItems = cleanedConnectionsString
-              .split(';')
-              .map((item) => {
-                try {
-                  return JSON.parse(item.trim())
-                } catch (error) {
-                  console.error('Error parsing connection item:', item, error)
-                  return {}
-                }
-              })
-            connections = connectionItems.filter(Boolean) // 유효한 connection만 필터링
+      console.log(`Line ${index + 1} original connectionsString:`, connectionsString);
+
+      let connections: Array<{
+        targetId: number;
+        targetType: string;
+        strength: number;
+        type: string;
+      }> = [];
+
+      try {
+        if (connectionsString) {
+          // 1. 연결 문자열에서 불필요한 이중 따옴표 처리
+          let cleanedConnectionsString = connectionsString
+            .replace(/""/g, '"') // 불필요한 이중 따옴표 제거
+            .trim();
+
+          console.log(`Cleaned Connections String:`, cleanedConnectionsString);
+
+          // 2. 쉼표로 구분된 여러 객체를 배열 형태로 제대로 감싸기
+          // 여기에 각 객체를 올바르게 감싸는 부분을 처리
+          cleanedConnectionsString = cleanedConnectionsString.replace(/},\s*{/g, "},{");
+          
+          // 만약 연결 문자열이 여러 개의 객체로 되어 있다면 배열 형태로 감싸기
+          cleanedConnectionsString = `[${cleanedConnectionsString}]`;
+
+          console.log(`Final Wrapped Connections String:`, cleanedConnectionsString);
+
+          // Trim any excess spaces or extra characters before parsing
+          cleanedConnectionsString = cleanedConnectionsString.trim();
+
+          // 3. JSON.parse로 파싱
+          const parsedConnections = JSON.parse(cleanedConnectionsString);
+
+          console.log(`Parsed connections for line ${index + 1}:`, parsedConnections);
+
+          // 4. 파싱된 데이터가 배열인지 확인하고, 각 항목 처리
+          if (Array.isArray(parsedConnections)) {
+            parsedConnections.forEach((item: any, i: number) => {
+              console.log(`Connection ${i}:`, item);
+              connections.push({
+                targetId: Number(item.targetId),
+                targetType: item.targetType,
+                strength: Number(item.strength),
+                type: item.type,
+              });
+            });
+          } else {
+            throw new Error('Parsed connections data is not an array');
           }
-        } catch (error) {
-          console.error(
-            'Error parsing connection data:',
-            connectionsString,
-            error,
-          )
-        }
 
-        return {
-          id: parseInt(id, 10),
-          user_id: Number(user_id), // Convert user_id to number
-          title,
-          type,
-          nationality,
-          ethnicity,
-          migration_year: Number(migration_year),
-          latitude: Number(latitude),
-          longitude: Number(longitude),
-          connections,
+          console.log(`Final connections for line ${index + 1}:`, connections);
         }
-      })
+      } catch (error) {
+        console.error(`Error parsing connection data for line ${index + 1}:`, connectionsString, error);
+      }
 
-      // Import each network entry
-      importedData.forEach((network) => createNetworkMutation.mutate(network))
+      return {
+        id: parseInt(id, 10),
+        user_id: Number(user_id),
+        title,
+        type,
+        nationality,
+        ethnicity,
+        migration_year: Number(migration_year),
+        latitude: Number(latitude),
+        longitude: Number(longitude),
+        connections,
+      };
+    });
+
+    console.log('Final imported data:', importedData);
+
+    // Check if importedData has any valid entries
+    if (importedData.length === 0) {
+      console.warn('No valid data was imported');
     }
-    reader.readAsText(file)
-  }
+
+    // Import each network entry
+    importedData.forEach((network) => {
+      console.log('Sending network to mutation:', network);
+      createNetworkMutation.mutate(network);
+    });
+  };
+
+  reader.readAsText(file);
+};
+
 
   const handleExportCSV = () => {
     if (!data) return
@@ -179,20 +216,18 @@ export const Network = () => {
           longitude,
           connections,
         }) => {
-          // connections 배열을 하나의 JSON 문자열로 변환하고 이중 큰따옴표로 감싸기
+          // connections 배열을 하나의 JSON 문자열로 변환하고 쉼표로 구분
           const connectionsString = connections
-            ? '"' +
-              connections
+            ? connections
                 .map(
                   (conn) =>
-                    JSON.stringify(conn)
-                      .replace(/"/g, '""') // 이중 큰따옴표로 변환
-                      .replace(/[\r\n]/g, ' '), // 줄 바꿈 제거
+                    // 각 커넥션을 JSON 문자열로 변환하고, 이중 큰따옴표로 감싸기
+                    JSON.stringify(conn).replace(/"/g, '""'), // 이중 큰따옴표로 변환
                 )
-                .join('; ') +
-              '"'
-            : '""'
+                .join(', ') // 연결된 커넥션을 쉼표로 구분
+            : '""' // 커넥션이 없을 경우 빈 문자열 처리
 
+          // 각 데이터를 쉼표로 구분하여 CSV 형식으로 변환
           return [
             id,
             user_id,
@@ -203,7 +238,7 @@ export const Network = () => {
             migration_year,
             latitude,
             longitude,
-            connectionsString, // connections 값을 이중 큰따옴표로 감싸서 하나의 셀에 유지
+            `"${connectionsString}"`, // connectionsString을 큰따옴표로 감싸서 하나의 셀에 넣음
           ].join(',') // 열 구분자로 쉼표 사용
         },
       ),
@@ -220,13 +255,6 @@ export const Network = () => {
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-  }
-
-  const deleteConnection = (idx: number) => {
-    updateNetwork({
-      ...editedNetwork,
-      connections: editedNetwork.connections?.filter((_, i) => i !== idx),
-    })
   }
 
   const clearFormHandler = () => {
