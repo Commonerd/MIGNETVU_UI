@@ -179,14 +179,19 @@ export const Network = () => {
           longitude,
           connections,
         }) => {
-          // connections 배열을 문자열로 변환
+          // connections 배열을 하나의 JSON 문자열로 변환하고 이중 큰따옴표로 감싸기
           const connectionsString = connections
-            ? connections
-                .map((conn) => JSON.stringify(conn))
-                .join('; ') // 각 커넥션을 세미콜론으로 구분
-                .replace(/[\r\n]/g, ' ') // 줄 바꿈 제거
-                .replace(/,/g, ' ') // 쉼표 제거
-            : ''
+            ? '"' +
+              connections
+                .map(
+                  (conn) =>
+                    JSON.stringify(conn)
+                      .replace(/"/g, '""') // 이중 큰따옴표로 변환
+                      .replace(/[\r\n]/g, ' '), // 줄 바꿈 제거
+                )
+                .join('; ') +
+              '"'
+            : '""'
 
           return [
             id,
@@ -198,7 +203,7 @@ export const Network = () => {
             migration_year,
             latitude,
             longitude,
-            `"${connectionsString}"`, // Connections 값을 따옴표로 감싸기
+            connectionsString, // connections 값을 이중 큰따옴표로 감싸서 하나의 셀에 유지
           ].join(',') // 열 구분자로 쉼표 사용
         },
       ),
