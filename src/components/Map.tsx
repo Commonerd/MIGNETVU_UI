@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -8,11 +8,11 @@ import {
   Tooltip,
   Popup,
   useMapEvents,
-} from 'react-leaflet'
-import { useTranslation } from 'react-i18next'
-import 'leaflet/dist/leaflet.css'
-import L, { LatLng, LatLngExpression, LeafletMouseEvent } from 'leaflet'
-import 'leaflet-polylinedecorator'
+} from "react-leaflet"
+import { useTranslation } from "react-i18next"
+import "leaflet/dist/leaflet.css"
+import L, { LatLng, LatLngExpression, LeafletMouseEvent } from "leaflet"
+import "leaflet-polylinedecorator"
 import {
   Migrant,
   Organization,
@@ -21,18 +21,18 @@ import {
   FilterOptions,
   Network,
   CsrfToken,
-} from '../types'
-import { mockMigrants, mockOrganizations } from '../mockData'
-import { members } from '../members'
-import styled from 'styled-components'
-import useStore from '../store'
+} from "../types"
+import { mockMigrants, mockOrganizations } from "../mockData"
+import { members } from "../members"
+import styled from "styled-components"
+import useStore from "../store"
 import {
   useQueryAllNetworksOnMap,
   useQueryNetworks,
-} from '../hooks/useQueryNetworks'
-import { useError } from '../hooks/useError'
-import axios from 'axios'
-import ClipboardJS from 'clipboard'
+} from "../hooks/useQueryNetworks"
+import { useError } from "../hooks/useError"
+import axios from "axios"
+import ClipboardJS from "clipboard"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -51,11 +51,11 @@ const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
 delete (L.Icon.Default.prototype as any)._getIconUrl
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon-2x.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon-2x.png",
   iconUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
   shadowUrl:
-    'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png',
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 })
 
 // Legend Component
@@ -68,51 +68,51 @@ const Legend = ({
     id: number
     name: string
     centrality: number
-    type: 'migrant' | 'organization'
+    type: "migrant" | "organization"
   }[]
-  onEntityClick: (id: number, type: 'migrant' | 'organization') => void
+  onEntityClick: (id: number, type: "migrant" | "organization") => void
   centralityType: string
 }) => {
   const map = useMap()
   const { t } = useTranslation()
 
   useEffect(() => {
-    const legend = new L.Control({ position: 'topright' })
+    const legend = new L.Control({ position: "topright" })
 
     legend.onAdd = () => {
-      const div = L.DomUtil.create('div', 'info legend')
+      const div = L.DomUtil.create("div", "info legend")
 
-      div.style.backgroundColor = 'rgba(255, 255, 255, 0.7)'
-      div.style.padding = '10px'
-      div.style.borderRadius = '5px'
-      div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)'
+      div.style.backgroundColor = "rgba(255, 255, 255, 0.7)"
+      div.style.padding = "10px"
+      div.style.borderRadius = "5px"
+      div.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.2)"
 
       const labels = [
         `<div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div> ${t(
-          'migrant',
+          "migrant",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
-          'organization',
+          "organization",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 5px; background-color: blue; margin-right: 5px;"></div> ${t(
-          'friend',
+          "friend",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 5px; background-color: green; margin-right: 5px;"></div> ${t(
-          'colleague',
+          "colleague",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 5px; background-color: red; margin-right: 5px;"></div> ${t(
-          'family',
+          "family",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 5px; background-color: purple; margin-right: 5px;"></div> ${t(
-          'professional',
+          "professional",
         )}`,
         `<div style="display: inline-block; width: 15px; height: 5px; background-color: orange; margin-right: 5px;"></div> ${t(
-          'cultural',
+          "cultural",
         )}`,
       ]
 
-      div.innerHTML = labels.join('<br>')
-      if (centralityType !== 'none') {
+      div.innerHTML = labels.join("<br>")
+      if (centralityType !== "none") {
         const topEntitiesHtml = topEntities
           .map(
             (entity, index) =>
@@ -120,8 +120,8 @@ const Legend = ({
                 entity.name
               }: ${entity.centrality.toFixed(2)}</div>`,
           )
-          .join('')
-        div.innerHTML += `<br><br><strong>${t('topEntities')}</strong><br>${topEntitiesHtml}`
+          .join("")
+        div.innerHTML += `<br><br><strong>${t("topEntities")}</strong><br>${topEntitiesHtml}`
       }
 
       return div
@@ -131,19 +131,19 @@ const Legend = ({
 
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-      const id = target.getAttribute('data-id')
-      const type = target.getAttribute('data-type') as
-        | 'migrant'
-        | 'organization'
+      const id = target.getAttribute("data-id")
+      const type = target.getAttribute("data-type") as
+        | "migrant"
+        | "organization"
       if (id && type) {
         onEntityClick(Number(id), type)
       }
     }
 
-    map.getContainer().addEventListener('click', handleClick)
+    map.getContainer().addEventListener("click", handleClick)
 
     return () => {
-      map.getContainer().removeEventListener('click', handleClick)
+      map.getContainer().removeEventListener("click", handleClick)
       legend.remove()
     }
   }, [map, t, topEntities, centralityType, onEntityClick])
@@ -157,13 +157,13 @@ const Map: React.FC = () => {
   const [migrants, setMigrants] = useState<Migrant[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [filters, setFilters] = useState<FilterOptions>({
-    nationality: 'all',
-    ethnicity: 'all',
-    connectionType: 'all',
-    entityType: 'all',
+    nationality: "all",
+    ethnicity: "all",
+    connectionType: "all",
+    entityType: "all",
     yearRange: [1800, new Date().getFullYear()], // 현재 연도를 자동으로 설정
   })
-  const [centralityType, setCentralityType] = useState<string>('none')
+  const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
     id: number
     type: EntityType
@@ -176,6 +176,7 @@ const Map: React.FC = () => {
   const { data } = useQueryAllNetworksOnMap()
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
+  const updateNetwork = useStore((state) => state.updateEditedNetwork)
 
   useEffect(() => {
     axios.defaults.withCredentials = true
@@ -183,7 +184,7 @@ const Map: React.FC = () => {
       const { data } = await axios.get<CsrfToken>(
         `${process.env.REACT_APP_API_URL}/csrf`,
       )
-      axios.defaults.headers.common['X-CSRF-Token'] = data.csrf_token
+      axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
     }
     getCsrfToken()
   }, [])
@@ -225,7 +226,7 @@ const Map: React.FC = () => {
   // }, [])
 
   // Example usage in handleEntityClick
-  const handleEntityClick = (id: number, type: 'migrant' | 'organization') => {
+  const handleEntityClick = (id: number, type: "migrant" | "organization") => {
     const entity = getEntityById(id)
     if (entity) {
       setFocusedNode({ lat: entity.latitude, lng: entity.longitude })
@@ -243,7 +244,7 @@ const Map: React.FC = () => {
     return networks?.find((n) => n.id === id) || null
   }
 
-  const getConnectionColor = (type: Network['connections'][number]['type']) => {
+  const getConnectionColor = (type: Network["connections"][number]["type"]) => {
     switch (type) {
       // case 'friend':
       //   return 'blue'
@@ -256,7 +257,7 @@ const Map: React.FC = () => {
       // case 'cultural':
       //   return 'orange'
       default:
-        return 'gray'
+        return "gray"
     }
   }
 
@@ -267,7 +268,7 @@ const Map: React.FC = () => {
     const addEdges = (network: Network) => {
       network.connections.forEach((connection) => {
         if (
-          filters.connectionType === 'all' ||
+          filters.connectionType === "all" ||
           connection.type === filters.connectionType
         ) {
           const target = networks?.find((n) => n.id === connection.targetId)
@@ -290,10 +291,10 @@ const Map: React.FC = () => {
       const createdAt = new Date(network.created_at)
 
       if (
-        (filters.entityType === 'all' || filters.entityType === network.type) &&
-        (filters.nationality === 'all' ||
+        (filters.entityType === "all" || filters.entityType === network.type) &&
+        (filters.nationality === "all" ||
           network.nationality === filters.nationality) &&
-        (filters.ethnicity === 'all' ||
+        (filters.ethnicity === "all" ||
           network.ethnicity === filters.ethnicity) &&
         createdAt.getFullYear() >= filters.yearRange[0] &&
         createdAt.getFullYear() <= filters.yearRange[1]
@@ -314,9 +315,9 @@ const Map: React.FC = () => {
 
   const filteredMigrants = migrants.filter(
     (migrant) =>
-      (filters.nationality === 'all' ||
+      (filters.nationality === "all" ||
         migrant.nationality === filters.nationality) &&
-      (filters.ethnicity === 'all' ||
+      (filters.ethnicity === "all" ||
         migrant.ethnicity === filters.ethnicity) &&
       migrant.migrationYear >= filters.yearRange[0] &&
       migrant.migrationYear <= filters.yearRange[1],
@@ -369,13 +370,13 @@ const Map: React.FC = () => {
     })
 
     switch (centralityType) {
-      case 'degree':
+      case "degree":
         for (const id in connectionsMap) {
           centrality[id] = connectionsMap[id].length
         }
         break
 
-      case 'betweenness':
+      case "betweenness":
         // Betweenness centrality implementation (as shown previously)
         for (const id in connectionsMap) {
           centrality[id] = 0
@@ -438,7 +439,7 @@ const Map: React.FC = () => {
 
         break
 
-      case 'closeness':
+      case "closeness":
         for (const id in connectionsMap) {
           const distances = bfsShortestPath(Number(id), connectionsMap)
           const totalDistance = Object.values(distances).reduce(
@@ -449,7 +450,7 @@ const Map: React.FC = () => {
         }
         break
 
-      case 'eigenvector':
+      case "eigenvector":
         // Initialize eigenvector centrality values to 1
         const numNodes = Object.keys(connectionsMap).length
         let eigenCentrality: { [id: number]: number } = {}
@@ -519,7 +520,7 @@ const Map: React.FC = () => {
       const migrant = migrants.find((m) => m.id === Number(id))
       return {
         id: Number(id),
-        name: migrant ? migrant.name : 'Unknown',
+        name: migrant ? migrant.name : "Unknown",
         centrality,
       }
     })
@@ -532,7 +533,7 @@ const Map: React.FC = () => {
       const organization = organizations.find((o) => o.id === Number(id))
       return {
         id: Number(id),
-        name: organization ? organization.name : 'Unknown',
+        name: organization ? organization.name : "Unknown",
         centrality,
       }
     })
@@ -541,14 +542,14 @@ const Map: React.FC = () => {
     let baseSize = 10
     let scaleFactor = 5
 
-    if (centralityType === 'degree') {
+    if (centralityType === "degree") {
       scaleFactor = 3
     } else if (
-      centralityType === 'closeness' ||
-      centralityType === 'eigenvector'
+      centralityType === "closeness" ||
+      centralityType === "eigenvector"
     ) {
       scaleFactor = 30
-    } else if (centralityType === 'betweenness') {
+    } else if (centralityType === "betweenness") {
       scaleFactor = 500
     }
 
@@ -579,7 +580,7 @@ const Map: React.FC = () => {
       registrantId: Number(registrantId),
       // name: getRegistrantName(Number(registrantId)),
       count,
-      medal: index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉',
+      medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
     }))
 
   // 마우스 우클릭 시 위도와 경도 표시
@@ -596,12 +597,28 @@ const Map: React.FC = () => {
   // 복사 버튼 클릭 시 클립보드에 위도와 경도 복사
   const copyToClipboard = () => {
     if (latLng) {
+      // Update latitude and longitude in the store
+      updateNetwork({
+        id: 0,
+        user_id: 0,
+        title: "",
+        type: "Migrant",
+        nationality: "",
+        ethnicity: "",
+        migration_year: 0,
+        latitude: latLng.lat,
+        longitude: latLng.lng,
+        connections: [
+          { targetType: "Migrant", targetId: 0, strength: 0, type: "" },
+        ],
+      })
+
       // latLng가 null이 아닐 때만 실행
-      const clipboard = new ClipboardJS('.copy-btn', {
+      const clipboard = new ClipboardJS(".copy-btn", {
         text: () => `${latLng.lat}, ${latLng.lng}`,
       })
 
-      clipboard.on('success', () => {
+      clipboard.on("success", () => {
         setCopied(true)
         setTimeout(() => setCopied(false), 2000) // 2초 후에 '복사됨' 메시지를 사라지게
       })
@@ -630,24 +647,24 @@ const Map: React.FC = () => {
         }).addTo(map)
 
         // Tooltip 내용 정의
-        const tooltipContent = `<span>${t('connectionType')}: ${t(connectionType)}<br/>${t('connectionStrength')}: ${connectionStrength}</span>`
+        const tooltipContent = `<span>${t("connectionType")}: ${t(connectionType)}<br/>${t("connectionStrength")}: ${connectionStrength}</span>`
 
         // 마우스를 올렸을 때만 툴팁 표시
         leafletPolyline.bindTooltip(tooltipContent, {
           permanent: false,
-          direction: 'top',
+          direction: "top",
           opacity: 0.9,
         })
 
         // 클릭 이벤트 리스너 추가: 클릭 시 툴팁 고정
-        leafletPolyline.on('click', (e: LeafletMouseEvent) => {
+        leafletPolyline.on("click", (e: LeafletMouseEvent) => {
           if (activeTooltip) {
             activeTooltip.remove()
           }
           const tooltip = leafletPolyline
             .bindTooltip(tooltipContent, {
               permanent: true,
-              direction: 'top',
+              direction: "top",
               opacity: 0.9,
             })
             .openTooltip(e.latlng)
@@ -655,7 +672,7 @@ const Map: React.FC = () => {
         })
 
         // 더블 클릭 이벤트 리스너 추가: 더블 클릭 시 툴팁 닫기
-        leafletPolyline.on('dblclick', () => {
+        leafletPolyline.on("dblclick", () => {
           if (activeTooltip) {
             activeTooltip.remove()
             setActiveTooltip(null)
@@ -689,7 +706,7 @@ const Map: React.FC = () => {
             map.removeLayer(decorator)
           }
         } else {
-          console.error('L.Symbol.arrowHead is not defined')
+          console.error("L.Symbol.arrowHead is not defined")
         }
       })
     }, [map, activeTooltip])
@@ -703,23 +720,23 @@ const Map: React.FC = () => {
         <div className="flex flex-wrap gap-1 md:gap-4 items-center">
           <select
             value={filters.entityType}
-            onChange={(e) => handleFilterChange('entityType', e.target.value)}
+            onChange={(e) => handleFilterChange("entityType", e.target.value)}
             className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
           >
-            <option value="all">{t('allEntityTypes')}</option>
-            <option value="migrant">{t('migrant')}</option>
-            <option value="organization">{t('organization')}</option>
+            <option value="all">{t("allEntityTypes")}</option>
+            <option value="migrant">{t("migrant")}</option>
+            <option value="organization">{t("organization")}</option>
           </select>
-          {filters.entityType !== 'organization' && (
+          {filters.entityType !== "organization" && (
             <>
               <select
                 value={filters.nationality}
                 onChange={(e) =>
-                  handleFilterChange('nationality', e.target.value)
+                  handleFilterChange("nationality", e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
               >
-                <option value="all">{t('allNationalities')}</option>
+                <option value="all">{t("allNationalities")}</option>
                 {uniqueNationalities.map((nationality) => (
                   <option key={nationality} value={nationality}>
                     {nationality}
@@ -729,11 +746,11 @@ const Map: React.FC = () => {
               <select
                 value={filters.ethnicity}
                 onChange={(e) =>
-                  handleFilterChange('ethnicity', e.target.value)
+                  handleFilterChange("ethnicity", e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
               >
-                <option value="all">{t('allEthnicities')}</option>
+                <option value="all">{t("allEthnicities")}</option>
                 {uniqueEthnicities.map((ethnicity) => (
                   <option key={ethnicity} value={ethnicity}>
                     {ethnicity}
@@ -745,24 +762,24 @@ const Map: React.FC = () => {
           <select
             value={filters.connectionType}
             onChange={(e) =>
-              handleFilterChange('connectionType', e.target.value)
+              handleFilterChange("connectionType", e.target.value)
             }
             className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
           >
-            <option value="all">{t('allConnectionTypes')}</option>
-            <option value="friend">{t('friend')}</option>
-            <option value="colleague">{t('colleague')}</option>
-            <option value="family">{t('family')}</option>
-            <option value="professional">{t('professional')}</option>
-            <option value="cultural">{t('cultural')}</option>
+            <option value="all">{t("allConnectionTypes")}</option>
+            <option value="friend">{t("friend")}</option>
+            <option value="colleague">{t("colleague")}</option>
+            <option value="family">{t("family")}</option>
+            <option value="professional">{t("professional")}</option>
+            <option value="cultural">{t("cultural")}</option>
           </select>
           <div>
-            <label className="text-xs md:text-sm">{t('yearRange')}: </label>
+            <label className="text-xs md:text-sm">{t("yearRange")}: </label>
             <input
               type="number"
               value={filters.yearRange[0]}
               onChange={(e) =>
-                handleFilterChange('yearRange', [
+                handleFilterChange("yearRange", [
                   parseInt(e.target.value),
                   filters.yearRange[1],
                 ])
@@ -774,7 +791,7 @@ const Map: React.FC = () => {
               type="number"
               value={filters.yearRange[1]}
               onChange={(e) =>
-                handleFilterChange('yearRange', [
+                handleFilterChange("yearRange", [
                   filters.yearRange[0],
                   parseInt(e.target.value),
                 ])
@@ -784,18 +801,18 @@ const Map: React.FC = () => {
           </div>
           {user.isLoggedIn ? (
             <>
-              {' '}
+              {" "}
               <select
                 value={centralityType}
                 onChange={(e) => setCentralityType(e.target.value)}
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
               >
-                <option value="none">{t('selectCentrality')}</option>
-                <option value="degree">{t('degreeCentrality')}</option>
-                <option value="betweenness">{t('betweenessCentrality')}</option>
-                <option value="closeness">{t('closenessCentrality')}</option>
+                <option value="none">{t("selectCentrality")}</option>
+                <option value="degree">{t("degreeCentrality")}</option>
+                <option value="betweenness">{t("betweenessCentrality")}</option>
+                <option value="closeness">{t("closenessCentrality")}</option>
                 <option value="eigenvector">
-                  {t('eigenvectorCentrality')}
+                  {t("eigenvectorCentrality")}
                 </option>
               </select>
             </>
@@ -807,17 +824,17 @@ const Map: React.FC = () => {
       <MapContainer
         center={[37.5665, 126.978]}
         zoom={2}
-        style={{ height: 'calc(100% - 60px)', width: '100%' }}
+        style={{ height: "calc(100% - 60px)", width: "100%" }}
       >
         <HandleRightClick />
         {latLng && (
           <Marker position={latLng}>
             <Popup>
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ marginBottom: '10px' }}>
+              <div style={{ textAlign: "center" }}>
+                <p style={{ marginBottom: "10px" }}>
                   <strong>Lat:</strong> {latLng.lat}
                 </p>
-                <p style={{ marginBottom: '20px' }}>
+                <p style={{ marginBottom: "20px" }}>
                   <strong>Lng:</strong> {latLng.lng}
                 </p>
                 <button
@@ -825,20 +842,20 @@ const Map: React.FC = () => {
                   data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
                   onClick={copyToClipboard}
                   style={{
-                    padding: '10px 20px',
-                    fontSize: '16px',
-                    backgroundColor: copied ? 'green' : '#007BFF', // 복사 후 버튼 색상은 녹색
-                    color: copied ? '#fff' : '#fff', // 글자 색상은 흰색으로 고정
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.3s ease', // 부드러운 배경색 변화
+                    padding: "10px 20px",
+                    fontSize: "16px",
+                    backgroundColor: copied ? "green" : "#007BFF", // 복사 후 버튼 색상은 녹색
+                    color: copied ? "#fff" : "#fff", // 글자 색상은 흰색으로 고정
+                    border: "none",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    transition: "background-color 0.3s ease", // 부드러운 배경색 변화
                   }}
                 >
                   {copied ? (
                     <span>Copied!</span> // 복사 후 상태 표시
                   ) : (
-                    'Copy'
+                    "Copy"
                   )}
                 </button>
               </div>
@@ -849,12 +866,12 @@ const Map: React.FC = () => {
           <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
         )}
         <LegendBox>
-          <h2>{t('topRegistrants')}</h2>
+          <h2>{t("topRegistrants")}</h2>
           <ul>
             {topRegistrants.map((registrant) => (
               <li key={registrant.registrantId}>
-                {registrant.medal} {registrant.registrantId} :{' '}
-                {registrant.count} {t('nodeCount')}
+                {registrant.medal} {registrant.registrantId} :{" "}
+                {registrant.count} {t("nodeCount")}
               </li>
             ))}
           </ul>
@@ -869,7 +886,7 @@ const Map: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {(filters.entityType === 'all' || filters.entityType === 'migrant') &&
+        {(filters.entityType === "all" || filters.entityType === "migrant") &&
           filteredMigrants.map((migrant) => {
             const size = getNodeSize(
               centralityValues[migrant.id] || 0,
@@ -879,16 +896,16 @@ const Map: React.FC = () => {
             const isHighlighted =
               highlightedNode &&
               highlightedNode.id === migrant.id &&
-              highlightedNode.type === 'migrant'
+              highlightedNode.type === "migrant"
 
             return (
               <Marker
                 key={`migrant-${migrant.id}`}
                 position={[migrant.latitude, migrant.longitude]}
                 icon={L.divIcon({
-                  className: 'custom-marker',
+                  className: "custom-marker",
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? 'yellow' : 'red'
+                    isHighlighted ? "yellow" : "red"
                   }; border-radius: 50%;"></div>`,
                   iconSize: [size, size],
                 })}
@@ -897,38 +914,38 @@ const Map: React.FC = () => {
                   <h2 className="text-lg font-bold">{migrant.name}</h2>
                   <p>id : {migrant.id} </p>
                   <p>
-                    {t('registrantId')} : {migrant.registrantId}
+                    {t("registrantId")} : {migrant.registrantId}
                   </p>
                   <p>
-                    {t('centrality')}: {centralityValues[migrant.id] || 0}
+                    {t("centrality")}: {centralityValues[migrant.id] || 0}
                   </p>
                   <p>
-                    {t('nationality')}: {migrant.nationality}
+                    {t("nationality")}: {migrant.nationality}
                   </p>
                   <p>
-                    {t('ethnicity')}: {migrant.ethnicity}
+                    {t("ethnicity")}: {migrant.ethnicity}
                   </p>
                   <p>
-                    {t('migrationYear')}: {migrant.migrationYear}
+                    {t("migrationYear")}: {migrant.migrationYear}
                   </p>
                   <p>
-                    {t('age')}: {migrant.age}
+                    {t("age")}: {migrant.age}
                   </p>
                   <p>
-                    {t('occupation')}: {migrant.occupation}
+                    {t("occupation")}: {migrant.occupation}
                   </p>
                   <p>
-                    {t('education')}: {migrant.education}
+                    {t("education")}: {migrant.education}
                   </p>
                   <p>
-                    {t('languagesSpoken')}: {migrant.languagesSpoken.join(', ')}
+                    {t("languagesSpoken")}: {migrant.languagesSpoken.join(", ")}
                   </p>
                 </Tooltip>
               </Marker>
             )
           })}
-        {(filters.entityType === 'all' ||
-          filters.entityType === 'organization') &&
+        {(filters.entityType === "all" ||
+          filters.entityType === "organization") &&
           filteredOrganizations.map((org) => {
             const size = getNodeSize(
               centralityValues[org.id] || 0,
@@ -937,15 +954,15 @@ const Map: React.FC = () => {
             const isHighlighted =
               highlightedNode &&
               highlightedNode.id === org.id &&
-              highlightedNode.type === 'organization'
+              highlightedNode.type === "organization"
             return (
               <Marker
                 key={`org-${org.id}`}
                 position={[org.latitude, org.longitude]}
                 icon={L.divIcon({
-                  className: 'custom-marker',
+                  className: "custom-marker",
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? 'yellow' : 'blue'
+                    isHighlighted ? "yellow" : "blue"
                   }; border-radius: 50%;"></div>`,
                   iconSize: [size, size],
                 })}
@@ -955,25 +972,25 @@ const Map: React.FC = () => {
                     <h2 className="text-lg font-bold">{org.name}</h2>
                     <p>id: {org.id} </p>
                     <p>
-                      {t('registrantId')} : {org.registrantId}
+                      {t("registrantId")} : {org.registrantId}
                     </p>
                     <p>
-                      {t('centrality')}: {centralityValues[org.id] || 0}
+                      {t("centrality")}: {centralityValues[org.id] || 0}
                     </p>
                     <p>
-                      {t('foundationYear')}: {org.foundationYear}
+                      {t("foundationYear")}: {org.foundationYear}
                     </p>
                     <p>
-                      {t('type')}: {org.type}
+                      {t("type")}: {org.type}
                     </p>
                     <p>
-                      {t('mission')}: {org.mission}
+                      {t("mission")}: {org.mission}
                     </p>
                     <p>
-                      {t('services')}: {org.services.join(', ')}
+                      {t("services")}: {org.services.join(", ")}
                     </p>
                     <p>
-                      {t('contactInfo')}: {org.contactInfo}
+                      {t("contactInfo")}: {org.contactInfo}
                     </p>
                   </div>
                 </Tooltip>
@@ -995,9 +1012,9 @@ const Map: React.FC = () => {
             >
               <Tooltip>
                 <span>
-                  {`${t('connectionType')}: ${t(String(edge[4]))}`}
+                  {`${t("connectionType")}: ${t(String(edge[4]))}`}
                   <br />
-                  {`${t('connectionStrength')}: ${edge[3]}`}{' '}
+                  {`${t("connectionStrength")}: ${edge[3]}`}{" "}
                 </span>
               </Tooltip>
             </Polyline>
@@ -1019,9 +1036,9 @@ const Map: React.FC = () => {
                 key={network.id}
                 position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
-                  className: 'custom-marker',
+                  className: "custom-marker",
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? 'yellow' : 'red'
+                    isHighlighted ? "yellow" : "red"
                   }; border-radius: 50%;"></div>`,
                   iconSize: [size, size],
                 })}
@@ -1033,27 +1050,27 @@ const Map: React.FC = () => {
                     </strong>
                     <div className="text-gray-700 text-sm space-y-1">
                       <p>
-                        <span className="font-medium">Creator ID:</span>{' '}
+                        <span className="font-medium">Creator ID:</span>{" "}
                         {network.user_id}
                       </p>
                       <p>
-                        <span className="font-medium">Nationality:</span>{' '}
+                        <span className="font-medium">Nationality:</span>{" "}
                         {network.nationality}
                       </p>
                       <p>
-                        <span className="font-medium">Ethnicity:</span>{' '}
+                        <span className="font-medium">Ethnicity:</span>{" "}
                         {network.ethnicity}
                       </p>
                       <p>
-                        <span className="font-medium">Migration Year:</span>{' '}
+                        <span className="font-medium">Migration Year:</span>{" "}
                         {network.migration_year}
                       </p>
                       <p>
-                        <span className="font-medium">Latitude:</span>{' '}
+                        <span className="font-medium">Latitude:</span>{" "}
                         {network.latitude.toFixed(5)}
                       </p>
                       <p>
-                        <span className="font-medium">Longitude:</span>{' '}
+                        <span className="font-medium">Longitude:</span>{" "}
                         {network.longitude.toFixed(5)}
                       </p>
                     </div>
