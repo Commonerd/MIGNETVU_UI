@@ -1,41 +1,51 @@
-import { useState, FormEvent, useEffect } from 'react'
-import { CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/solid'
-import { useMutateAuth } from '../hooks/useMutateAuth'
-import { useTranslation } from 'react-i18next'
-import useStore from '../store'
-import styled from 'styled-components'
-import { CsrfToken } from '../types'
-import axios from 'axios'
+import { useState, FormEvent, useEffect } from "react"
+import { CheckBadgeIcon, ArrowPathIcon } from "@heroicons/react/24/solid"
+import { useMutateAuth } from "../hooks/useMutateAuth"
+import { useTranslation } from "react-i18next"
+import useStore from "../store"
+import styled from "styled-components"
+import { CsrfToken } from "../types"
+import axios from "axios"
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
   const { setUser } = useStore()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [pw, setPw] = useState('')
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [pw, setPw] = useState("")
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
+  const [csrfLoaded, setCsrfLoaded] = useState(false) // CSRF 토큰 로딩 상태 추가
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
   }
 
   useEffect(() => {
-    axios.defaults.withCredentials = true
     const getCsrfToken = async () => {
-      const { data } = await axios.get<CsrfToken>(
-        `${process.env.REACT_APP_API_URL}/csrf`,
-      )
-      axios.defaults.headers.common['X-CSRF-Token'] = data.csrf_token
+      try {
+        const { data } = await axios.get<CsrfToken>(
+          `${process.env.REACT_APP_API_URL}/csrf`,
+        )
+        axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+        setCsrfLoaded(true)
+      } catch (err) {
+        alert(err)
+      }
     }
+    axios.defaults.withCredentials = true
     getCsrfToken()
   }, [])
 
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (!csrfLoaded) {
+      alert("CSRF token not yet loaded!")
+      return
+    }
     if (isLogin) {
       loginMutation.mutate(
-        { email, password: pw, name: '0' },
+        { email, password: pw, name: "0" },
         {
           onSuccess: () => setUser({ email, isLoggedIn: true, name }),
         },
@@ -61,14 +71,14 @@ export const Auth = () => {
           <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
           <span className="text-2xl font-extrabold">MigNetVu</span>
         </Header>
-        <span className="text-xs">{t('appSubName')}</span>
-        <Title>{isLogin ? t('login') : t('register')}</Title>
+        <span className="text-xs">{t("appSubName")}</span>
+        <Title>{isLogin ? t("login") : t("register")}</Title>
         <form onSubmit={submitAuthHandler}>
           {!isLogin && (
             <Input
               type="text"
               name="name"
-              placeholder={t('name')}
+              placeholder={t("name")}
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -77,7 +87,7 @@ export const Auth = () => {
           <Input
             type="email"
             name="email"
-            placeholder={t('email')}
+            placeholder={t("email")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -85,13 +95,13 @@ export const Auth = () => {
           <Input
             type="password"
             name="password"
-            placeholder={t('password')}
+            placeholder={t("password")}
             value={pw}
             onChange={(e) => setPw(e.target.value)}
             required
           />
           <Button type="submit" disabled={!email || !pw || (!isLogin && !name)}>
-            {isLogin ? t('login') : t('register')}
+            {isLogin ? t("login") : t("register")}
           </Button>
         </form>
         <IconWrapper>
