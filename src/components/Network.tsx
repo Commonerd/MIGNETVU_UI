@@ -432,7 +432,7 @@ export const Network = () => {
                     </div>
 
                     {/* Strength */}
-                    <div className="flex-1">
+                    <div className="flex-2">
                       <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Strength
                       </label>
