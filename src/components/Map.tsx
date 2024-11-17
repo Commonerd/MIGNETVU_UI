@@ -560,10 +560,12 @@ const Map: React.FC = () => {
   const registrantNodeCounts =
     networks?.reduce(
       (acc, entity) => {
-        acc[entity.user_id] = (acc[entity.user_id] || 0) + 1
+        // 타입 강제 단언으로 user_name 사용
+        const userName = (entity as any).user_name
+        acc[userName] = (acc[userName] || 0) + 1
         return acc
       },
-      {} as { [registrantId: number]: number },
+      {} as { [registrantName: string]: number },
     ) || {}
 
   // 등록자 이름을 매핑하는 함수
