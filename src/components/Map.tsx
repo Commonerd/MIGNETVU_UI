@@ -687,24 +687,24 @@ const Map: React.FC = () => {
           const decorator = L.polylineDecorator(leafletPolyline, {
             patterns: [
               {
-                offset: 0,
-                repeat: 10,
+                offset: 0, // Start the arrow at the end of the polyline
+                repeat: 200, // Set a large repeat value to space out arrows
                 symbol: L.Symbol.arrowHead({
-                  pixelSize: 10,
+                  pixelSize: 15, // Increase the arrow size for prominence
                   polygon: false,
                   headAngle: 45,
                   pathOptions: {
-                    stroke: true, // 선을 그릴지 여부
-                    color: "#3498db", // 선 색상: 블루 계열로 밝고 세련된 느낌을 주는 색상
-                    weight: 2, // 선 두께: 너무 두껍지 않고 깔끔한 두께
-                    opacity: 0.85, // 선 불투명도: 투명도를 조금 낮춰 부드럽게
-                    lineCap: "round", // 선 끝 모양: 부드러운 둥근 끝으로 스타일링
-                    lineJoin: "round", // 선이 만나는 부분의 모양: 둥근 교차점으로 자연스러움
-                    dashArray: "6,3", // 점선 형태: 적절히 간격을 줄여서 깔끔한 느낌
-                    dashOffset: "0", // 대시 오프셋: 기본값으로 설정
-                    fill: true, // 내부를 채우기
-                    fillColor: "#2ecc71", // 내부 색상: 자연 친화적이고 상쾌한 느낌의 그린
-                    fillOpacity: 0.3, // 내부 불투명도: 약간의 투명도를 주어 배경과 잘 어우러지게
+                    stroke: false, // Draw the outline of the arrow
+                    color: "#7f8c8d", // Arrow stroke color: bright blue
+                    weight: 2, // Line thickness: moderate for balance
+                    opacity: 0.85, // Slight transparency for a softer look
+                    lineCap: "round", // Rounded end for the stroke
+                    lineJoin: "round", // Smooth join for the arrows
+                    dashArray: "6,3", // Dash pattern for the line
+                    dashOffset: "0", // No offset for dashes
+                    fill: true, // Fill the arrow symbol
+                    fillColor: "#27ae60", // Green fill color for the arrow: fresh look
+                    fillOpacity: 0.8, // Slight transparency for the fill
                     fillRule: "evenodd",
                   },
                 }),
