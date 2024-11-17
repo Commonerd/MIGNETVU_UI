@@ -562,6 +562,7 @@ const Map: React.FC = () => {
       (acc, entity) => {
         // 타입 강제 단언으로 user_name 사용
         const userName = (entity as any).user_name
+        console.log(userName)
         acc[userName] = (acc[userName] || 0) + 1
         return acc
       },
