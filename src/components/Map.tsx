@@ -560,20 +560,20 @@ const Map: React.FC = () => {
   const registrantNodeCounts =
     networks?.reduce(
       (acc, entity) => {
-        // 타입 강제 단언으로 user_name 사용
-        const userName = (entity as any).user_name
-        console.log(userName)
-        acc[userName] = (acc[userName] || 0) + 1
+        acc[entity.user_id] = (acc[entity.user_id] || 0) + 1
         return acc
       },
-      {} as { [registrantName: string]: number },
+      {} as { [registrantId: number]: number },
     ) || {}
 
-  // 등록자 이름을 매핑하는 함수
-  // const getRegistrantName = (id: number) => {
-  //   const registrant = members.find((r) => r.id === id)
-  //   return registrant ? registrant?.name : 'Unknown'
-  // }
+  // 유저 이름을 가져오기 위한 사용자 정보 맵핑
+  const userNames = networks?.reduce(
+    (acc, entity) => {
+      acc[entity.user_id] = entity.user_name // 유저 ID와 유저 이름을 매핑
+      return acc
+    },
+    {} as { [userId: number]: string },
+  )
 
   // 상위 3명의 등록자 추출 및 정렬
   const topRegistrants = Object.entries(registrantNodeCounts)
@@ -581,7 +581,7 @@ const Map: React.FC = () => {
     .slice(0, 3)
     .map(([registrantId, count], index) => ({
       registrantId: Number(registrantId),
-      // name: getRegistrantName(Number(registrantId)),
+      userName: userNames[Number(registrantId)], // 유저 이름을 가져옴
       count,
       medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
     }))
@@ -692,10 +692,20 @@ const Map: React.FC = () => {
                 symbol: L.Symbol.arrowHead({
                   pixelSize: 10,
                   polygon: false,
+                  headAngle: 45,
                   pathOptions: {
-                    stroke: true,
-                    color: color,
-                    weight: 2,
+                    stroke: true, // 선을 그릴지 여부
+                    color: "#3498db", // 선 색상: 블루 계열로 밝고 세련된 느낌을 주는 색상
+                    weight: 2, // 선 두께: 너무 두껍지 않고 깔끔한 두께
+                    opacity: 0.85, // 선 불투명도: 투명도를 조금 낮춰 부드럽게
+                    lineCap: "round", // 선 끝 모양: 부드러운 둥근 끝으로 스타일링
+                    lineJoin: "round", // 선이 만나는 부분의 모양: 둥근 교차점으로 자연스러움
+                    dashArray: "6,3", // 점선 형태: 적절히 간격을 줄여서 깔끔한 느낌
+                    dashOffset: "0", // 대시 오프셋: 기본값으로 설정
+                    fill: true, // 내부를 채우기
+                    fillColor: "#2ecc71", // 내부 색상: 자연 친화적이고 상쾌한 느낌의 그린
+                    fillOpacity: 0.3, // 내부 불투명도: 약간의 투명도를 주어 배경과 잘 어우러지게
+                    fillRule: "evenodd",
                   },
                 }),
               },
@@ -873,8 +883,8 @@ const Map: React.FC = () => {
           <ul>
             {topRegistrants.map((registrant) => (
               <li key={registrant.registrantId}>
-                {registrant.medal} {registrant.registrantId} :{" "}
-                {registrant.count} {t("nodeCount")}
+                {registrant.medal} {registrant.userName} : {registrant.count}{" "}
+                {t("nodeCount")}
               </li>
             ))}
           </ul>
