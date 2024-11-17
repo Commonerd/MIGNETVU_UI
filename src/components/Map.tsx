@@ -193,7 +193,7 @@ const Map: React.FC = () => {
   useEffect(() => {
     setNetworks(data)
     console.log(data)
-  }, [])
+  }, [data])
 
   useEffect(() => {
     const markersLayer = L.layerGroup()
