@@ -700,7 +700,7 @@ const Map: React.FC = () => {
                     opacity: 0.85, // Slight transparency for a softer look
                     lineCap: "round", // Rounded end for the stroke
                     lineJoin: "round", // Smooth join for the arrows
-                    dashArray: "6,3", // Dash pattern for the line
+                    dashArray: "6,6", // Dash pattern for the line
                     dashOffset: "0", // No offset for dashes
                     fill: true, // Fill the arrow symbol
                     fillColor: "#27ae60", // Green fill color for the arrow: fresh look
@@ -1063,8 +1063,9 @@ const Map: React.FC = () => {
                     </strong>
                     <div className="text-gray-700 text-sm space-y-1">
                       <p>
-                        <span className="font-medium">Creator ID:</span>{" "}
-                        {network.user_id}
+                        <span className="font-medium">Creator Name:</span>{" "}
+                        {userNames[network.user_id]}{" "}
+                        {/* userNames 객체에서 유저 이름을 가져옵니다 */}
                       </p>
                       <p>
                         <span className="font-medium">Nationality:</span>{" "}

@@ -580,6 +580,7 @@ export const Network = () => {
               longitude={network.longitude}
               connections={network.connections}
               user_id={0}
+              user_name={network.user_name}
             />
           ))}
         </ul>

@@ -1,11 +1,13 @@
-import { FC, memo } from 'react'
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid'
-import useStore from '../store'
-import { Network } from '../types'
-import { useMutateNetwork } from '../hooks/useMutateNetwork'
+import { FC, memo } from "react"
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid"
+import useStore from "../store"
+import { Network } from "../types"
+import { useMutateNetwork } from "../hooks/useMutateNetwork"
 
-const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
+const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
   id,
+  user_id,
+  user_name,
   title,
   type,
   nationality,
@@ -23,6 +25,9 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
       <div className="flex justify-between items-center">
         <span className="font-bold text-base">
           No.{id} : {title}
+        </span>
+        <span className="font-bold text-xs flex justify-between items-center">
+          Creator Name : {user_name}
         </span>
         <div className="flex ml-4">
           <PencilIcon
@@ -43,7 +48,7 @@ const NetworkItemMemo: FC<Omit<Network, 'created_at' | 'updated_at'>> = ({
               // Scroll to the top
               window.scrollTo({
                 top: 0,
-                behavior: 'smooth',
+                behavior: "smooth",
               })
             }}
           />
