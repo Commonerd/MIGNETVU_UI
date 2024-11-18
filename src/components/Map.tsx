@@ -1046,73 +1046,86 @@ const Map: React.FC = () => {
           )
         })}
         {/* 지도에 표시될 네트워크 데이터 */}
-        {(filters.entityType === "all" || filters.entityType === "migrant") &&
-          filteredNetworks.map((network) => {
-            const size = getNodeSize(
-              centralityValues[network.id] || 0,
-              centralityType,
-            )
-            {
-              /* {networks &&
-          networks.length > 0 &&
-          networks.map((network) => {
-            const size = getNodeSize(
-              centralityValues[network.id] || 0,
-              centralityType,
-            ) */
-            }
-            const isHighlighted =
-              highlightedNode && highlightedNode.id === network.id
-            // highlightedNode.type === 'organization'
-            return (
-              <Marker
-                key={network.id}
-                position={[network.latitude, network.longitude]}
-                icon={L.divIcon({
-                  className: "custom-marker",
-                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? "yellow" : "red"
-                  }; border-radius: 50%;"></div>`,
-                  iconSize: [size, size],
-                })}
-              >
-                <Tooltip>
-                  <div className="p-4">
-                    <strong className="text-lg font-semibold block mb-2">
-                      No.{network.id} : {network.title}
-                    </strong>
-                    <div className="text-gray-700 text-sm space-y-1">
-                      <p>
-                        <span className="font-medium">Creator Name:</span>{" "}
-                        {userNames[network.user_id]}{" "}
-                        {/* userNames 객체에서 유저 이름을 가져옵니다 */}
-                      </p>
-                      <p>
-                        <span className="font-medium">Nationality:</span>{" "}
-                        {network.nationality}
-                      </p>
-                      <p>
-                        <span className="font-medium">Ethnicity:</span>{" "}
-                        {network.ethnicity}
-                      </p>
-                      <p>
-                        <span className="font-medium">Migration Year:</span>{" "}
-                        {network.migration_year}
-                      </p>
-                      <p>
-                        <span className="font-medium">Latitude:</span>{" "}
-                        {network.latitude.toFixed(5)}
-                      </p>
-                      <p>
-                        <span className="font-medium">Longitude:</span>{" "}
-                        {network.longitude.toFixed(5)}
-                      </p>
+        {(filters.entityType === "all" ||
+          filters.entityType === "migrant" ||
+          filters.entityType === "organization") &&
+          filteredNetworks
+            .filter((network) => {
+              // Filter based on entityType
+              if (filters.entityType === "migrant")
+                return network.type === "Migrant"
+              if (filters.entityType === "organization")
+                return network.type === "Organization"
+              return true // Show all for "all"
+            })
+            .map((network) => {
+              const size = getNodeSize(
+                centralityValues[network.id] || 0,
+                centralityType,
+              )
+
+              const isHighlighted =
+                highlightedNode && highlightedNode.id === network.id
+
+              // Determine color: Organization is blue, highlighted is yellow, default is red
+              let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
+
+              if (isHighlighted) {
+                // Highlighted nodes are yellow regardless of type
+                color = "yellow"
+              }
+
+              return (
+                <Marker
+                  key={network.id}
+                  position={[network.latitude, network.longitude]}
+                  icon={L.divIcon({
+                    className: "custom-marker",
+                    html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
+                    iconSize: [size, size],
+                  })}
+                >
+                  <Tooltip>
+                    <div className="p-4">
+                      <strong className="text-lg font-semibold block mb-2">
+                        No.{network.id} : {network.title}
+                      </strong>
+                      <div className="text-gray-700 text-sm space-y-1">
+                        <p>
+                          <span className="font-medium">Creator Name:</span>{" "}
+                          {userNames[network.user_id]}{" "}
+                          {/* userNames 객체에서 유저 이름을 가져옵니다 */}
+                        </p>
+                        <p>
+                          <span className="font-medium">Type:</span>{" "}
+                          {network.type}
+                        </p>
+                        <p>
+                          <span className="font-medium">Nationality:</span>{" "}
+                          {network.nationality}
+                        </p>
+                        <p>
+                          <span className="font-medium">Ethnicity:</span>{" "}
+                          {network.ethnicity}
+                        </p>
+                        <p>
+                          <span className="font-medium">Migration Year:</span>{" "}
+                          {network.migration_year}
+                        </p>
+                        <p>
+                          <span className="font-medium">Latitude:</span>{" "}
+                          {network.latitude.toFixed(5)}
+                        </p>
+                        <p>
+                          <span className="font-medium">Longitude:</span>{" "}
+                          {network.longitude.toFixed(5)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </Tooltip>
-              </Marker>
-            )
-          })}
+                  </Tooltip>
+                </Marker>
+              )
+            })}
         <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
       </MapContainer>
     </div>
