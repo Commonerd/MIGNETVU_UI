@@ -313,15 +313,27 @@ const Map: React.FC = () => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
-  const filteredMigrants = migrants.filter(
-    (migrant) =>
-      (filters.nationality === "all" ||
-        migrant.nationality === filters.nationality) &&
-      (filters.ethnicity === "all" ||
-        migrant.ethnicity === filters.ethnicity) &&
-      migrant.migrationYear >= filters.yearRange[0] &&
-      migrant.migrationYear <= filters.yearRange[1],
-  )
+  // const filteredMigrants = migrants.filter(
+  //   (migrant) =>
+  //     (filters.nationality === "all" ||
+  //       migrant.nationality === filters.nationality) &&
+  //     (filters.ethnicity === "all" ||
+  //       migrant.ethnicity === filters.ethnicity) &&
+  //     migrant.migrationYear >= filters.yearRange[0] &&
+  //     migrant.migrationYear <= filters.yearRange[1],
+  // )
+
+  const filteredNetworks = networks
+    ? networks.filter(
+        (network) =>
+          (filters.nationality === "all" ||
+            network.nationality === filters.nationality) &&
+          (filters.ethnicity === "all" ||
+            network.ethnicity === filters.ethnicity) &&
+          network.migration_year >= filters.yearRange[0] &&
+          network.migration_year <= filters.yearRange[1],
+      )
+    : []
 
   const filteredOrganizations = organizations.filter(
     (org) =>
@@ -899,7 +911,7 @@ const Map: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {(filters.entityType === "all" || filters.entityType === "migrant") &&
+        {/* {(filters.entityType === "all" || filters.entityType === "migrant") &&
           filteredMigrants.map((migrant) => {
             const size = getNodeSize(
               centralityValues[migrant.id] || 0,
@@ -956,7 +968,7 @@ const Map: React.FC = () => {
                 </Tooltip>
               </Marker>
             )
-          })}
+          })} */}
         {(filters.entityType === "all" ||
           filters.entityType === "organization") &&
           filteredOrganizations.map((org) => {
@@ -1034,13 +1046,21 @@ const Map: React.FC = () => {
           )
         })}
         {/* 지도에 표시될 네트워크 데이터 */}
-        {networks &&
+        {(filters.entityType === "all" || filters.entityType === "migrant") &&
+          filteredNetworks.map((network) => {
+            const size = getNodeSize(
+              centralityValues[network.id] || 0,
+              centralityType,
+            )
+            {
+              /* {networks &&
           networks.length > 0 &&
           networks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
               centralityType,
-            )
+            ) */
+            }
             const isHighlighted =
               highlightedNode && highlightedNode.id === network.id
             // highlightedNode.type === 'organization'
