@@ -130,6 +130,9 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
                         <th className="px-2 py-1 border font-semibold text-center">
                           Connection Type
                         </th>
+                        <th className="px-2 py-1 border font-semibold text-center">
+                          Year
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -145,6 +148,9 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
                         </td>
                         <td className="px-2 py-1 border text-center">
                           {connection.type}
+                        </td>
+                        <td className="px-2 py-1 border text-center">
+                          {connection.year}
                         </td>
                       </tr>
                     </tbody>

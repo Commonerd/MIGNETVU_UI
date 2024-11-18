@@ -22,6 +22,7 @@ export type Network = {
     targetType: string
     strength: number
     type: string
+    year: number
   }>
 }
 export type CsrfToken = {

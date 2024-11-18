@@ -1,4 +1,4 @@
-import { create } from 'zustand'
+import { create } from "zustand"
 
 type User = {
   email: string
@@ -16,6 +16,7 @@ type Connection = {
   targetType: string
   strength: number
   type: string
+  year: number
 }
 
 type EditedNetwork = {
@@ -43,32 +44,32 @@ type State = {
 }
 
 const useStore = create<State>((set) => ({
-  user: { email: '', isLoggedIn: false, name: '' },
+  user: { email: "", isLoggedIn: false, name: "" },
   setUser: (user) => {
     set({ user })
   },
-  editedTask: { id: 0, title: '' },
+  editedTask: { id: 0, title: "" },
   updateEditedTask: (payload) => {
     set({
       editedTask: payload,
     })
   },
   resetEditedTask: () => {
-    set({ editedTask: { id: 0, title: '' } })
+    set({ editedTask: { id: 0, title: "" } })
   },
   // network
   editedNetwork: {
     id: 0,
     user_id: 0,
-    title: '',
-    type: 'Migrant',
-    nationality: '',
-    ethnicity: '',
+    title: "",
+    type: "Migrant",
+    nationality: "",
+    ethnicity: "",
     migration_year: 0,
     latitude: 0,
     longitude: 0,
     connections: [
-      { targetType: 'Migrant', targetId: 0, strength: 0, type: '' },
+      { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
     ],
   },
   updateEditedNetwork: (payload) => {
@@ -81,15 +82,21 @@ const useStore = create<State>((set) => ({
       editedNetwork: {
         id: 0,
         user_id: 0,
-        title: '',
-        type: 'Migrant',
-        nationality: '',
-        ethnicity: '',
+        title: "",
+        type: "Migrant",
+        nationality: "",
+        ethnicity: "",
         migration_year: 0,
         latitude: 0,
         longitude: 0,
         connections: [
-          { targetType: 'Migrant', targetId: 0, strength: 0, type: '' },
+          {
+            targetType: "Migrant",
+            targetId: 0,
+            strength: 0,
+            type: "",
+            year: 0,
+          },
         ],
       },
     })

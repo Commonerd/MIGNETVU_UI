@@ -119,6 +119,7 @@ export const Network = () => {
                 targetType: conn.targetType,
                 strength: Number(conn.strength),
                 type: conn.type,
+                year: Number(conn.year),
               }))
             } else {
               throw new Error("Parsed connections data is not an array")
@@ -235,7 +236,7 @@ export const Network = () => {
       latitude: 0,
       longitude: 0,
       connections: [
-        { targetType: "Migrant", targetId: 0, strength: 0, type: "" },
+        { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
       ],
       user_id: 0,
     })
@@ -372,7 +373,6 @@ export const Network = () => {
             </div>
           </div>
           {/* Connections section */}
-          {/* Connections section */}
           <div>
             <label className="block text-gray-700 font-semibold text-sm mb-2">
               Connections
@@ -479,6 +479,30 @@ export const Network = () => {
                       />
                     </div>
 
+                    {/* Year */}
+                    <div className="flex-2">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Year
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={conn.year || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            connections: editedNetwork.connections?.map(
+                              (c, i) =>
+                                i === idx
+                                  ? { ...c, year: Number(e.target.value) }
+                                  : c,
+                            ),
+                          })
+                        }
+                        placeholder="1920"
+                      />
+                    </div>
+
                     {/* Delete Button */}
                     <button
                       type="button"
@@ -504,6 +528,7 @@ export const Network = () => {
                         targetType: "",
                         strength: 0,
                         type: "",
+                        year: 0,
                       },
                     ],
                   })

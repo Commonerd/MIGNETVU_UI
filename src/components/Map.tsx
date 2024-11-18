@@ -197,7 +197,6 @@ const Map: React.FC = () => {
   // Set Networks
   useEffect(() => {
     setNetworks(data)
-    console.log(data)
   }, [data])
 
   useEffect(() => {
@@ -288,6 +287,7 @@ const Map: React.FC = () => {
               getConnectionColor(connection.type),
               connection.strength,
               connection.type,
+              connection.year,
             ])
           }
         }
@@ -297,7 +297,6 @@ const Map: React.FC = () => {
     // Filter and add edges for Network entities based on filters
     networks?.forEach((network) => {
       const createdAt = new Date(network.created_at)
-
       if (
         (filters.entityType === "all" || filters.entityType === network.type) &&
         (filters.nationality === "all" ||
@@ -646,7 +645,13 @@ const Map: React.FC = () => {
         latitude: latLng.lat,
         longitude: latLng.lng,
         connections: [
-          { targetType: "Migrant", targetId: 0, strength: 0, type: "" },
+          {
+            targetType: "Migrant",
+            targetId: 0,
+            strength: 0,
+            type: "",
+            year: 0,
+          },
         ],
       })
 
@@ -675,6 +680,7 @@ const Map: React.FC = () => {
         const opacity = (edge[3] as number) * 0.16 + 0.2
         const connectionType = edge[4] as string
         const connectionStrength = edge[3] as number
+        const connectionYear = edge[5] as number
 
         // Leaflet Polyline 객체 생성
         const leafletPolyline = L.polyline(positions, {
@@ -684,7 +690,7 @@ const Map: React.FC = () => {
         }).addTo(map)
 
         // Tooltip 내용 정의
-        const tooltipContent = `<span>${t("connectionType")}: ${t(connectionType)}<br/>${t("connectionStrength")}: ${connectionStrength}</span>`
+        const tooltipContent = `<span>${t("connectionType")}: ${t(connectionType)}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t("connectionYear")}: ${connectionYear}</span>`
 
         // 마우스를 올렸을 때만 툴팁 표시
         leafletPolyline.bindTooltip(tooltipContent, {
@@ -1064,7 +1070,7 @@ const Map: React.FC = () => {
                 <span>
                   {`${t("connectionType")}: ${t(String(edge[4]))}`}
                   <br />
-                  {`${t("connectionStrength")}: ${edge[3]}`}{" "}
+                  {`${t("connectionStrength")}: ${edge[3]}`}
                 </span>
               </Tooltip>
             </Polyline>
