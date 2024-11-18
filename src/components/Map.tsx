@@ -60,17 +60,18 @@ L.Icon.Default.mergeOptions({
 
 // Legend Component
 const Legend = ({
-  topEntities,
+  topNetworks,
   onEntityClick,
   centralityType,
 }: {
-  topEntities: {
+  topNetworks: {
     id: number
     name: string
     centrality: number
-    type: "migrant" | "organization"
+    // type: "migrant" | "organization"
   }[]
-  onEntityClick: (id: number, type: "migrant" | "organization") => void
+  // onEntityClick: (id: number, type: "migrant" | "organization") => void
+  onEntityClick: (id: number) => void
   centralityType: string
 }) => {
   const map = useMap()
@@ -94,29 +95,30 @@ const Legend = ({
         `<div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
           "organization",
         )}`,
-        `<div style="display: inline-block; width: 15px; height: 5px; background-color: blue; margin-right: 5px;"></div> ${t(
-          "friend",
-        )}`,
-        `<div style="display: inline-block; width: 15px; height: 5px; background-color: green; margin-right: 5px;"></div> ${t(
-          "colleague",
-        )}`,
-        `<div style="display: inline-block; width: 15px; height: 5px; background-color: red; margin-right: 5px;"></div> ${t(
-          "family",
-        )}`,
-        `<div style="display: inline-block; width: 15px; height: 5px; background-color: purple; margin-right: 5px;"></div> ${t(
-          "professional",
-        )}`,
-        `<div style="display: inline-block; width: 15px; height: 5px; background-color: orange; margin-right: 5px;"></div> ${t(
-          "cultural",
-        )}`,
+        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: blue; margin-right: 5px;"></div> ${t(
+        //   "friend",
+        // )}`,
+        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: green; margin-right: 5px;"></div> ${t(
+        //   "colleague",
+        // )}`,
+        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: red; margin-right: 5px;"></div> ${t(
+        //   "family",
+        // )}`,
+        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: purple; margin-right: 5px;"></div> ${t(
+        //   "professional",
+        // )}`,
+        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: orange; margin-right: 5px;"></div> ${t(
+        //   "cultural",
+        // )}`,
       ]
 
       div.innerHTML = labels.join("<br>")
       if (centralityType !== "none") {
-        const topEntitiesHtml = topEntities
+        const topEntitiesHtml = topNetworks
           .map(
             (entity, index) =>
-              `<div style="cursor: pointer;" data-id="${entity.id}" data-type="${entity.type}">${index + 1}. ${
+              //`<div style="cursor: pointer;" data-id="${entity.id}" data-type="${entity.type}">${index + 1}. ${
+              `<div style="cursor: pointer;" data-id="${entity.id}">${index + 1}. ${
                 entity.name
               }: ${entity.centrality.toFixed(2)}</div>`,
           )
@@ -132,11 +134,14 @@ const Legend = ({
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
       const id = target.getAttribute("data-id")
-      const type = target.getAttribute("data-type") as
-        | "migrant"
-        | "organization"
-      if (id && type) {
-        onEntityClick(Number(id), type)
+      // const type = target.getAttribute("data-type") as
+      //   | "migrant"
+      //   | "organization"
+      // if (id && type) {
+      //   onEntityClick(Number(id), type)
+      // }
+      if (id) {
+        onEntityClick(Number(id))
       }
     }
 
@@ -146,14 +151,14 @@ const Legend = ({
       map.getContainer().removeEventListener("click", handleClick)
       legend.remove()
     }
-  }, [map, t, topEntities, centralityType, onEntityClick])
+  }, [map, t, topNetworks, centralityType, onEntityClick])
 
   return null
 }
 
 const Map: React.FC = () => {
   const { t } = useTranslation()
-  const [networks, setNetworks] = useState<Network[]>()
+  const [networks, setNetworks] = useState<Network[] | undefined>()
   const [migrants, setMigrants] = useState<Migrant[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [filters, setFilters] = useState<FilterOptions>({
@@ -166,7 +171,7 @@ const Map: React.FC = () => {
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
     id: number
-    type: EntityType
+    // type: EntityType
   } | null>(null)
   const [focusedNode, setFocusedNode] = useState<{
     lat: number
@@ -226,16 +231,19 @@ const Map: React.FC = () => {
   // }, [])
 
   // Example usage in handleEntityClick
-  const handleEntityClick = (id: number, type: "migrant" | "organization") => {
+  //const handleEntityClick = (id: number, type: "migrant" | "organization") => {
+  const handleEntityClick = (id: number) => {
     const entity = getEntityById(id)
     if (entity) {
       setFocusedNode({ lat: entity.latitude, lng: entity.longitude })
     }
     setHighlightedNode((prev) => {
-      if (prev && prev.id === id && prev.type === type) {
+      // if (prev && prev.id === id && prev.type === type) {
+      if (prev && prev.id === id) {
         return null
       }
-      return { id, type }
+      // return { id, type }
+      return { id }
     })
   }
 
@@ -375,7 +383,8 @@ const Map: React.FC = () => {
     const connectionsMap: { [id: number]: number[] } = {}
 
     // Build a connections map
-    ;[...migrants, ...organizations].forEach((entity) => {
+    //;[...migrants, ...organizations].forEach((entity) => {
+    ;[...(networks ?? [])].forEach((entity) => {
       connectionsMap[entity.id] = entity.connections.map(
         (connection) => connection.targetId,
       )
@@ -523,6 +532,19 @@ const Map: React.FC = () => {
   }
 
   const centralityValues = calculateCentrality()
+
+  const topNetworks = Object.entries(centralityValues)
+    .filter(([id]) => networks?.some((m) => m.id === Number(id)))
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
+    .map(([id, centrality]) => {
+      const network = networks?.find((m: { id: number }) => m.id === Number(id))
+      return {
+        id: Number(id),
+        name: String(network ? network.title : "Unknown"),
+        centrality,
+      }
+    })
 
   const topMigrants = Object.entries(centralityValues)
     .filter(([id]) => migrants.some((m) => m.id === Number(id)))
@@ -834,11 +856,11 @@ const Map: React.FC = () => {
               >
                 <option value="none">{t("selectCentrality")}</option>
                 <option value="degree">{t("degreeCentrality")}</option>
-                <option value="betweenness">{t("betweenessCentrality")}</option>
+                {/* <option value="betweenness">{t("betweenessCentrality")}</option>
                 <option value="closeness">{t("closenessCentrality")}</option>
                 <option value="eigenvector">
                   {t("eigenvectorCentrality")}
-                </option>
+                </option> */}
               </select>
             </>
           ) : (
@@ -901,12 +923,13 @@ const Map: React.FC = () => {
             ))}
           </ul>
         </LegendBox>
-        {/* <Legend
+        <Legend
           // topMigrants={topMigrants}
           // topOrganizations={topOrganizations}
+          topNetworks={topNetworks}
           onEntityClick={handleEntityClick}
           centralityType={centralityType}
-        /> */}
+        />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -1069,7 +1092,6 @@ const Map: React.FC = () => {
 
               // Determine color: Organization is blue, highlighted is yellow, default is red
               let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
-
               if (isHighlighted) {
                 // Highlighted nodes are yellow regardless of type
                 color = "yellow"
@@ -1099,6 +1121,9 @@ const Map: React.FC = () => {
                         <p>
                           <span className="font-medium">Type:</span>{" "}
                           {network.type}
+                        </p>
+                        <p>
+                          {t("centrality")}: {centralityValues[network.id] || 0}
                         </p>
                         <p>
                           <span className="font-medium">Nationality:</span>{" "}
