@@ -763,92 +763,94 @@ const Map: React.FC = () => {
 
   return (
     <div className="h-[calc(85vh-64px)] relative">
-      <div className="p-4 bg-white">
-        <div className="flex flex-wrap gap-1 md:gap-4 items-center">
-          <select
-            value={filters.entityType}
-            onChange={(e) => handleFilterChange("entityType", e.target.value)}
-            className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-          >
-            <option value="all">{t("allEntityTypes")}</option>
-            <option value="migrant">{t("migrant")}</option>
-            <option value="organization">{t("organization")}</option>
-          </select>
-          {filters.entityType !== "organization" && (
-            <>
+      {user.isLoggedIn ? (
+        <>
+          {" "}
+          <div className="p-4 bg-white">
+            <div className="flex flex-wrap gap-1 md:gap-4 items-center">
               <select
-                value={filters.nationality}
+                value={filters.entityType}
                 onChange={(e) =>
-                  handleFilterChange("nationality", e.target.value)
+                  handleFilterChange("entityType", e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
               >
-                <option value="all">{t("allNationalities")}</option>
-                {uniqueNationalities.map((nationality) => (
-                  <option key={nationality} value={nationality}>
-                    {nationality}
-                  </option>
-                ))}
+                <option value="all">{t("allEntityTypes")}</option>
+                <option value="migrant">{t("migrant")}</option>
+                <option value="organization">{t("organization")}</option>
               </select>
+              {filters.entityType !== "organization" && (
+                <>
+                  <select
+                    value={filters.nationality}
+                    onChange={(e) =>
+                      handleFilterChange("nationality", e.target.value)
+                    }
+                    className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+                  >
+                    <option value="all">{t("allNationalities")}</option>
+                    {uniqueNationalities.map((nationality) => (
+                      <option key={nationality} value={nationality}>
+                        {nationality}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    value={filters.ethnicity}
+                    onChange={(e) =>
+                      handleFilterChange("ethnicity", e.target.value)
+                    }
+                    className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
+                  >
+                    <option value="all">{t("allEthnicities")}</option>
+                    {uniqueEthnicities.map((ethnicity) => (
+                      <option key={ethnicity} value={ethnicity}>
+                        {ethnicity}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
               <select
-                value={filters.ethnicity}
+                value={filters.connectionType}
                 onChange={(e) =>
-                  handleFilterChange("ethnicity", e.target.value)
+                  handleFilterChange("connectionType", e.target.value)
                 }
                 className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
               >
-                <option value="all">{t("allEthnicities")}</option>
-                {uniqueEthnicities.map((ethnicity) => (
-                  <option key={ethnicity} value={ethnicity}>
-                    {ethnicity}
-                  </option>
-                ))}
+                <option value="all">{t("allConnectionTypes")}</option>
+                <option value="friend">{t("friend")}</option>
+                <option value="colleague">{t("colleague")}</option>
+                <option value="family">{t("family")}</option>
+                <option value="professional">{t("professional")}</option>
+                <option value="cultural">{t("cultural")}</option>
               </select>
-            </>
-          )}
-          <select
-            value={filters.connectionType}
-            onChange={(e) =>
-              handleFilterChange("connectionType", e.target.value)
-            }
-            className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-          >
-            <option value="all">{t("allConnectionTypes")}</option>
-            <option value="friend">{t("friend")}</option>
-            <option value="colleague">{t("colleague")}</option>
-            <option value="family">{t("family")}</option>
-            <option value="professional">{t("professional")}</option>
-            <option value="cultural">{t("cultural")}</option>
-          </select>
-          <div>
-            <label className="text-xs md:text-sm">{t("yearRange")}: </label>
-            <input
-              type="number"
-              value={filters.yearRange[0]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  parseInt(e.target.value),
-                  filters.yearRange[1],
-                ])
-              }
-              className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
-            />
-            <span className="text-xs md:text-sm"> - </span>
-            <input
-              type="number"
-              value={filters.yearRange[1]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  filters.yearRange[0],
-                  parseInt(e.target.value),
-                ])
-              }
-              className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
-            />
-          </div>
-          {user.isLoggedIn ? (
-            <>
-              {" "}
+              <div>
+                <label className="text-xs md:text-sm">{t("yearRange")}: </label>
+                <input
+                  type="number"
+                  value={filters.yearRange[0]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      parseInt(e.target.value),
+                      filters.yearRange[1],
+                    ])
+                  }
+                  className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+                />
+                <span className="text-xs md:text-sm"> - </span>
+                <input
+                  type="number"
+                  value={filters.yearRange[1]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      filters.yearRange[0],
+                      parseInt(e.target.value),
+                    ])
+                  }
+                  className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+                />
+              </div>
               <select
                 value={centralityType}
                 onChange={(e) => setCentralityType(e.target.value)}
@@ -862,12 +864,12 @@ const Map: React.FC = () => {
                   {t("eigenvectorCentrality")}
                 </option> */}
               </select>
-            </>
-          ) : (
-            <></>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
       <MapContainer
         center={[37.5665, 126.978]}
         zoom={2}
