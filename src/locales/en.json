@@ -64,5 +64,6 @@
   "welcome": ", welcome to MigNetVu!",
   "registrantId": "Registrant",
   "topRegistrants": "Node Registration Contributors Top3 ",
-  "nodeCount": "Nodes"
+  "nodeCount": "Nodes",
+  "topEntities": "Top 5 Centrality"
 }

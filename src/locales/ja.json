@@ -57,5 +57,6 @@
   "welcome": "様、MigNetVuへようこそ！",
   "registrantId": "登録者",
   "topRegistrants": "ノード登録貢献者TOP3",
-  "nodeCount": "ノード"
+  "nodeCount": "ノード",
+  "topEntities": "中心性トップ5"
 }

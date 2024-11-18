@@ -64,5 +64,6 @@
   "welcome": "님, 마이그넷뷰에 오신 것을 환영합니다!",
   "registrantId": "등록자",
   "topRegistrants": "노드 등록 기여자 Top3",
-  "nodeCount": "노드"
+  "nodeCount": "노드",
+  "topEntities": "상위 5위 중심성"
 }

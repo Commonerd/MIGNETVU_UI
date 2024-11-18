@@ -57,5 +57,6 @@
   "welcome": ", добро пожаловать в MagnetView!",
   "registrantId": "Регистрант",
   "topRegistrants": "Регистрация узла Вкладчики Top3",
-  "nodeCount": "Узлы"
+  "nodeCount": "Узлы",
+  "topEntities": "Топ-5 по центральности"
 }
