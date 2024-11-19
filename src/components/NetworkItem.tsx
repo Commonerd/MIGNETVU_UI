@@ -21,8 +21,8 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
   const { deleteNetworkMutation } = useMutateNetwork()
 
   return (
-    <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs">
-      <div className="flex justify-between items-center">
+    <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs w-full max-w-lg">
+      <div className="flex justify-between items-center w-full max-w-lg">
         <span className="font-bold text-base">
           No.{id} : {title}
         </span>
@@ -45,7 +45,6 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
                 connections: connections,
                 user_id: 0,
               })
-              // Scroll to the top
               window.scrollTo({
                 top: 0,
                 behavior: "smooth",
@@ -108,6 +107,7 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
             </tr>
           </tbody>
         </table>
+
         {/* Render the connections */}
         <div className="mt-4">
           <strong>Connections:</strong>
@@ -156,9 +156,8 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
                     </tbody>
                   </table>
 
-                  {/* Add a separator between connections */}
                   {index < connections.length - 1 && (
-                    <div className="border-t my-2"></div> // Divider between connections
+                    <div className="border-t my-2"></div>
                   )}
                 </div>
               ))}

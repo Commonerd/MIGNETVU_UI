@@ -251,7 +251,7 @@ export const Network = () => {
         </span>
       </div>
 
-      <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
+      <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-semibold text-sm">
@@ -409,7 +409,7 @@ export const Network = () => {
                     {/* Target Type */}
                     <div className="flex-1">
                       <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Target Type
+                        Type
                       </label>
                       <select
                         className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
@@ -426,13 +426,17 @@ export const Network = () => {
                           })
                         }
                       >
-                        <option value="Migrant">Migrant</option>
-                        <option value="Organization">Organization</option>
+                        <option value="Migrant" className="text-sm">
+                          Migrant
+                        </option>
+                        <option value="Organization" className="text-sm">
+                          Organization
+                        </option>
                       </select>
                     </div>
 
                     {/* Strength */}
-                    <div className="flex-2">
+                    <div className="flex-1">
                       <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Strength
                       </label>
@@ -480,7 +484,7 @@ export const Network = () => {
                     </div>
 
                     {/* Year */}
-                    <div className="flex-2">
+                    <div className="flex-1">
                       <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
                         Year
                       </label>
@@ -591,7 +595,7 @@ export const Network = () => {
       {isLoading ? (
         <p>Loading...</p>
       ) : (
-        <ul className="my-0 w-full max-w-md">
+        <ul className="my-2 w-full max-w-lg">
           {data?.map((network) => (
             <NetworkItem
               key={network.id}
