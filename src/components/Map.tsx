@@ -39,7 +39,7 @@ const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
   useEffect(() => {
     if (lat && lng) {
-      map.setView([lat, lng], 4, {
+      map.setView([lat, lng], 8, {
         animate: true,
       })
     }
