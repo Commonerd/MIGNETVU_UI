@@ -40,7 +40,9 @@ export const Auth = () => {
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!csrfLoaded) {
-      alert("CSRF token not yet loaded! Please wait Just 10 seconds!")
+      alert(
+        "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
+      )
       return
     }
     if (isLogin) {
