@@ -194,8 +194,13 @@ const Map: React.FC = () => {
     getCsrfToken()
   }, [])
 
-  // Set Networks
   useEffect(() => {
+    if (!data) {
+      console.error("No data available!")
+      return
+    }
+
+    console.log("Setting networks:", data)
     setNetworks(data)
   }, [data])
 
@@ -275,9 +280,13 @@ const Map: React.FC = () => {
     const addEdges = (network: Network) => {
       network.connections.forEach((connection) => {
         if (
-          filters.connectionType === "all" ||
-          connection.type === filters.connectionType
+          (filters.connectionType === "all" ||
+            connection.type === filters.connectionType) &&
+          Number(connection.year) >= Number(filters.yearRange[0]) &&
+          Number(connection.year) <= Number(filters.yearRange[1])
         ) {
+          console.log(`Matched connection: ${JSON.stringify(connection)}`)
+
           const target = networks?.find((n) => n.id === connection.targetId)
 
           if (target) {
@@ -296,15 +305,16 @@ const Map: React.FC = () => {
 
     // Filter and add edges for Network entities based on filters
     networks?.forEach((network) => {
-      const createdAt = new Date(network.created_at)
+      const migration_year = new Date(network.migration_year)
+
       if (
         (filters.entityType === "all" || filters.entityType === network.type) &&
         (filters.nationality === "all" ||
           network.nationality === filters.nationality) &&
         (filters.ethnicity === "all" ||
           network.ethnicity === filters.ethnicity) &&
-        createdAt.getFullYear() >= filters.yearRange[0] &&
-        createdAt.getFullYear() <= filters.yearRange[1]
+        migration_year.getFullYear() >= filters.yearRange[0] &&
+        migration_year.getFullYear() <= filters.yearRange[1]
       ) {
         addEdges(network)
       }
@@ -313,11 +323,18 @@ const Map: React.FC = () => {
     return edges
   }
 
+  useEffect(() => {
+    const edges = getEdges()
+  }, [filters, networks])
+
   const handleFilterChange = (
     key: keyof FilterOptions,
     value: string | number[],
   ) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
+    setFilters((prev) => {
+      const updatedFilters = { ...prev, [key]: value }
+      return updatedFilters
+    })
   }
 
   // const filteredMigrants = migrants.filter(
@@ -670,10 +687,24 @@ const Map: React.FC = () => {
   const CustomMapComponent = () => {
     const map = useMap()
     const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
+    const [layerGroup, setLayerGroup] = useState<L.LayerGroup | null>(null)
+    const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null) // edgeLayer 상태 추가
 
     useEffect(() => {
-      const edges = getEdges() // 각 엣지의 정보를 가져오는 함수
+      // 기존 레이어 제거
+      if (edgeLayer) {
+        edgeLayer.clearLayers()
+        edgeLayer.remove() // 기존 레이어 제거
+      }
 
+      // 새 레이어 그룹 생성
+      const newLayerGroup = L.layerGroup().addTo(map)
+      setLayerGroup(newLayerGroup)
+
+      const newEdgeLayer = L.layerGroup().addTo(map) // edgeLayer 생성
+      setEdgeLayer(newEdgeLayer)
+
+      const edges = getEdges() // 각 엣지의 정보를 가져오는 함수
       edges.forEach((edge) => {
         const positions = edge.slice(0, 2) as LatLngExpression[]
         const color = edge[2] as string
@@ -687,10 +718,14 @@ const Map: React.FC = () => {
           color: color,
           weight: 2,
           opacity: opacity,
-        }).addTo(map)
+        }).addTo(newEdgeLayer) // edgeLayer에 추가
 
         // Tooltip 내용 정의
-        const tooltipContent = `<span>${t("connectionType")}: ${t(connectionType)}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t("connectionYear")}: ${connectionYear}</span>`
+        const tooltipContent = `<span>${t("connectionType")}: ${t(
+          connectionType,
+        )}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t(
+          "connectionYear",
+        )}: ${connectionYear}</span>`
 
         // 마우스를 올렸을 때만 툴팁 표시
         leafletPolyline.bindTooltip(tooltipContent, {
@@ -730,21 +765,21 @@ const Map: React.FC = () => {
                 offset: 0, // Start the arrow at the end of the polyline
                 repeat: 200, // Set a large repeat value to space out arrows
                 symbol: L.Symbol.arrowHead({
-                  pixelSize: 15, // Increase the arrow size for prominence
+                  pixelSize: 15,
                   polygon: false,
                   headAngle: 45,
                   pathOptions: {
-                    stroke: false, // Draw the outline of the arrow
-                    color: "#7f8c8d", // Arrow stroke color: bright blue
-                    weight: 2, // Line thickness: moderate for balance
-                    opacity: 0.85, // Slight transparency for a softer look
-                    lineCap: "round", // Rounded end for the stroke
-                    lineJoin: "round", // Smooth join for the arrows
-                    dashArray: "6,6", // Dash pattern for the line
-                    dashOffset: "0", // No offset for dashes
-                    fill: true, // Fill the arrow symbol
-                    fillColor: "#27ae60", // Green fill color for the arrow: fresh look
-                    fillOpacity: 0.8, // Slight transparency for the fill
+                    stroke: false,
+                    color: "#7f8c8d",
+                    weight: 2,
+                    opacity: 0.85,
+                    lineCap: "round",
+                    lineJoin: "round",
+                    dashArray: "6,6",
+                    dashOffset: "0",
+                    fill: true,
+                    fillColor: "#27ae60",
+                    fillOpacity: 0.8,
                     fillRule: "evenodd",
                   },
                 }),
@@ -752,17 +787,23 @@ const Map: React.FC = () => {
             ],
           })
 
-          decorator.addTo(map)
-
-          return () => {
-            map.removeLayer(leafletPolyline)
-            map.removeLayer(decorator)
-          }
+          decorator.addTo(newEdgeLayer) // edgeLayer에 추가
         } else {
           console.error("L.Symbol.arrowHead is not defined")
         }
       })
-    }, [map, activeTooltip])
+
+      return () => {
+        // 컴포넌트가 언마운트될 때 레이어 정리
+        if (newLayerGroup) {
+          map.removeLayer(newLayerGroup)
+        }
+        if (newEdgeLayer) {
+          newEdgeLayer.clearLayers()
+          newEdgeLayer.remove() // edgeLayer를 명시적으로 정리
+        }
+      }
+    }, [map, activeTooltip, filters, edgeLayer]) // edgeLayer 추가 의존성
 
     return null
   }
@@ -1000,7 +1041,7 @@ const Map: React.FC = () => {
               </Marker>
             )
           })} */}
-        {(filters.entityType === "all" ||
+        {/* {(filters.entityType === "all" ||
           filters.entityType === "organization") &&
           filteredOrganizations.map((org) => {
             const size = getNodeSize(
@@ -1075,7 +1116,7 @@ const Map: React.FC = () => {
               </Tooltip>
             </Polyline>
           )
-        })}
+        })} */}
         {/* 지도에 표시될 네트워크 데이터 */}
         {(filters.entityType === "all" ||
           filters.entityType === "migrant" ||
