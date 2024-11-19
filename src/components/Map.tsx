@@ -183,16 +183,16 @@ const Map: React.FC = () => {
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
 
-  useEffect(() => {
-    axios.defaults.withCredentials = true
-    const getCsrfToken = async () => {
-      const { data } = await axios.get<CsrfToken>(
-        `${process.env.REACT_APP_API_URL}/csrf`,
-      )
-      axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-    }
-    getCsrfToken()
-  }, [])
+  // useEffect(() => {
+  //   axios.defaults.withCredentials = true
+  //   const getCsrfToken = async () => {
+  //     const { data } = await axios.get<CsrfToken>(
+  //       `${process.env.REACT_APP_API_URL}/csrf`,
+  //     )
+  //     axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+  //   }
+  //   getCsrfToken()
+  // }, [])
 
   useEffect(() => {
     if (!data) {
