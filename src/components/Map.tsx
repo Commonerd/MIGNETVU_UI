@@ -323,9 +323,9 @@ const Map: React.FC = () => {
     return edges
   }
 
-  useEffect(() => {
-    const edges = getEdges()
-  }, [filters, networks])
+  // useEffect(() => {
+  //   const edges = getEdges()
+  // }, [filters, networks])
 
   const handleFilterChange = (
     key: keyof FilterOptions,
@@ -803,7 +803,7 @@ const Map: React.FC = () => {
           newEdgeLayer.remove() // edgeLayer를 명시적으로 정리
         }
       }
-    }, [map, activeTooltip, filters, edgeLayer]) // edgeLayer 추가 의존성
+    }, [map, activeTooltip, filters]) // edgeLayer 추가 의존성
 
     return null
   }
