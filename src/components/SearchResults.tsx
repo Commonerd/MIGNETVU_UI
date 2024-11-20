@@ -1,6 +1,7 @@
 import { FC, useState, useEffect } from "react"
 import { useQuerySearchNetworks } from "../hooks/useQueryNetworks"
 import { NetworkItem } from "./NetworkItem"
+import { useQueryClient } from "@tanstack/react-query"
 
 interface SearchResultsProps {
   searchQuery: string
@@ -13,16 +14,16 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
     searchQuery,
     currentPage,
   )
+  const queryClient = useQueryClient() // React Query Client 접근
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
   }
-
-  useEffect(() => {
-    if (data) {
-      console.log(data) // data 구조 확인용
-    }
-  }, [data])
+  const handleClearCache = () => {
+    // 특정 쿼리 키 캐시 삭제
+    queryClient.invalidateQueries({ queryKey: ["searchNetworks"] })
+    alert("Cache has been cleared!") // 영어 메시지
+  }
 
   if (isLoading) {
     return <p>Loading...</p>
@@ -36,6 +37,15 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
 
   return (
     <div className="my-4 w-full max-w-lg">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Search Results</h2>
+        <button
+          onClick={handleClearCache}
+          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+        >
+          Clear Cache
+        </button>
+      </div>{" "}
       {!data || !data.networks || data.networks.length === 0 ? (
         <p className="text-center">No search results found.</p>
       ) : (
