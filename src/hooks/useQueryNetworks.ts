@@ -1,7 +1,7 @@
-import axios from 'axios'
-import { useQuery } from '@tanstack/react-query'
-import { Network } from '../types'
-import { useError } from './useError'
+import axios from "axios"
+import { useQuery } from "@tanstack/react-query"
+import { Network } from "../types"
+import { useError } from "./useError"
 
 export const useQueryNetworks = () => {
   const { switchErrorHandling } = useError()
@@ -13,7 +13,7 @@ export const useQueryNetworks = () => {
     return data
   }
   return useQuery<Network[], Error>({
-    queryKey: ['networks'],
+    queryKey: ["networks"],
     queryFn: getNetworks,
     staleTime: Infinity,
     onError: (err: any) => {
@@ -37,11 +37,42 @@ export const useQueryAllNetworksOnMap = () => {
   }
 
   return useQuery<Network[], Error>({
-    queryKey: ['networks'],
+    queryKey: ["networks"],
     queryFn: getAllNetworksOnMap,
     staleTime: Infinity,
     onError: (err: any) => {
       if (err.response.data.message) {
+        switchErrorHandling(err.response.data.message)
+      } else {
+        switchErrorHandling(err.response.data)
+      }
+    },
+  })
+}
+
+export const useQuerySearchNetworks = (searchQuery: string, page: number) => {
+  const { switchErrorHandling } = useError()
+
+  const getSearchNetworks = async () => {
+    const { data } = await axios.get<{
+      networks: Network[]
+      totalPages: number
+    }>(
+      `${process.env.REACT_APP_API_URL}/networks/search`, // 수정된 URL
+      {
+        params: { searchQuery, page }, // 검색어와 페이지 번호를 쿼리 파라미터로 전달
+        withCredentials: true,
+      },
+    )
+    return data
+  }
+
+  return useQuery<{ networks: Network[]; totalPages: number }, Error>({
+    queryKey: ["searchNetworks", searchQuery, page],
+    queryFn: getSearchNetworks,
+    staleTime: Infinity,
+    onError: (err: any) => {
+      if (err.response?.data?.message) {
         switchErrorHandling(err.response.data.message)
       } else {
         switchErrorHandling(err.response.data)

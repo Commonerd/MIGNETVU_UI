@@ -1,4 +1,4 @@
-import { FormEvent, useRef } from "react"
+import { FormEvent, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   ArrowRightOnRectangleIcon,
@@ -9,12 +9,15 @@ import { useQueryNetworks } from "../hooks/useQueryNetworks"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { NetworkItem } from "./NetworkItem"
+import SearchResults from "./SearchResults"
 
 export const Network = () => {
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { data, isLoading } = useQueryNetworks()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
+  const [searchQuery, setSearchQuery] = useState("")
+  const [triggerSearch, setTriggerSearch] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -240,6 +243,16 @@ export const Network = () => {
       ],
       user_id: 0,
     })
+  }
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+  }
+
+  const handleSearchClick = () => {
+    if (searchQuery.trim() !== "") {
+      setTriggerSearch(true)
+    }
   }
 
   return (
@@ -592,7 +605,29 @@ export const Network = () => {
         </button>
       </div>
 
-      {isLoading ? (
+      {/* Search Bar */}
+      <div className="flex justify-center my-4">
+        <input
+          type="text"
+          placeholder="Search Networks"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          className="px-4 py-2 border rounded w-full max-w-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        />
+        <button
+          onClick={handleSearchClick}
+          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+        >
+          Search
+        </button>
+      </div>
+
+      {/* Render the SearchResults with pagination only after the search button is clicked */}
+      {triggerSearch && searchQuery && (
+        <SearchResults searchQuery={searchQuery} />
+      )}
+
+      {/* {isLoading ? (
         <p>Loading...</p>
       ) : (
         <ul className="my-2 w-full max-w-lg">
@@ -613,7 +648,7 @@ export const Network = () => {
             />
           ))}
         </ul>
-      )}
+      )} */}
     </div>
   )
 }
