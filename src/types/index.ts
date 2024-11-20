@@ -4,6 +4,16 @@ export type Task = {
   created_at: Date
   updated_at: Date
 }
+
+type MigrationTrace = {
+  id: number
+  network_id: number
+  latitude: number
+  longitude: number
+  migration_year: number
+  location_name: string
+}
+
 export type Network = {
   id: number
   user_id: number
@@ -24,7 +34,9 @@ export type Network = {
     type: string
     year: number
   }>
+  migration_traces: MigrationTrace[]
 }
+
 export type CsrfToken = {
   csrf_token: string
 }

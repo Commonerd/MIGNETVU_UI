@@ -182,6 +182,10 @@ const Map: React.FC = () => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
+  const [yearRange, setYearRange] = useState<[number, number]>([
+    1800,
+    new Date().getFullYear(),
+  ]) // Year for migration trace
 
   // useEffect(() => {
   //   axios.defaults.withCredentials = true
@@ -233,6 +237,98 @@ const Map: React.FC = () => {
   //   setMigrants(mockMigrants)
   //   setOrganizations(mockOrganizations)
   // }, [])
+
+  // 필터링된 경로
+  const filteredTraces =
+    networks?.flatMap((network) =>
+      network.migration_traces.filter(
+        (trace) =>
+          trace.migration_year >= yearRange[0] &&
+          trace.migration_year <= yearRange[1],
+      ),
+    ) ?? [] // Fallback to an empty array if undefined
+
+  const positions = filteredTraces.map(
+    (trace: { latitude: any; longitude: any }) => [
+      trace.latitude,
+      trace.longitude,
+    ],
+  )
+
+  // 시각화: 이주 시점마다 색깔을 다르게 표시
+  const getColorByYear = (year: number): string => {
+    // 연도에 따라 색상 지정
+    if (year < 1900) return "red"
+    if (year < 1950) return "orange"
+    if (year < 2000) return "green"
+    return "blue"
+  }
+
+  const migrationTraces =
+    networks?.map((network) => network.migration_traces) ?? []
+
+  // // 구간별 폴리라인 생성
+  // const segments = migrationTraces
+  //   .map(
+  //     (
+  //       trace: { latitude: any; longitude: any; migration_year: number },
+  //       index: number,
+  //     ) => {
+  //       if (index === migrationTraces.length - 1) return null
+  //       const nextTrace = migrationTraces[index + 1]
+  //       return {
+  //         positions: [
+  //           [trace.latitude, trace.longitude],
+  //           [nextTrace.latitude, nextTrace.longitude],
+  //         ],
+  //         color: getColorByYear(trace.migration_year),
+  //       }
+  //     },
+  //   )
+  //   .filter(Boolean)
+
+  // 분석 기능: 이동 거리 계산
+  const haversine = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number => {
+    const R = 6371 // 지구 반지름 (km)
+    const toRad = (value: number) => (value * Math.PI) / 180
+
+    const dLat = toRad(lat2 - lat1)
+    const dLon = toRad(lon2 - lon1)
+
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+
+    return R * c // 거리 (km)
+  }
+
+  const totalDistance = filteredTraces.reduce(
+    (
+      distance: number,
+      trace: { latitude: number; longitude: number },
+      index: number,
+    ) => {
+      if (index === 0) return 0
+      const prev = filteredTraces[index - 1]
+      return (
+        distance +
+        haversine(
+          prev.latitude,
+          prev.longitude,
+          trace.latitude,
+          trace.longitude,
+        )
+      )
+    },
+    0,
+  )
 
   // Example usage in handleEntityClick
   //const handleEntityClick = (id: number, type: "migrant" | "organization") => {
@@ -911,6 +1007,26 @@ const Map: React.FC = () => {
                   {t("eigenvectorCentrality")}
                 </option> */}
               </select>
+              <label className="text-xs md:text-sm">
+                {t("migrationTraceability")}
+              </label>
+              <input
+                type="number"
+                value={yearRange[0]}
+                onChange={(e) =>
+                  setYearRange([Number(e.target.value), yearRange[1]])
+                }
+                className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+              />
+              <span className="text-xs md:text-sm"> - </span>
+              <input
+                type="number"
+                value={yearRange[1]}
+                onChange={(e) =>
+                  setYearRange([yearRange[0], Number(e.target.value)])
+                }
+                className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+              />
             </div>
           </div>
         </>
@@ -1201,6 +1317,85 @@ const Map: React.FC = () => {
               )
             })}
         <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
+        {filteredTraces.map(
+          (trace: {
+            id: React.Key | null | undefined
+            network_id: number
+            latitude: number
+            longitude: number
+            location_name:
+              | string
+              | number
+              | boolean
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | React.ReactPortal
+              | null
+              | undefined
+            migration_year:
+              | string
+              | number
+              | boolean
+              | React.ReactElement<
+                  any,
+                  string | React.JSXElementConstructor<any>
+                >
+              | Iterable<React.ReactNode>
+              | React.ReactPortal
+              | null
+              | undefined
+          }) => (
+            <Marker key={trace.id} position={[trace.latitude, trace.longitude]}>
+              <Popup>
+                <div
+                  style={{
+                    fontSize: "18px",
+                    lineHeight: "1.6",
+                    margin: "0",
+                    padding: "0",
+                  }}
+                >
+                  <div style={{ marginBottom: "8px" }}>
+                    <strong>Network ID:</strong> {trace.network_id}
+                  </div>
+                  <div style={{ marginBottom: "8px" }}>
+                    <strong>Place:</strong> {trace.location_name}
+                  </div>
+                  <div>
+                    <strong>Migration Year:</strong> {trace.migration_year}
+                  </div>
+                </div>
+              </Popup>
+            </Marker>
+          ),
+        )}
+        <Polyline
+          positions={positions}
+          color="#42A5F5" // 부드럽고 눈에 띄는 파란색
+          weight={5}
+          opacity={0.7}
+          dashArray="5, 10" // 점선 효과 (선택사항)
+          lineCap="round" // 선 끝을 둥글게 처리
+          lineJoin="round" // 선이 만나는 지점도 둥글게 처리
+        />
+        {/* {segments.map(
+          (
+            segment: {
+              positions: L.LatLngExpression[] | L.LatLngExpression[][]
+              color: string | undefined
+            },
+            index: React.Key | null | undefined,
+          ) => (
+            <Polyline
+              key={index}
+              positions={segment.positions}
+              color={segment.color}
+            />
+          ),
+        )} */}
       </MapContainer>
     </div>
   )

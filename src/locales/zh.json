@@ -58,5 +58,6 @@
   "registrantId": "注册人",
   "topRegistrants": "前3名注册节点贡献者",
   "nodeCount": "网站",
-  "topEntities": "中心性前五名"
+  "topEntities": "中心性前五名",
+  "migrationTraceability": "迁徙追踪"
 }
