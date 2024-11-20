@@ -1374,12 +1374,12 @@ const Map: React.FC = () => {
         )}
         <Polyline
           positions={positions}
-          color="#42A5F5" // 부드럽고 눈에 띄는 파란색
+          color="#42A5F5"
           weight={5}
           opacity={0.7}
-          dashArray="5, 10" // 점선 효과 (선택사항)
-          lineCap="round" // 선 끝을 둥글게 처리
-          lineJoin="round" // 선이 만나는 지점도 둥글게 처리
+          dashArray="5, 10"
+          lineCap="round"
+          lineJoin="round"
         />
         {/* {segments.map(
           (
