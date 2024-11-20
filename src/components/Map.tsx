@@ -1405,7 +1405,7 @@ const LegendBox = styled.div`
   position: relative;
   top: 0.5rem;
   left: 2rem;
-  width: 10rem; /* 가로 길이 설정 */
+  width: 10rem;
   background-color: rgba(255, 255, 255, 0.7);
   padding: 10px;
   border: 1px solid #ccc;
