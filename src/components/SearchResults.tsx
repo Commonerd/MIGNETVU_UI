@@ -46,15 +46,6 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
           Clear Cache
         </button>
       </div>{" "}
-      {!data || !data.networks || data.networks.length === 0 ? (
-        <p className="text-center">No search results found.</p>
-      ) : (
-        <ul className="space-y-4">
-          {data?.networks.map((network) => (
-            <NetworkItem key={network.id} {...network} />
-          ))}
-        </ul>
-      )}
       {/* Pagination Controls */}
       <div className="flex justify-center mt-4">
         <button
@@ -75,6 +66,15 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
           Next
         </button>
       </div>
+      {!data || !data.networks || data.networks.length === 0 ? (
+        <p className="text-center">No search results found.</p>
+      ) : (
+        <ul className="space-y-4">
+          {data?.networks.map((network) => (
+            <NetworkItem key={network.id} {...network} />
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

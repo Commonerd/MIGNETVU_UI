@@ -33,6 +33,7 @@ import {
 import { useError } from "../hooks/useError"
 import axios from "axios"
 import ClipboardJS from "clipboard"
+import SearchResults from "./SearchResults"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -186,6 +187,8 @@ const Map: React.FC = () => {
     1800,
     new Date().getFullYear(),
   ]) // Year for migration trace
+  const [searchQuery, setSearchQuery] = useState("")
+  const [triggerSearch, setTriggerSearch] = useState(false)
 
   // useEffect(() => {
   //   axios.defaults.withCredentials = true
@@ -780,6 +783,16 @@ const Map: React.FC = () => {
     }
   }
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value)
+  }
+
+  const handleSearchClick = () => {
+    if (searchQuery.trim() !== "") {
+      setTriggerSearch(true)
+    }
+  }
+
   const CustomMapComponent = () => {
     const map = useMap()
     const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
@@ -908,68 +921,72 @@ const Map: React.FC = () => {
     <div className="h-[calc(85vh-64px)] relative">
       {user.isLoggedIn ? (
         <>
-          {" "}
-          <div className="p-4 bg-white">
-            <div className="flex flex-wrap gap-1 md:gap-4 items-center">
-              <select
-                value={filters.entityType}
-                onChange={(e) =>
-                  handleFilterChange("entityType", e.target.value)
-                }
-                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-              >
-                <option value="all">{t("allEntityTypes")}</option>
-                <option value="migrant">{t("migrant")}</option>
-                <option value="organization">{t("organization")}</option>
-              </select>
-              {filters.entityType !== "organization" && (
-                <>
-                  <select
-                    value={filters.nationality}
-                    onChange={(e) =>
-                      handleFilterChange("nationality", e.target.value)
-                    }
-                    className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-                  >
-                    <option value="all">{t("allNationalities")}</option>
-                    {uniqueNationalities.map((nationality) => (
-                      <option key={nationality} value={nationality}>
-                        {nationality}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    value={filters.ethnicity}
-                    onChange={(e) =>
-                      handleFilterChange("ethnicity", e.target.value)
-                    }
-                    className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-                  >
-                    <option value="all">{t("allEthnicities")}</option>
-                    {uniqueEthnicities.map((ethnicity) => (
-                      <option key={ethnicity} value={ethnicity}>
-                        {ethnicity}
-                      </option>
-                    ))}
-                  </select>
-                </>
-              )}
-              <select
-                value={filters.connectionType}
-                onChange={(e) =>
-                  handleFilterChange("connectionType", e.target.value)
-                }
-                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-              >
-                <option value="all">{t("allConnectionTypes")}</option>
-                <option value="friend">{t("friend")}</option>
-                <option value="colleague">{t("colleague")}</option>
-                <option value="family">{t("family")}</option>
-                <option value="professional">{t("professional")}</option>
-                <option value="cultural">{t("cultural")}</option>
-              </select>
-              <div>
-                <label className="text-xs md:text-sm">{t("yearRange")}: </label>
+          <div className="p-2 bg-gray-50">
+            <div className="flex flex-wrap gap-3">
+              {/* Entity Filters */}
+              <div className="p-2 border rounded bg-gray-50 flex flex-wrap gap-2 items-center">
+                <select
+                  value={filters.entityType}
+                  onChange={(e) =>
+                    handleFilterChange("entityType", e.target.value)
+                  }
+                  className="p-1 border rounded text-sm w-30 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="all">{t("allEntityTypes")}</option>
+                  <option value="migrant">{t("migrant")}</option>
+                  <option value="organization">{t("organization")}</option>
+                </select>
+                {filters.entityType !== "organization" && (
+                  <>
+                    <select
+                      value={filters.nationality}
+                      onChange={(e) =>
+                        handleFilterChange("nationality", e.target.value)
+                      }
+                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="all">{t("allNationalities")}</option>
+                      {uniqueNationalities.map((nationality) => (
+                        <option key={nationality} value={nationality}>
+                          {nationality}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={filters.ethnicity}
+                      onChange={(e) =>
+                        handleFilterChange("ethnicity", e.target.value)
+                      }
+                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="all">{t("allEthnicities")}</option>
+                      {uniqueEthnicities.map((ethnicity) => (
+                        <option key={ethnicity} value={ethnicity}>
+                          {ethnicity}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+                <select
+                  value={filters.connectionType}
+                  onChange={(e) =>
+                    handleFilterChange("connectionType", e.target.value)
+                  }
+                  className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="all">{t("allConnectionTypes")}</option>
+                  <option value="friend">{t("friend")}</option>
+                  <option value="colleague">{t("colleague")}</option>
+                  <option value="family">{t("family")}</option>
+                  <option value="professional">{t("professional")}</option>
+                  <option value="cultural">{t("cultural")}</option>
+                </select>
+              </div>
+
+              {/* Year Range */}
+              <div className="p-2 border rounded bg-gray-50 flex gap-2 items-center">
+                <label className="text-sm">{t("yearRange")}</label>
                 <input
                   type="number"
                   value={filters.yearRange[0]}
@@ -979,9 +996,9 @@ const Map: React.FC = () => {
                       filters.yearRange[1],
                     ])
                   }
-                  className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <span className="text-xs md:text-sm"> - </span>
+                <span className="text-sm">-</span>
                 <input
                   type="number"
                   value={filters.yearRange[1]}
@@ -991,43 +1008,81 @@ const Map: React.FC = () => {
                       parseInt(e.target.value),
                     ])
                   }
-                  className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
-              <select
-                value={centralityType}
-                onChange={(e) => setCentralityType(e.target.value)}
-                className="p-1 md:p-2 border rounded text-xs md:text-sm w-28 md:w-32 h-8 md:h-10"
-              >
-                <option value="none">{t("selectCentrality")}</option>
-                <option value="degree">{t("degreeCentrality")}</option>
-                {/* <option value="betweenness">{t("betweenessCentrality")}</option>
-                <option value="closeness">{t("closenessCentrality")}</option>
-                <option value="eigenvector">
-                  {t("eigenvectorCentrality")}
-                </option> */}
-              </select>
-              <label className="text-xs md:text-sm">
-                {t("migrationTraceability")}
-              </label>
-              <input
-                type="number"
-                value={yearRange[0]}
-                onChange={(e) =>
-                  setYearRange([Number(e.target.value), yearRange[1]])
-                }
-                className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
-              />
-              <span className="text-xs md:text-sm"> - </span>
-              <input
-                type="number"
-                value={yearRange[1]}
-                onChange={(e) =>
-                  setYearRange([yearRange[0], Number(e.target.value)])
-                }
-                className="w-12 md:w-20 p-1 md:p-2 border rounded text-xs md:text-sm"
-              />
+
+              {/* Centrality */}
+              <div className="p-2 border rounded bg-gray-50 flex items-center">
+                <select
+                  value={centralityType}
+                  onChange={(e) => setCentralityType(e.target.value)}
+                  className="p-1 border rounded text-sm w-32 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="none">{t("selectCentrality")}</option>
+                  <option value="degree">{t("degreeCentrality")}</option>
+                </select>
+              </div>
+
+              {/* Migration Traceability */}
+              <div className="p-2 border rounded bg-gray-50 flex gap-2 items-center">
+                <label className="text-sm">{t("migrationTraceability")}</label>
+                <input
+                  type="number"
+                  value={yearRange[0]}
+                  onChange={(e) =>
+                    setYearRange([Number(e.target.value), yearRange[1]])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <span className="text-sm">-</span>
+                <input
+                  type="number"
+                  value={yearRange[1]}
+                  onChange={(e) =>
+                    setYearRange([yearRange[0], Number(e.target.value)])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              {/* Search */}
+              <div className="p-2 border rounded bg-gray-50 flex gap-3 items-center">
+                <input
+                  type="text"
+                  placeholder={t("Search Networks")}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  className="w-48 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <button
+                  onClick={handleSearchClick}
+                  className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
+
+            {/* Render Search Results */}
+            {triggerSearch && searchQuery && (
+              <div className="mt-4 flex justify-end">
+                <SearchResults searchQuery={searchQuery} />
+              </div>
+            )}
           </div>
         </>
       ) : (
