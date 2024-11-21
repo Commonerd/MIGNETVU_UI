@@ -3,6 +3,7 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid"
 import useStore from "../store"
 import { Network } from "../types"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
+import { useNavigate } from "react-router-dom"
 
 const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
   id,
@@ -19,6 +20,7 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
+  const navigate = useNavigate()
 
   return (
     <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs w-full max-w-lg">
@@ -45,10 +47,9 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
                 connections: connections,
                 user_id: 0,
               })
-              window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-              })
+              window.location.href.includes("network")
+                ? window.scrollTo({ top: 0, behavior: "smooth" })
+                : navigate("/network")
             }}
           />
           <TrashIcon
