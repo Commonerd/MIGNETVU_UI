@@ -1085,7 +1085,7 @@ const Map: React.FC = () => {
             {/* Render Search Results */}
             {triggerSearch && searchQuery && (
               <div
-                className="flex justify-end absolute w-full"
+                className="flex justify-end absolute w-full border border-gray-300 w-full max-h-80 overflow-y-auto z-10"
                 style={{
                   top: "4rem",
                   right: "0",
@@ -1094,7 +1094,7 @@ const Map: React.FC = () => {
                 }}
               >
                 <div
-                  className="bg-white shadow rounded p-4"
+                  className="bg-white shadow rounded p-4 border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10"
                   style={{
                     maxWidth: "50%",
                     width: "fit-content",
