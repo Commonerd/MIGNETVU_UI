@@ -921,7 +921,7 @@ const Map: React.FC = () => {
     <div className="h-[calc(85vh-64px)] relative">
       {user.isLoggedIn ? (
         <>
-          <div className="p-2 bg-gray-50">
+          <div className="p-2 bg-gray-50 relative">
             <div className="flex flex-wrap gap-3">
               {/* Entity Filters */}
               <div className="p-2 border rounded bg-gray-50 flex flex-wrap gap-2 items-center">
@@ -1084,12 +1084,24 @@ const Map: React.FC = () => {
 
             {/* Render Search Results */}
             {triggerSearch && searchQuery && (
-              <div className="mt-4 flex justify-end">
+              <div
+                className="flex justify-end absolute w-full"
+                style={{
+                  top: "4rem",
+                  right: "0",
+                  zIndex: 1,
+                  opacity: 0.95, // 투명도 조정 (0은 완전 투명, 1은 완전 불투명)
+                }}
+              >
                 <div
                   className="bg-white shadow rounded p-4"
                   style={{
-                    maxWidth: "50%", // 최대 너비 제한 (필요에 따라 조정 가능)
-                    width: "fit-content", // 내용에 맞게 너비 조정
+                    maxWidth: "50%",
+                    width: "fit-content",
+                    zIndex: 1,
+                    position: "relative",
+                    opacity: 0.95, // 검색 결과의 투명도 설정
+                    backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경에 투명도 적용 (배경 색상: 흰색, 투명도 0.8)
                   }}
                 >
                   <SearchResults searchQuery={searchQuery} />
@@ -1104,7 +1116,20 @@ const Map: React.FC = () => {
       <MapContainer
         center={[37.5665, 126.978]}
         zoom={2}
-        style={{ height: "calc(100% - 60px)", width: "100%" }}
+        style={{
+          height: "calc(100% - 25px)",
+          width: "100%",
+          position: "relative",
+          zIndex: 0,
+        }}
+        maxBounds={[
+          [90, -180], // 최소 위도, 경도
+          [-90, 180], // 최대 위도, 경도
+        ]}
+        maxBoundsViscosity={1.0} // 최대 경계 범위 조정
+        minZoom={2} // 최소 줌 레벨 설정
+        maxZoom={10} // 최대 줌 레벨 설정
+        worldCopyJump={true} // 줌 아웃 시 지도가 반복되지 않도록 설정
       >
         <HandleRightClick />
         {latLng && (
