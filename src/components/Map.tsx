@@ -1053,6 +1053,11 @@ const Map: React.FC = () => {
                   placeholder={t("Search Networks")}
                   value={searchQuery}
                   onChange={handleSearchChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchClick()
+                    }
+                  }}
                   className="w-48 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <button
