@@ -57,6 +57,7 @@ export const useQuerySearchNetworks = (searchQuery: string, page: number) => {
     const { data } = await axios.get<{
       networks: Network[]
       totalPages: number
+      totalCount: number
     }>(
       `${process.env.REACT_APP_API_URL}/networks/search`, // 수정된 URL
       {

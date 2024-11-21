@@ -1085,7 +1085,15 @@ const Map: React.FC = () => {
             {/* Render Search Results */}
             {triggerSearch && searchQuery && (
               <div className="mt-4 flex justify-end">
-                <SearchResults searchQuery={searchQuery} />
+                <div
+                  className="bg-white shadow rounded p-4"
+                  style={{
+                    maxWidth: "50%", // 최대 너비 제한 (필요에 따라 조정 가능)
+                    width: "fit-content", // 내용에 맞게 너비 조정
+                  }}
+                >
+                  <SearchResults searchQuery={searchQuery} />
+                </div>
               </div>
             )}
           </div>

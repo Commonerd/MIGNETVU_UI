@@ -34,36 +34,57 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
   }
 
   const totalPages = data?.totalPages || 0
+  const totalCount = data?.totalCount || 0
 
   return (
-    <div className="my-4 w-full max-w-lg">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Search Results</h2>
+    <div className="my-1 w-full max-w-lg">
+      {/* Search Results */}
+      <div className="flex justify-center items-center mb-4">
+        <h2 className="text-xl font-bold">Found {totalCount} Results</h2>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="ml-10 flex items-center justify-between mt-4">
+        {/* Pagination Centered */}
+        <div className="flex justify-center items-center flex-1 gap-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300"
+          >
+            Prev
+          </button>
+          <span className="text-sm">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300"
+          >
+            Next
+          </button>
+        </div>
+
+        {/* Clear Cache Icon */}
         <button
           onClick={handleClearCache}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+          className="ml-4 text-red-500 hover:text-red-700"
         >
-          Clear Cache
-        </button>
-      </div>{" "}
-      {/* Pagination Controls */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-        >
-          Prev
-        </button>
-        <span className="px-4 py-2">
-          {currentPage} / {totalPages}
-        </span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage >= totalPages}
-          className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300"
-        >
-          Next
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v3m0 9v3m7.5-7.5h-3m-9 0H4.5m12.364-5.636l-2.121 2.121m-6.364 6.364L5.636 16.95m12.728 0l-2.121-2.121m-6.364-6.364L5.636 7.05"
+            />
+          </svg>
         </button>
       </div>
       {!data || !data.networks || data.networks.length === 0 ? (
