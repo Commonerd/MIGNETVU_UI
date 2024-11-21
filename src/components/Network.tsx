@@ -10,14 +10,18 @@ import { useMutateNetwork } from "../hooks/useMutateNetwork"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { NetworkItem } from "./NetworkItem"
 import SearchResults from "./SearchResults"
+import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 export const Network = () => {
+  const { t } = useTranslation()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { data, isLoading } = useQueryNetworks()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
+  const navigate = useNavigate()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -535,7 +539,7 @@ export const Network = () => {
               <button
                 type="button"
                 className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white rounded mt-3"
-                onClick={() =>
+                onClick={() => {
                   updateNetwork({
                     ...editedNetwork,
                     connections: [
@@ -549,7 +553,8 @@ export const Network = () => {
                       },
                     ],
                   })
-                }
+                  navigate("/map")
+                }}
               >
                 Add Connection
               </button>
@@ -605,20 +610,38 @@ export const Network = () => {
         </button>
       </div>
 
-      {/* Search Bar */}
-      <div className="flex justify-center my-4">
+      {/* Search */}
+      <div className="w-full max-w-lg p-5 border rounded bg-gray-50 flex gap-4 items-center">
         <input
           type="text"
-          placeholder="Search Networks"
+          placeholder={t("Search Networks")}
           value={searchQuery}
           onChange={handleSearchChange}
-          className="px-4 py-2 border rounded w-full max-w-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearchClick()
+            }
+          }}
+          className="w-full max-w-lg p-2 border rounded text-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
         />
         <button
           onClick={handleSearchClick}
-          className="ml-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
-          Search
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-7 h-7"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+            />
+          </svg>
         </button>
       </div>
 
