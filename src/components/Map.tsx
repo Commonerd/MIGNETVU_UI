@@ -339,7 +339,7 @@ const Map: React.FC = () => {
   const handleEntityClick = (id: number) => {
     const entity = getEntityById(id)
     if (entity) {
-      setFocusedNode({ lat: entity.latitude, lng: entity.longitude })
+      setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
     }
     setHighlightedNode((prev) => {
       // if (prev && prev.id === id && prev.type === type) {
@@ -1128,13 +1128,11 @@ const Map: React.FC = () => {
           zIndex: 0,
         }}
         maxBounds={[
-          [90, -180], // 최소 위도, 경도
-          [-90, 180], // 최대 위도, 경도
+          [90, -360], // 최소 위도, 경도
+          [-90, 360], // 최대 위도, 경도
         ]}
-        maxBoundsViscosity={1.0} // 최대 경계 범위 조정
-        minZoom={2} // 최소 줌 레벨 설정
-        maxZoom={10} // 최대 줌 레벨 설정
-        worldCopyJump={true} // 줌 아웃 시 지도가 반복되지 않도록 설정
+        maxBoundsViscosity={2.0} // 최대 경계 범위 조정
+        minZoom={1} // 최소 줌 레벨 설정
       >
         <HandleRightClick />
         {latLng && (
