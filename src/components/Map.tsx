@@ -1131,8 +1131,8 @@ const Map: React.FC = () => {
           [90, -360], // 최소 위도, 경도
           [-90, 360], // 최대 위도, 경도
         ]}
-        maxBoundsViscosity={2.0} // 최대 경계 범위 조정
-        minZoom={1} // 최소 줌 레벨 설정
+        maxBoundsViscosity={1.0} // 최대 경계 범위 조정
+        minZoom={3} // 최소 줌 레벨 설정
       >
         <HandleRightClick />
         {latLng && (
