@@ -2,12 +2,21 @@ import { FC, useState, useEffect } from "react"
 import { useQuerySearchNetworks } from "../hooks/useQueryNetworks"
 import { NetworkItem } from "./NetworkItem"
 import { useQueryClient } from "@tanstack/react-query"
+import { useMap } from "react-leaflet"
 
 interface SearchResultsProps {
   searchQuery: string
+  setFocusedNode: React.Dispatch<
+    React.SetStateAction<{ lat: number; lng: number } | null>
+  >
+  handleEntityClick: (id: number) => void
 }
 
-const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
+const SearchResults: FC<SearchResultsProps> = ({
+  searchQuery,
+  setFocusedNode,
+  handleEntityClick,
+}) => {
   const [currentPage, setCurrentPage] = useState(1)
 
   const { data, isLoading, error } = useQuerySearchNetworks(
@@ -92,7 +101,12 @@ const SearchResults: FC<SearchResultsProps> = ({ searchQuery }) => {
       ) : (
         <ul className="space-y-4">
           {data?.networks.map((network) => (
-            <NetworkItem key={network.id} {...network} />
+            <NetworkItem
+              key={network.id}
+              {...network}
+              setFocusedNode={setFocusedNode}
+              handleEntityClick={handleEntityClick}
+            />
           ))}
         </ul>
       )}

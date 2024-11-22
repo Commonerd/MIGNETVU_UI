@@ -3,9 +3,14 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid"
 import useStore from "../store"
 import { Network } from "../types"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
-const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
+const NetworkItemMemo: FC<
+  Omit<Network, "created_at" | "updated_at"> & {
+    setFocusedNode: (node: { lat: number; lng: number }) => void
+    handleEntityClick: (id: number) => void
+  }
+> = ({
   id,
   user_id,
   user_name,
@@ -17,15 +22,26 @@ const NetworkItemMemo: FC<Omit<Network, "created_at" | "updated_at">> = ({
   latitude,
   longitude,
   connections,
+  setFocusedNode, // 반드시 포함
+  handleEntityClick,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
   const navigate = useNavigate()
+  const location = useLocation()
 
   return (
     <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs w-full max-w-lg">
       <div className="flex justify-between items-center w-full max-w-lg">
-        <span className="font-bold text-base">
+        <span
+          className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+          onClick={() =>
+            location.pathname !== "/network"
+              ? (setFocusedNode({ lat: latitude, lng: longitude }),
+                handleEntityClick(id))
+              : null
+          }
+        >
           No.{id} : {title}
         </span>
         <span className="font-bold text-xs flex justify-between items-center">

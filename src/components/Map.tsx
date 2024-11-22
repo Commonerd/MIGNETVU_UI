@@ -175,6 +175,7 @@ const Map: React.FC = () => {
     // type: EntityType
   } | null>(null)
   const [focusedNode, setFocusedNode] = useState<{
+    id: number | null
     lat: number
     lng: number
   } | null>(null)
@@ -1104,7 +1105,11 @@ const Map: React.FC = () => {
                     backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경에 투명도 적용 (배경 색상: 흰색, 투명도 0.8)
                   }}
                 >
-                  <SearchResults searchQuery={searchQuery} />
+                  <SearchResults
+                    searchQuery={searchQuery}
+                    setFocusedNode={setFocusedNode}
+                    handleEntityClick={handleEntityClick}
+                  />
                 </div>
               </div>
             )}
