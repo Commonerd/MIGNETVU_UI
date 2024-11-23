@@ -1416,6 +1416,7 @@ const Map: React.FC = () => {
         <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
         {filteredTraces.map(
           (trace: {
+            reason: string
             id: React.Key | null | undefined
             network_id: number
             latitude: number
@@ -1455,14 +1456,17 @@ const Map: React.FC = () => {
                     padding: "0",
                   }}
                 >
-                  <div style={{ marginBottom: "8px" }}>
+                  <div>
                     <strong>Network ID:</strong> {trace.network_id}
                   </div>
-                  <div style={{ marginBottom: "8px" }}>
+                  <div>
                     <strong>Place:</strong> {trace.location_name}
                   </div>
                   <div>
                     <strong>Migration Year:</strong> {trace.migration_year}
+                  </div>
+                  <div>
+                    <strong>Reason:</strong> {trace.reason}
                   </div>
                 </div>
               </Popup>
