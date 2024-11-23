@@ -22,6 +22,7 @@ const NetworkItemMemo: FC<
   latitude,
   longitude,
   connections,
+  migration_traces, // 추가된 마이그레이션 트레이스
   setFocusedNode, // 반드시 포함
   handleEntityClick,
 }) => {
@@ -61,6 +62,7 @@ const NetworkItemMemo: FC<
                 latitude: latitude,
                 longitude: longitude,
                 connections: connections,
+                migration_traces: migration_traces,
                 user_id: 0,
               })
               window.location.href.includes("network")
@@ -95,7 +97,7 @@ const NetworkItemMemo: FC<
                 Ethnicity
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Mig. Year
+                {type === "Migrant" ? "Birth Year" : "Established Year"}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
                 Lat
@@ -124,6 +126,60 @@ const NetworkItemMemo: FC<
             </tr>
           </tbody>
         </table>
+        {/* 마이그레이션 트레이스 표시 */}
+        <div className="mt-4">
+          <strong>Migration Trace:</strong>
+          {migration_traces && migration_traces.length > 0 ? (
+            <div className="mt-2">
+              <table className="table-auto w-full border-collapse text-xs">
+                <thead>
+                  <tr>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Location
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Longitude
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Latitude
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Year
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Reason
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {migration_traces.map((trace, index) => (
+                    <tr key={index}>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.location_name}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.longitude}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.latitude}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.migration_year}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.reason}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <p className="text-xs">No migration traces available.</p>
+            </div>
+          )}
+        </div>
 
         {/* Render the connections */}
         <div className="mt-4">

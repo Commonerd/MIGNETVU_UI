@@ -761,6 +761,7 @@ const Map: React.FC = () => {
         migration_year: 0,
         latitude: latLng.lat,
         longitude: latLng.lng,
+        migration_traces: [],
         connections: [
           {
             targetType: "Migrant",

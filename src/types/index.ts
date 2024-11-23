@@ -12,6 +12,7 @@ type MigrationTrace = {
   longitude: number
   migration_year: number
   location_name: string
+  reason: string
 }
 
 export type Network = {

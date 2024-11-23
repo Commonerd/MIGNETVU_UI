@@ -11,6 +11,16 @@ type EditedTask = {
   title: string
 }
 
+type MigrationTrace = {
+  migration_year: number
+  id: number
+  network_id: number
+  latitude: number
+  longitude: number
+  location_name: string
+  reason: string
+}
+
 type Connection = {
   targetId: number
   targetType: string
@@ -29,6 +39,7 @@ type EditedNetwork = {
   migration_year: number
   latitude: number
   longitude: number
+  migration_traces: MigrationTrace[] // Add migration traces
   connections: Connection[] // Add connections as an array
 }
 
@@ -68,6 +79,7 @@ const useStore = create<State>((set) => ({
     migration_year: 0,
     latitude: 0,
     longitude: 0,
+    migration_traces: [],
     connections: [
       { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
     ],
@@ -89,6 +101,7 @@ const useStore = create<State>((set) => ({
         migration_year: 0,
         latitude: 0,
         longitude: 0,
+        migration_traces: [],
         connections: [
           {
             targetType: "Migrant",
