@@ -38,6 +38,7 @@ export const Network = () => {
       longitude,
       connections,
       user_id,
+      migration_traces, // Get migration traces data
     } = editedNetwork
 
     // Ensure type is either 'Migrant' or 'Organization'
@@ -57,8 +58,9 @@ export const Network = () => {
       longitude: Number(longitude),
       connections: connections || [], // Default to an empty array if no connections
       user_id,
+      migration_traces, // Get migration traces data
     }
-
+    console.log("-------", migration_traces)
     if (id === 0) {
       createNetworkMutation.mutate({
         title,
@@ -70,6 +72,7 @@ export const Network = () => {
         longitude: Number(longitude),
         connections: connections || [],
         user_id: Number(user_id),
+        migration_traces: migration_traces || [], // Get migration traces data
       })
     } else {
       updateNetworkMutation.mutate({
@@ -78,6 +81,7 @@ export const Network = () => {
         latitude: Number(latitude),
         longitude: Number(longitude),
         connections: connections || [],
+        migration_traces: migration_traces || [], // Get migration traces data
       })
     }
   }
@@ -225,6 +229,15 @@ export const Network = () => {
     document.body.removeChild(link)
   }
 
+  const deleteMigrationTrace = (idx: number) => {
+    updateNetwork({
+      ...editedNetwork,
+      migration_traces: editedNetwork.migration_traces?.filter(
+        (_, i) => i !== idx,
+      ),
+    })
+  }
+
   const deleteConnection = (idx: number) => {
     updateNetwork({
       ...editedNetwork,
@@ -242,9 +255,8 @@ export const Network = () => {
       migration_year: 0,
       latitude: 0,
       longitude: 0,
-      connections: [
-        { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
-      ],
+      migration_traces: [],
+      connections: [],
       user_id: 0,
     })
   }
@@ -339,11 +351,15 @@ export const Network = () => {
           <div className="flex space-x-4">
             <div className="w-1/3">
               <label className="block text-gray-700 font-semibold text-sm">
-                Migration Year
+                {editedNetwork.type === "Migrant"
+                  ? "Birth Year"
+                  : "Established Year"}
               </label>
               <input
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="ex) 2024"
+                placeholder={
+                  editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                }
                 type="number"
                 onChange={(e) =>
                   updateNetwork({
@@ -387,6 +403,176 @@ export const Network = () => {
                 }
                 value={editedNetwork.longitude || ""}
               />
+            </div>
+          </div>
+          {/* Migration Details section */}
+          <div>
+            <label className="block text-gray-700 font-semibold text-sm mb-2">
+              Migration Trace
+            </label>
+            <div className="space-y-3">
+              {editedNetwork.migration_traces?.map((detail, idx) => (
+                <div key={idx}>
+                  {idx > 0 && <hr className="my-1 border-gray-300" />}
+                  <div className="flex justify-between space-x-2">
+                    {/* Location Name */}
+                    <div className="flex-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={detail.location_name || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            migration_traces:
+                              editedNetwork.migration_traces?.map((d, i) =>
+                                i === idx
+                                  ? { ...d, location_name: e.target.value }
+                                  : d,
+                              ),
+                          })
+                        }
+                        placeholder="Seoul"
+                      />
+                    </div>
+
+                    {/* Latitude */}
+                    <div className="flex-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Latitude
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={detail.latitude || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            migration_traces:
+                              editedNetwork.migration_traces?.map((d, i) =>
+                                i === idx
+                                  ? { ...d, latitude: Number(e.target.value) }
+                                  : d,
+                              ),
+                          })
+                        }
+                        placeholder="42.385"
+                      />
+                    </div>
+
+                    {/* Longitude */}
+                    <div className="flex-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Longitude
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={detail.longitude || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            migration_traces:
+                              editedNetwork.migration_traces?.map((d, i) =>
+                                i === idx
+                                  ? { ...d, longitude: Number(e.target.value) }
+                                  : d,
+                              ),
+                          })
+                        }
+                        placeholder="121.253"
+                      />
+                    </div>
+
+                    {/* Year */}
+                    <div className="flex-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Year
+                      </label>
+                      <input
+                        type="number"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={detail.migration_year || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            migration_traces:
+                              editedNetwork.migration_traces?.map((d, i) =>
+                                i === idx
+                                  ? {
+                                      ...d,
+                                      migration_year: Number(e.target.value),
+                                    }
+                                  : d,
+                              ),
+                          })
+                        }
+                        placeholder="2015"
+                      />
+                    </div>
+
+                    {/* Reason */}
+                    <div className="flex-1">
+                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                        Reason
+                      </label>
+                      <input
+                        type="text"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        value={detail.reason || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            migration_traces:
+                              editedNetwork.migration_traces?.map((d, i) =>
+                                i === idx
+                                  ? { ...d, reason: e.target.value }
+                                  : d,
+                              ),
+                          })
+                        }
+                        placeholder="Job"
+                      />
+                    </div>
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
+                      onClick={() => deleteMigrationTrace(idx)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* Add New Detail */}
+              <button
+                type="button"
+                className="mt-3 w-full text-center bg-indigo-500 text-white font-semibold px-4 py-2 rounded hover:bg-indigo-600"
+                onClick={() =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    migration_traces: [
+                      ...(editedNetwork.migration_traces || []),
+                      {
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: 0,
+                        reason: "",
+                        // id: 0,
+                        // network_id: 0,
+                      },
+                    ],
+                  })
+                }
+              >
+                Add Migration Trace
+              </button>
             </div>
           </div>
           {/* Connections section */}
@@ -553,7 +739,6 @@ export const Network = () => {
                       },
                     ],
                   })
-                  navigate("/map")
                 }}
               >
                 Add Connection
