@@ -1031,18 +1031,24 @@ const Map: React.FC = () => {
                 <label className="text-sm">{t("migrationTraceability")}</label>
                 <input
                   type="number"
-                  value={yearRange[0]}
+                  value={yearRange[0] || ""}
                   onChange={(e) =>
-                    setYearRange([Number(e.target.value), yearRange[1]])
+                    setYearRange([
+                      e.target.value === "" ? 0 : parseInt(e.target.value),
+                      yearRange[1],
+                    ])
                   }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <span className="text-sm">-</span>
                 <input
                   type="number"
-                  value={yearRange[1]}
+                  value={yearRange[1] || ""}
                   onChange={(e) =>
-                    setYearRange([yearRange[0], Number(e.target.value)])
+                    setYearRange([
+                      yearRange[0],
+                      e.target.value === "" ? 0 : parseInt(e.target.value),
+                    ])
                   }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
