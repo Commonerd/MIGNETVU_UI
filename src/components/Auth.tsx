@@ -70,7 +70,7 @@ export const Auth = () => {
     <Container>
       <LoginBox>
         <Header>
-          <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
+          <CheckBadgeIcon className="h-8 w-8 mr-2 text-amber-800" />
           <span className="text-2xl font-extrabold">HisNetVu</span>
         </Header>
         <span className="text-xs">{t("appSubName")}</span>
