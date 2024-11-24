@@ -23,6 +23,7 @@ const SearchResults: FC<SearchResultsProps> = ({
     searchQuery,
     currentPage,
   )
+
   const queryClient = useQueryClient() // React Query Client 접근
 
   const handlePageChange = (newPage: number) => {
