@@ -184,9 +184,9 @@ const NetworkItemMemo: FC<
         {/* Render the connections */}
         <div className="mt-4">
           <strong>Connections:</strong>
-          {connections.length > 0 ? (
+          {connections?.length > 0 ? (
             <div className="mt-2">
-              {connections.map((connection, index) => (
+              {connections?.map((connection, index) => (
                 <div key={connection.targetId}>
                   <table className="table-auto w-full mt-2 border-collapse text-xs">
                     <thead>
