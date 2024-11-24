@@ -71,7 +71,7 @@ export const Auth = () => {
       <LoginBox>
         <Header>
           <CheckBadgeIcon className="h-8 w-8 mr-2 text-blue-500" />
-          <span className="text-2xl font-extrabold">MigNetVu</span>
+          <span className="text-2xl font-extrabold">HisNetVu</span>
         </Header>
         <span className="text-xs">{t("appSubName")}</span>
         <Title>{isLogin ? t("login") : t("register")}</Title>

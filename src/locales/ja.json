@@ -1,6 +1,6 @@
 {
-  "appName": "MigNetVu",
-  "appSubName": "移住ネットワークの過去と現在",
+  "appName": "HisNetVu",
+  "appSubName": "人類の移動と関係網の痕跡をたどる",
   "addNetwork": "ネットワーク追加",
   "login": "ログイン",
   "register": "登録",
@@ -54,7 +54,7 @@
   "topMigrants": "移住者の中心性 TOP5",
   "topOrganizations": "団体の中心性 TOP5",
   "logout": "ログアウト",
-  "welcome": "様、MigNetVuへようこそ！",
+  "welcome": "様、HisNetVuへようこそ！",
   "registrantId": "登録者",
   "topRegistrants": "ノード登録貢献者TOP3",
   "nodeCount": "ノード",

@@ -1,6 +1,6 @@
 {
-  "appName": "MigNetVu",
-  "appSubName": "Migration Networks from Past to Present",
+  "appName": "HisNetVu",
+  "appSubName": "Tracing the Traces of Human Movement and Networks",
   "addNetwork": "Add Network",
   "login": "Sign in",
   "register": "Sign on",
@@ -61,7 +61,7 @@
   "topMigrants": "Migratns Centrality TOP5",
   "topOrganizations": "Organizations Centrality TOP5",
   "logout": "Sign out",
-  "welcome": ", welcome to MigNetVu!",
+  "welcome": ", welcome to HisNetVu!",
   "registrantId": "Registrant",
   "topRegistrants": "Node Registration Contributors Top3 ",
   "nodeCount": "Nodes",

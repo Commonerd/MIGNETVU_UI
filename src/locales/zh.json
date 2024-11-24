@@ -1,6 +1,6 @@
 {
-  "appName": "MigNetVu",
-  "appSubName": "过去和现在的移民网络",
+  "appName": "HisNetVu",
+  "appSubName": "追踪人类迁徙与关系网络的痕迹",
   "addNetwork": "添加网络",
   "login": "登录",
   "register": "注册",
@@ -54,7 +54,7 @@
   "topMigrants": "移民的中心性  TOP5",
   "topOrganizations": "团体的中心性 TOP5",
   "logout": "注销",
-  "welcome": "，欢迎访问 MigNetVu！",
+  "welcome": "，欢迎访问 HisNetVu！",
   "registrantId": "注册人",
   "topRegistrants": "前3名注册节点贡献者",
   "nodeCount": "网站",

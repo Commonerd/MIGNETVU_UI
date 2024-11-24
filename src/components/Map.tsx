@@ -923,16 +923,16 @@ const Map: React.FC = () => {
     <div className="h-[calc(85vh-64px)] relative">
       {user.isLoggedIn ? (
         <>
-          <div className="p-2 bg-gray-50 relative">
+          <div className="p-2 bg-gray-100 relative">
             <div className="flex flex-wrap gap-3">
               {/* Entity Filters */}
-              <div className="p-2 border rounded bg-gray-50 flex flex-wrap gap-2 items-center">
+              <div className="p-2 border rounded bg-gray-100 flex flex-wrap gap-2 items-center">
                 <select
                   value={filters.entityType}
                   onChange={(e) =>
                     handleFilterChange("entityType", e.target.value)
                   }
-                  className="p-1 border rounded text-sm w-30 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-1 border rounded text-sm w-30 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="all">{t("allEntityTypes")}</option>
                   <option value="migrant">{t("migrant")}</option>
@@ -945,7 +945,7 @@ const Map: React.FC = () => {
                       onChange={(e) =>
                         handleFilterChange("nationality", e.target.value)
                       }
-                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
                       <option value="all">{t("allNationalities")}</option>
                       {uniqueNationalities.map((nationality) => (
@@ -959,7 +959,7 @@ const Map: React.FC = () => {
                       onChange={(e) =>
                         handleFilterChange("ethnicity", e.target.value)
                       }
-                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
                       <option value="all">{t("allEthnicities")}</option>
                       {uniqueEthnicities.map((ethnicity) => (
@@ -975,7 +975,7 @@ const Map: React.FC = () => {
                   onChange={(e) =>
                     handleFilterChange("connectionType", e.target.value)
                   }
-                  className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="all">{t("allConnectionTypes")}</option>
                   <option value="friend">{t("friend")}</option>
@@ -987,7 +987,7 @@ const Map: React.FC = () => {
               </div>
 
               {/* Year Range */}
-              <div className="p-2 border rounded bg-gray-50 flex gap-2 items-center">
+              <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
                 <label className="text-sm">{t("yearRange")}</label>
                 <input
                   type="number"
@@ -998,7 +998,7 @@ const Map: React.FC = () => {
                       filters.yearRange[1],
                     ])
                   }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <span className="text-sm">-</span>
                 <input
@@ -1010,16 +1010,16 @@ const Map: React.FC = () => {
                       parseInt(e.target.value),
                     ])
                   }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               {/* Centrality */}
-              <div className="p-2 border rounded bg-gray-50 flex items-center">
+              <div className="p-2 border rounded bg-gray-100 flex items-center">
                 <select
                   value={centralityType}
                   onChange={(e) => setCentralityType(e.target.value)}
-                  className="p-1 border rounded text-sm w-32 h-8 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="p-1 border rounded text-sm w-32 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
@@ -1027,7 +1027,7 @@ const Map: React.FC = () => {
               </div>
 
               {/* Migration Traceability */}
-              <div className="p-2 border rounded bg-gray-50 flex gap-2 items-center">
+              <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
                 <label className="text-sm">{t("migrationTraceability")}</label>
                 <input
                   type="number"
@@ -1038,7 +1038,7 @@ const Map: React.FC = () => {
                       yearRange[1],
                     ])
                   }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <span className="text-sm">-</span>
                 <input
@@ -1050,12 +1050,12 @@ const Map: React.FC = () => {
                       e.target.value === "" ? 0 : parseInt(e.target.value),
                     ])
                   }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
               {/* Search */}
-              <div className="p-2 border rounded bg-gray-50 flex gap-3 items-center">
+              <div className="p-2 border rounded bg-gray-100 flex gap-3 items-center">
                 <input
                   type="text"
                   placeholder={t("Search Networks")}
@@ -1066,11 +1066,11 @@ const Map: React.FC = () => {
                       handleSearchClick()
                     }
                   }}
-                  className="w-48 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-48 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   onClick={handleSearchClick}
-                  className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

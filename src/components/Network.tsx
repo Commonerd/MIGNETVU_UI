@@ -274,7 +274,7 @@ export const Network = () => {
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
       <div className="flex items-center my-6">
-        <ShieldCheckIcon className="h-8 w-8 mr-3 text-indigo-500 cursor-pointer" />
+        <ShieldCheckIcon className="h-8 w-8 mr-3 text-amber-800" />
         <span className="text-center text-3xl font-extrabold">
           Network Manager
         </span>
@@ -287,7 +287,7 @@ export const Network = () => {
               Name
             </label>
             <input
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="Enter name"
               type="text"
               onChange={(e) =>
@@ -304,7 +304,7 @@ export const Network = () => {
                 Type
               </label>
               <select
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 onChange={(e) =>
                   updateNetwork({ ...editedNetwork, type: e.target.value })
                 }
@@ -319,7 +319,7 @@ export const Network = () => {
                 Nationality
               </label>
               <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="ex) U.S.A"
                 type="text"
                 onChange={(e) =>
@@ -336,7 +336,7 @@ export const Network = () => {
                 Ethnicity
               </label>
               <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="ex) Korean"
                 type="text"
                 onChange={(e) =>
@@ -356,7 +356,7 @@ export const Network = () => {
                   : "Established Year"}
               </label>
               <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder={
                   editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
                 }
@@ -375,7 +375,7 @@ export const Network = () => {
                 Latitude
               </label>
               <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="ex) 43.587"
                 type="number"
                 onChange={(e) =>
@@ -392,7 +392,7 @@ export const Network = () => {
                 Longitude
               </label>
               <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 placeholder="ex) 123.587"
                 type="number"
                 onChange={(e) =>
@@ -422,7 +422,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={detail.location_name || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -446,7 +446,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={detail.latitude || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -470,7 +470,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={detail.longitude || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -494,7 +494,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={detail.migration_year || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -521,7 +521,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={detail.reason || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -552,7 +552,7 @@ export const Network = () => {
               {/* Add New Detail */}
               <button
                 type="button"
-                className="mt-3 w-full text-center bg-indigo-500 text-white font-semibold px-4 py-2 rounded hover:bg-indigo-600"
+                className="mt-3 w-full text-center bg-gray-300 text-gray-800 rounded hover:bg-gray-400 px-4 py-2 rounded"
                 onClick={() =>
                   updateNetwork({
                     ...editedNetwork,
@@ -592,7 +592,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={conn.targetId || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -615,7 +615,7 @@ export const Network = () => {
                         Type
                       </label>
                       <select
-                        className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={conn.targetType || "Migrant"}
                         onChange={(e) =>
                           updateNetwork({
@@ -645,7 +645,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={conn.strength || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -671,7 +671,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={conn.type || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -693,7 +693,7 @@ export const Network = () => {
                       </label>
                       <input
                         type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-xs"
+                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
                         value={conn.year || ""}
                         onChange={(e) =>
                           updateNetwork({
@@ -724,7 +724,7 @@ export const Network = () => {
 
               <button
                 type="button"
-                className="w-full py-2 px-4 bg-indigo-500 hover:bg-indigo-700 text-white rounded mt-3"
+                className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
                 onClick={() => {
                   updateNetwork({
                     ...editedNetwork,
@@ -754,7 +754,7 @@ export const Network = () => {
               Clear
             </button>
             <button
-              className="w-full py-2 text-white bg-indigo-500 hover:bg-indigo-700 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full py-2 bg-gray-400 text-gray-800 rounded hover:bg-gray-600 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-amber-500"
               disabled={
                 !editedNetwork.title ||
                 !editedNetwork.nationality ||
@@ -773,7 +773,7 @@ export const Network = () => {
       <div className="flex justify-center gap-2 my-4">
         <button
           onClick={handleImportCSV}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          className="px-4 py-2 bg-[#6E7F7A] text-white rounded hover:bg-[#36454F]"
         >
           Import
         </button>
@@ -789,14 +789,14 @@ export const Network = () => {
         />
         <button
           onClick={handleExportCSV}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700"
+          className="px-4 py-2 bg-[#6E7F7A] text-white rounded hover:bg-[#36454F]"
         >
           Export
         </button>
       </div>
 
       {/* Search */}
-      <div className="w-full max-w-lg p-5 border rounded bg-gray-50 flex gap-4 items-center">
+      <div className="w-full max-w-lg p-5 border rounded bg-gray-100 flex gap-4 items-center">
         <input
           type="text"
           placeholder={t("Search Networks")}
@@ -807,11 +807,13 @@ export const Network = () => {
               handleSearchClick()
             }
           }}
-          className="w-full max-w-lg p-2 border rounded text-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full max-w-lg p-2 border rounded text-md focus:outline-none focus:ring-2 focus:ring-amber-500"
         />
         <button
           onClick={handleSearchClick}
-          className="px-4 py-1 bg-green-500 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="px-4 py-1 bg-amber-600
+ text-white rounded hover:bg-amber-800
+ focus:outline-none focus:ring-2 focus:ring-amber-500"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
