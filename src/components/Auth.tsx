@@ -184,7 +184,7 @@ const Input = styled.input`
 const Button = styled.button`
   width: 100%;
   padding: 12px;
-  background-color: #2d3748;
+  background-color: #800020;
   color: white;
   border: none;
   border-radius: 8px;
@@ -192,7 +192,7 @@ const Button = styled.button`
   margin-top: 1rem;
 
   &:hover {
-    background-color: #2563eb;
+    background-color: #455a64;
   }
 
   @media (max-width: 600px) {
