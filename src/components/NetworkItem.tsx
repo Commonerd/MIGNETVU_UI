@@ -66,7 +66,10 @@ const NetworkItemMemo: FC<
                 user_id: 0,
               })
               window.location.href.includes("network")
-                ? window.scrollTo({ top: 0, behavior: "smooth" })
+                ? window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: "instant",
+                  })
                 : navigate("/network")
             }}
           />

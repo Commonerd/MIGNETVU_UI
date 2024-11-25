@@ -12,6 +12,7 @@ import { NetworkItem } from "./NetworkItem"
 import SearchResults from "./SearchResults"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { GlobeIcon } from "lucide-react"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -274,11 +275,53 @@ export const Network = () => {
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
       <div className="flex items-center my-6">
-        <ShieldCheckIcon className="h-8 w-8 mr-3 text-amber-800" />
-        <span className="text-center text-3xl font-extrabold">
+        <GlobeIcon className="h-8 w-8 mr-3 text-amber-800" />
+        <span className="text-center text-xl font-extrabold">
           Network Manager
         </span>
       </div>
+
+      {/* Search */}
+      <div className="w-full max-w-sm p-3 border rounded bg-gray-100 flex gap-4 items-center">
+        <input
+          type="text"
+          placeholder={t("Search Networks")}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearchClick()
+            }
+          }}
+          className="w-full max-w-lg p-2 border rounded text-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+        />
+        <button
+          onClick={handleSearchClick}
+          className="px-4 py-1 bg-amber-600
+ text-white rounded hover:bg-amber-800
+ focus:outline-none focus:ring-2 focus:ring-amber-500"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-7 h-7"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Render the SearchResults with pagination only after the search button is clicked */}
+      {triggerSearch && searchQuery && (
+        <SearchResults searchQuery={searchQuery} />
+      )}
 
       <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
@@ -794,71 +837,6 @@ export const Network = () => {
           Export
         </button>
       </div>
-
-      {/* Search */}
-      <div className="w-full max-w-lg p-5 border rounded bg-gray-100 flex gap-4 items-center">
-        <input
-          type="text"
-          placeholder={t("Search Networks")}
-          value={searchQuery}
-          onChange={handleSearchChange}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSearchClick()
-            }
-          }}
-          className="w-full max-w-lg p-2 border rounded text-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-        />
-        <button
-          onClick={handleSearchClick}
-          className="px-4 py-1 bg-amber-600
- text-white rounded hover:bg-amber-800
- focus:outline-none focus:ring-2 focus:ring-amber-500"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.5}
-            stroke="currentColor"
-            className="w-7 h-7"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-            />
-          </svg>
-        </button>
-      </div>
-
-      {/* Render the SearchResults with pagination only after the search button is clicked */}
-      {triggerSearch && searchQuery && (
-        <SearchResults searchQuery={searchQuery} />
-      )}
-
-      {/* {isLoading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul className="my-2 w-full max-w-lg">
-          {data?.map((network) => (
-            <NetworkItem
-              key={network.id}
-              id={network.id}
-              title={network.title}
-              type={network.type}
-              nationality={network.nationality}
-              ethnicity={network.ethnicity}
-              migration_year={network.migration_year}
-              latitude={network.latitude}
-              longitude={network.longitude}
-              connections={network.connections}
-              user_id={0}
-              user_name={network.user_name}
-            />
-          ))}
-        </ul>
-      )} */}
     </div>
   )
 }
