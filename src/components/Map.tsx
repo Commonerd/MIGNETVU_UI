@@ -1403,7 +1403,14 @@ const Map: React.FC = () => {
                         </p>
                         <p>
                           <span className="font-medium">Migration Year:</span>{" "}
-                          {network.migration_year}
+                          <span className="font-medium">
+                            {network.type === "Migrant"
+                              ? "Birth Year"
+                              : network.type === "Organization"
+                                ? "Established Year"
+                                : "Migration Year"}
+                            :
+                          </span>{" "}
                         </p>
                         <p>
                           <span className="font-medium">Latitude:</span>{" "}
