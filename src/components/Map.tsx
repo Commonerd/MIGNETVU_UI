@@ -167,7 +167,7 @@ const Map: React.FC = () => {
     ethnicity: "all",
     connectionType: "all",
     entityType: "all",
-    yearRange: [1800, new Date().getFullYear()], // 현재 연도를 자동으로 설정
+    yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -185,7 +185,7 @@ const Map: React.FC = () => {
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const [yearRange, setYearRange] = useState<[number, number]>([
-    1800,
+    0,
     new Date().getFullYear(),
   ]) // Year for migration trace
   const [searchQuery, setSearchQuery] = useState("")
@@ -1031,25 +1031,47 @@ const Map: React.FC = () => {
                 <label className="text-sm">{t("migrationTraceability")}</label>
                 <input
                   type="number"
-                  value={yearRange[0] || ""}
-                  onChange={(e) =>
-                    setYearRange([
-                      e.target.value === "" ? 0 : parseInt(e.target.value),
-                      yearRange[1],
-                    ])
-                  }
+                  value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+                  onFocus={() => {
+                    // 포커스 시 값이 0이면 빈 문자열로 변환
+                    if (yearRange[0] === 0) {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // 블러 시 빈 문자열이면 0으로 변환
+                    if (e.target.value === "") {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([value, yearRange[1]])
+                  }}
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <span className="text-sm">-</span>
                 <input
                   type="number"
-                  value={yearRange[1] || ""}
-                  onChange={(e) =>
-                    setYearRange([
-                      yearRange[0],
-                      e.target.value === "" ? 0 : parseInt(e.target.value),
-                    ])
-                  }
+                  value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
+                  onFocus={() => {
+                    // 포커스 시 값이 0이면 빈 문자열로 변환
+                    if (yearRange[1] === 0) {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    // 블러 시 빈 문자열이면 0으로 변환
+                    if (e.target.value === "") {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([yearRange[0], value])
+                  }}
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
