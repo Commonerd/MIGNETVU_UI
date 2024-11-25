@@ -1424,14 +1424,14 @@ const Map: React.FC = () => {
                           {network.ethnicity}
                         </p>
                         <p>
-                          <span className="font-medium">Migration Year:</span>{" "}
                           <span className="font-medium">
+                            {" "}
                             {network.type === "Migrant"
                               ? "Birth Year"
-                              : network.type === "Organization"
-                                ? "Established Year"
-                                : "Migration Year"}
-                            :
+                              : "Established Year"}
+                          </span>{" "}
+                          <span className="font-medium">
+                            :{network.migration_year}
                           </span>{" "}
                         </p>
                         <p>
