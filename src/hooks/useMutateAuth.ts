@@ -1,26 +1,32 @@
-import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import useStore from '../store'
-import { Credential } from '../types'
-import { useError } from '../hooks/useError'
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import useStore from "../store"
+import { Credential, LoginResponse } from "../types"
+import { useError } from "../hooks/useError"
 
 export const useMutateAuth = () => {
   const navigate = useNavigate()
   const resetEditedTask = useStore((state) => state.resetEditedTask)
   const { switchErrorHandling } = useError()
-  const loginMutation = useMutation(
-    async (user: Credential) =>
-      await axios.post(`${process.env.REACT_APP_API_URL}/login`, user),
+
+  const loginMutation = useMutation<LoginResponse, Error, Credential>(
+    async (user: Credential) => {
+      const response = await axios.post<LoginResponse>(
+        `${process.env.REACT_APP_API_URL}/login`,
+        user,
+      )
+      return response.data
+    },
     {
       onSuccess: () => {
-        navigate('/')
+        navigate("/")
       },
       onError: (err: any) => {
-        if (err.response.data.message) {
+        if (err.response && err.response.data.message) {
           switchErrorHandling(err.response.data.message)
         } else {
-          switchErrorHandling(err.response.data)
+          switchErrorHandling("An error occurred while logging in.")
         }
       },
     },
@@ -43,7 +49,7 @@ export const useMutateAuth = () => {
     {
       onSuccess: () => {
         resetEditedTask()
-        navigate('/')
+        navigate("/")
       },
       onError: (err: any) => {
         if (err.response.data.message) {

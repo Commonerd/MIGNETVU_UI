@@ -5,6 +5,12 @@ export type Task = {
   updated_at: Date
 }
 
+export interface LoginResponse {
+  name: string
+  email: string
+  token: string // 필요한 다른 필드가 있으면 추가하세요.
+}
+
 type MigrationTrace = {
   id: number
   network_id: number

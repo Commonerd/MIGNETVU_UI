@@ -49,7 +49,10 @@ export const Auth = () => {
       loginMutation.mutate(
         { email, password: pw, name: "0" },
         {
-          onSuccess: () => setUser({ email, isLoggedIn: true, name }),
+          onSuccess: (res) => {
+            // 로그인 리스폰스로부터 이름을 가져와 setUser 상태 업데이트
+            setUser({ email: res.email, isLoggedIn: true, name: res.name })
+          },
         },
       )
     } else {
