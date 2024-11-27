@@ -921,99 +921,147 @@ const Map: React.FC = () => {
 
   return (
     <div className="h-[calc(85vh-64px)] relative">
-      {user.isLoggedIn ? (
-        <>
-          <div className="p-2 bg-gray-100 relative">
-            <div className="flex flex-wrap gap-3">
-              {/* Entity Filters */}
-              <div className="p-2 border rounded bg-gray-100 flex flex-wrap gap-2 items-center">
+      <div className="p-2 bg-gray-100 relative">
+        <div className="flex flex-wrap gap-3">
+          {/* Entity Filters */}
+          <div className="p-2 border rounded bg-gray-100 flex flex-wrap gap-2 items-center">
+            <select
+              value={filters.entityType}
+              onChange={(e) => handleFilterChange("entityType", e.target.value)}
+              className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-30" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            >
+              <option value="all">{t("allEntityTypes")}</option>
+              <option value="migrant">{t("migrant")}</option>
+              <option value="organization">{t("organization")}</option>
+            </select>
+            {filters.entityType !== "organization" && (
+              <>
                 <select
-                  value={filters.entityType}
+                  value={filters.nationality}
                   onChange={(e) =>
-                    handleFilterChange("entityType", e.target.value)
+                    handleFilterChange("nationality", e.target.value)
                   }
-                  className="p-1 border rounded text-sm w-30 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 >
-                  <option value="all">{t("allEntityTypes")}</option>
-                  <option value="migrant">{t("migrant")}</option>
-                  <option value="organization">{t("organization")}</option>
+                  <option value="all">{t("allNationalities")}</option>
+                  {uniqueNationalities.map((nationality) => (
+                    <option key={nationality} value={nationality}>
+                      {nationality}
+                    </option>
+                  ))}
                 </select>
-                {filters.entityType !== "organization" && (
-                  <>
-                    <select
-                      value={filters.nationality}
-                      onChange={(e) =>
-                        handleFilterChange("nationality", e.target.value)
-                      }
-                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    >
-                      <option value="all">{t("allNationalities")}</option>
-                      {uniqueNationalities.map((nationality) => (
-                        <option key={nationality} value={nationality}>
-                          {nationality}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      value={filters.ethnicity}
-                      onChange={(e) =>
-                        handleFilterChange("ethnicity", e.target.value)
-                      }
-                      className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    >
-                      <option value="all">{t("allEthnicities")}</option>
-                      {uniqueEthnicities.map((ethnicity) => (
-                        <option key={ethnicity} value={ethnicity}>
-                          {ethnicity}
-                        </option>
-                      ))}
-                    </select>
-                  </>
-                )}
                 <select
-                  value={filters.connectionType}
+                  value={filters.ethnicity}
                   onChange={(e) =>
-                    handleFilterChange("connectionType", e.target.value)
+                    handleFilterChange("ethnicity", e.target.value)
                   }
-                  className="p-1 border rounded text-sm w-24 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 >
-                  <option value="all">{t("allConnectionTypes")}</option>
-                  <option value="friend">{t("friend")}</option>
-                  <option value="colleague">{t("colleague")}</option>
-                  <option value="family">{t("family")}</option>
-                  <option value="professional">{t("professional")}</option>
-                  <option value="cultural">{t("cultural")}</option>
+                  <option value="all">{t("allEthnicities")}</option>
+                  {uniqueEthnicities.map((ethnicity) => (
+                    <option key={ethnicity} value={ethnicity}>
+                      {ethnicity}
+                    </option>
+                  ))}
                 </select>
-              </div>
+              </>
+            )}
+            <select
+              value={filters.connectionType}
+              onChange={(e) =>
+                handleFilterChange("connectionType", e.target.value)
+              }
+              className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            >
+              <option value="all">{t("allConnectionTypes")}</option>
+              <option value="friend">{t("friend")}</option>
+              <option value="colleague">{t("colleague")}</option>
+              <option value="family">{t("family")}</option>
+              <option value="professional">{t("professional")}</option>
+              <option value="cultural">{t("cultural")}</option>
+            </select>
+          </div>
 
-              {/* Year Range */}
-              <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
-                <label className="text-sm">{t("yearRange")}</label>
-                <input
-                  type="number"
-                  value={filters.yearRange[0]}
-                  onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      parseInt(e.target.value),
-                      filters.yearRange[1],
-                    ])
-                  }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-                <span className="text-sm">-</span>
-                <input
-                  type="number"
-                  value={filters.yearRange[1]}
-                  onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      filters.yearRange[0],
-                      parseInt(e.target.value),
-                    ])
-                  }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
+          {/* Year Range */}
+          <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
+            <label className="text-sm">{t("yearRange")}</label>
+            <input
+              type="number"
+              value={filters.yearRange[0]}
+              onChange={(e) =>
+                handleFilterChange("yearRange", [
+                  parseInt(e.target.value),
+                  filters.yearRange[1],
+                ])
+              }
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+            />
+            <span className="text-sm">-</span>
+            <input
+              type="number"
+              value={filters.yearRange[1]}
+              onChange={(e) =>
+                handleFilterChange("yearRange", [
+                  filters.yearRange[0],
+                  parseInt(e.target.value),
+                ])
+              }
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+            />
+          </div>
 
+          {/* Migration Traceability */}
+          <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
+            <label className="text-sm">{t("migrationTraceability")}</label>
+            <input
+              type="number"
+              value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+              onFocus={() => {
+                // 포커스 시 값이 0이면 빈 문자열로 변환
+                if (yearRange[0] === 0) {
+                  setYearRange([0, yearRange[1]])
+                }
+              }}
+              onBlur={(e) => {
+                // 블러 시 빈 문자열이면 0으로 변환
+                if (e.target.value === "") {
+                  setYearRange([0, yearRange[1]])
+                }
+              }}
+              onChange={(e) => {
+                const value =
+                  e.target.value === "" ? 0 : parseInt(e.target.value)
+                setYearRange([value, yearRange[1]])
+              }}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+            />
+            <span className="text-sm">-</span>
+            <input
+              type="number"
+              value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
+              onFocus={() => {
+                // 포커스 시 값이 0이면 빈 문자열로 변환
+                if (yearRange[1] === 0) {
+                  setYearRange([yearRange[0], 0])
+                }
+              }}
+              onBlur={(e) => {
+                // 블러 시 빈 문자열이면 0으로 변환
+                if (e.target.value === "") {
+                  setYearRange([yearRange[0], 0])
+                }
+              }}
+              onChange={(e) => {
+                const value =
+                  e.target.value === "" ? 0 : parseInt(e.target.value)
+                setYearRange([yearRange[0], value])
+              }}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+            />
+          </div>
+
+          {user.isLoggedIn ? (
+            <>
               {/* Centrality */}
               <div className="p-2 border rounded bg-gray-100 flex items-center">
                 <select
@@ -1025,57 +1073,13 @@ const Map: React.FC = () => {
                   <option value="degree">{t("degreeCentrality")}</option>
                 </select>
               </div>
+            </>
+          ) : (
+            <></>
+          )}
 
-              {/* Migration Traceability */}
-              <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
-                <label className="text-sm">{t("migrationTraceability")}</label>
-                <input
-                  type="number"
-                  value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
-                  onFocus={() => {
-                    // 포커스 시 값이 0이면 빈 문자열로 변환
-                    if (yearRange[0] === 0) {
-                      setYearRange([0, yearRange[1]])
-                    }
-                  }}
-                  onBlur={(e) => {
-                    // 블러 시 빈 문자열이면 0으로 변환
-                    if (e.target.value === "") {
-                      setYearRange([0, yearRange[1]])
-                    }
-                  }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([value, yearRange[1]])
-                  }}
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-                <span className="text-sm">-</span>
-                <input
-                  type="number"
-                  value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
-                  onFocus={() => {
-                    // 포커스 시 값이 0이면 빈 문자열로 변환
-                    if (yearRange[1] === 0) {
-                      setYearRange([yearRange[0], 0])
-                    }
-                  }}
-                  onBlur={(e) => {
-                    // 블러 시 빈 문자열이면 0으로 변환
-                    if (e.target.value === "") {
-                      setYearRange([yearRange[0], 0])
-                    }
-                  }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([yearRange[0], value])
-                  }}
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
+          {user.isLoggedIn ? (
+            <>
               {/* Search */}
               <div className="p-2 border rounded bg-gray-100 flex gap-3 items-center">
                 <input
@@ -1110,43 +1114,44 @@ const Map: React.FC = () => {
                   </svg>
                 </button>
               </div>
-            </div>
+            </>
+          ) : (
+            <></>
+          )}
+        </div>
 
-            {/* Render Search Results */}
-            {triggerSearch && searchQuery && (
-              <div
-                className="flex justify-end absolute w-full border border-gray-300 w-full max-h-80 overflow-y-auto z-10"
-                style={{
-                  top: "4rem",
-                  right: "0",
-                  zIndex: 1,
-                  opacity: 0.95, // 투명도 조정 (0은 완전 투명, 1은 완전 불투명)
-                }}
-              >
-                <div
-                  className="bg-white shadow rounded p-4 border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10"
-                  style={{
-                    maxWidth: "50%",
-                    width: "fit-content",
-                    zIndex: 1,
-                    position: "relative",
-                    opacity: 0.95, // 검색 결과의 투명도 설정
-                    backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경에 투명도 적용 (배경 색상: 흰색, 투명도 0.8)
-                  }}
-                >
-                  <SearchResults
-                    searchQuery={searchQuery}
-                    setFocusedNode={setFocusedNode}
-                    handleEntityClick={handleEntityClick}
-                  />
-                </div>
-              </div>
-            )}
+        {/* Render Search Results */}
+        {triggerSearch && searchQuery && (
+          <div
+            className="flex justify-end absolute w-full border border-gray-300 w-full max-h-80 overflow-y-auto z-10"
+            style={{
+              top: "4rem",
+              right: "0",
+              zIndex: 1,
+              opacity: 0.95, // 투명도 조정 (0은 완전 투명, 1은 완전 불투명)
+            }}
+          >
+            <div
+              className="bg-white shadow rounded p-4 border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10"
+              style={{
+                maxWidth: "50%",
+                width: "fit-content",
+                zIndex: 1,
+                position: "relative",
+                opacity: 0.95, // 검색 결과의 투명도 설정
+                backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경에 투명도 적용 (배경 색상: 흰색, 투명도 0.8)
+              }}
+            >
+              <SearchResults
+                searchQuery={searchQuery}
+                setFocusedNode={setFocusedNode}
+                handleEntityClick={handleEntityClick}
+              />
+            </div>
           </div>
-        </>
-      ) : (
-        <></>
-      )}
+        )}
+      </div>
+
       <MapContainer
         center={[37.5665, 126.978]}
         zoom={2}
