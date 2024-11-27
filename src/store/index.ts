@@ -46,6 +46,7 @@ type EditedNetwork = {
 type State = {
   user: User
   setUser: (user: User) => void
+  resetUser: () => void
   editedTask: EditedTask
   updateEditedTask: (payload: EditedTask) => void
   resetEditedTask: () => void
@@ -56,9 +57,8 @@ type State = {
 
 const useStore = create<State>((set) => ({
   user: { email: "", isLoggedIn: false, name: "" },
-  setUser: (user) => {
-    set({ user })
-  },
+  setUser: (user) => set({ user }),
+  resetUser: () => set({ user: { email: "", isLoggedIn: false, name: "" } }),
   editedTask: { id: 0, title: "" },
   updateEditedTask: (payload) => {
     set({

@@ -16,6 +16,7 @@ import Login from "./components/Login"
 import Map from "./components/Map"
 import { Network } from "./components/Network"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import useStore from "./store"
 
 function App() {
   useEffect(() => {
@@ -30,17 +31,28 @@ function App() {
   }, [])
 
   const { t } = useTranslation()
-  const [user, setUser] = useState<{
-    email: string
-    isLoggedIn: boolean
-    name: string
-  }>({
-    email: "",
-    isLoggedIn: false,
-    name: "",
-  })
 
   const queryClient = new QueryClient()
+
+  const { user, setUser } = useStore()
+
+  useEffect(() => {
+    const fetchUserState = async () => {
+      try {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+          credentials: "include", // 쿠키를 포함해 요청
+        })
+        if (res.ok) {
+          const user = await res.json()
+          setUser({ email: user.email, isLoggedIn: true, name: user.name })
+        }
+      } catch (error) {
+        console.error("Failed to sync user state:", error)
+      }
+    }
+
+    fetchUserState()
+  }, [setUser])
 
   return (
     <BrowserRouter>
