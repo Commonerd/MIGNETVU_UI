@@ -35,6 +35,7 @@ export const Network = () => {
       nationality,
       ethnicity,
       migration_year,
+      end_year,
       latitude,
       longitude,
       connections,
@@ -55,6 +56,7 @@ export const Network = () => {
       nationality,
       ethnicity,
       migration_year: Number(migration_year),
+      end_year: Number(end_year),
       latitude: Number(latitude),
       longitude: Number(longitude),
       connections: connections || [], // Default to an empty array if no connections
@@ -69,6 +71,7 @@ export const Network = () => {
         nationality,
         ethnicity,
         migration_year: Number(migration_year),
+        end_year: Number(end_year),
         latitude: Number(latitude),
         longitude: Number(longitude),
         connections: connections || [],
@@ -79,6 +82,7 @@ export const Network = () => {
       updateNetworkMutation.mutate({
         ...editedNetwork,
         migration_year: Number(migration_year),
+        end_year: Number(end_year),
         latitude: Number(latitude),
         longitude: Number(longitude),
         connections: connections || [],
@@ -106,6 +110,7 @@ export const Network = () => {
           nationality,
           ethnicity,
           migration_year,
+          end_year,
           latitude,
           longitude,
           connectionsString,
@@ -153,6 +158,7 @@ export const Network = () => {
           nationality,
           ethnicity,
           migration_year: Number(migration_year),
+          end_year: Number(end_year),
           latitude: Number(latitude),
           longitude: Number(longitude),
           connections,
@@ -181,7 +187,8 @@ export const Network = () => {
         "Type",
         "Nationality",
         "Ethnicity",
-        "Migration Year",
+        "Start Year",
+        "End Year",
         "Latitude",
         "Longitude",
         "Connections",
@@ -195,6 +202,7 @@ export const Network = () => {
           nationality,
           ethnicity,
           migration_year,
+          end_year,
           latitude,
           longitude,
           connections,
@@ -212,6 +220,7 @@ export const Network = () => {
             nationality,
             ethnicity,
             migration_year,
+            end_year,
             latitude,
             longitude,
             `"${connectionsString}"`, // JSON 배열을 큰따옴표로 감싸기
@@ -254,6 +263,7 @@ export const Network = () => {
       nationality: "",
       ethnicity: "",
       migration_year: 0,
+      end_year: 0,
       latitude: 0,
       longitude: 0,
       migration_traces: [],
@@ -411,6 +421,25 @@ export const Network = () => {
                   })
                 }
                 value={editedNetwork.migration_year || ""}
+              />
+              <label className="block text-gray-700 font-semibold text-sm">
+                {editedNetwork.type === "Migrant"
+                  ? "Death Year"
+                  : "Dissolved Year"}
+              </label>
+              <input
+                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                placeholder={
+                  editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                }
+                type="number"
+                onChange={(e) =>
+                  updateNetwork({
+                    ...editedNetwork,
+                    end_year: Number(e.target.value),
+                  })
+                }
+                value={editedNetwork.end_year || ""}
               />
             </div>
             <div className="w-1/3">

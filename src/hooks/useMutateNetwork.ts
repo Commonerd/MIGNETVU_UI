@@ -17,6 +17,7 @@ export const useMutateNetwork = () => {
         nationality: network.nationality,
         ethnicity: network.ethnicity,
         migration_year: network.migration_year,
+        end_year: network.end_year,
         latitude: network.latitude,
         longitude: network.longitude,
         connections: network.connections, // Include connections in the request
@@ -55,6 +56,7 @@ export const useMutateNetwork = () => {
           nationality: network.nationality,
           ethnicity: network.ethnicity,
           migration_year: network.migration_year,
+          end_year: network.end_year,
           latitude: network.latitude,
           longitude: network.longitude,
           connections: network.connections, // Include connections in the request

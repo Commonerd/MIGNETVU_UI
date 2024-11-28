@@ -37,6 +37,7 @@ type EditedNetwork = {
   nationality: string
   ethnicity: string
   migration_year: number
+  end_year: number
   latitude: number
   longitude: number
   migration_traces: MigrationTrace[] // Add migration traces
@@ -77,6 +78,7 @@ const useStore = create<State>((set) => ({
     nationality: "",
     ethnicity: "",
     migration_year: 0,
+    end_year: 0,
     latitude: 0,
     longitude: 0,
     migration_traces: [],
@@ -99,6 +101,7 @@ const useStore = create<State>((set) => ({
         nationality: "",
         ethnicity: "",
         migration_year: 0,
+        end_year: 0,
         latitude: 0,
         longitude: 0,
         migration_traces: [],

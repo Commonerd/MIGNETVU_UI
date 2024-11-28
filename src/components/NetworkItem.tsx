@@ -19,6 +19,7 @@ const NetworkItemMemo: FC<
   nationality,
   ethnicity,
   migration_year,
+  end_year,
   latitude,
   longitude,
   connections,
@@ -59,6 +60,7 @@ const NetworkItemMemo: FC<
                 nationality: nationality,
                 ethnicity: ethnicity,
                 migration_year: migration_year,
+                end_year,
                 latitude: latitude,
                 longitude: longitude,
                 connections: connections,
@@ -103,6 +105,9 @@ const NetworkItemMemo: FC<
                 {type === "Migrant" ? "Birth Year" : "Established Year"}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
+                {type === "Migrant" ? "Death Year" : "Dissolved Year"}
+              </th>
+              <th className="px-1 py-1 border font-semibold text-center">
                 Lat
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
@@ -120,6 +125,7 @@ const NetworkItemMemo: FC<
                 {ethnicity}
               </td>
               <td className="px-1 py-1 border text-center">{migration_year}</td>
+              <td className="px-1 py-1 border text-center">{end_year}</td>
               <td className="px-1 py-1 border text-center truncate">
                 {latitude.toFixed(5)}
               </td>

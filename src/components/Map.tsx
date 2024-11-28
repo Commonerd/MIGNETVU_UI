@@ -1440,6 +1440,17 @@ const Map: React.FC = () => {
                           </span>{" "}
                         </p>
                         <p>
+                          <span className="font-medium">
+                            {" "}
+                            {network.type === "Migrant"
+                              ? "Death Year"
+                              : "Dissolved Year"}
+                          </span>{" "}
+                          <span className="font-medium">
+                            :{network.end_year}
+                          </span>{" "}
+                        </p>
+                        <p>
                           <span className="font-medium">Latitude:</span>{" "}
                           {network.latitude.toFixed(5)}
                         </p>
