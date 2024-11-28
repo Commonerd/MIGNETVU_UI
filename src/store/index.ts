@@ -1,6 +1,7 @@
 import { create } from "zustand"
 
 type User = {
+  id: number
   email: string
   isLoggedIn: boolean
   name: string

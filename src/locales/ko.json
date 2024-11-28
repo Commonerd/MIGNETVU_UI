@@ -66,5 +66,6 @@
   "topRegistrants": "노드 등록 기여자 Top3",
   "nodeCount": "노드",
   "topEntities": "상위 5위 중심성",
-  "migrationTraceability": "이주추적"
+  "migrationTraceability": "이주추적",
+  "filterByUserNetwork": "나의 노드"
 }

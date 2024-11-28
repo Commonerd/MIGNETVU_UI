@@ -168,6 +168,7 @@ const Map: React.FC = () => {
     connectionType: "all",
     entityType: "all",
     yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
+    userNetworkFilter: false, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -423,13 +424,9 @@ const Map: React.FC = () => {
     return edges
   }
 
-  // useEffect(() => {
-  //   const edges = getEdges()
-  // }, [filters, networks])
-
   const handleFilterChange = (
     key: keyof FilterOptions,
-    value: string | number[],
+    value: boolean | string | number[],
   ) => {
     setFilters((prev) => {
       const updatedFilters = { ...prev, [key]: value }
@@ -437,26 +434,30 @@ const Map: React.FC = () => {
     })
   }
 
-  // const filteredMigrants = migrants.filter(
-  //   (migrant) =>
-  //     (filters.nationality === "all" ||
-  //       migrant.nationality === filters.nationality) &&
-  //     (filters.ethnicity === "all" ||
-  //       migrant.ethnicity === filters.ethnicity) &&
-  //     migrant.migrationYear >= filters.yearRange[0] &&
-  //     migrant.migrationYear <= filters.yearRange[1],
-  // )
-
   const filteredNetworks = networks
-    ? networks.filter(
-        (network) =>
-          (filters.nationality === "all" ||
-            network.nationality === filters.nationality) &&
-          (filters.ethnicity === "all" ||
-            network.ethnicity === filters.ethnicity) &&
+    ? networks.filter((network) => {
+        // 기존 필터 조건
+        const matchesNationality =
+          filters.nationality === "all" ||
+          network.nationality === filters.nationality
+        const matchesEthnicity =
+          filters.ethnicity === "all" || network.ethnicity === filters.ethnicity
+        const matchesYearRange =
           network.migration_year >= filters.yearRange[0] &&
-          network.migration_year <= filters.yearRange[1],
-      )
+          network.migration_year <= filters.yearRange[1]
+
+        // 새로 추가된 유저 이름 필터
+        const matchesUserNetwork =
+          !filters.userNetworkFilter || network.user_name === user.name
+
+        // 모든 필터 조건을 종합적으로 확인
+        return (
+          matchesNationality &&
+          matchesEthnicity &&
+          matchesYearRange &&
+          matchesUserNetwork
+        )
+      })
     : []
 
   const filteredOrganizations = organizations.filter(
@@ -1067,11 +1068,24 @@ const Map: React.FC = () => {
                 <select
                   value={centralityType}
                   onChange={(e) => setCentralityType(e.target.value)}
-                  className="p-1 border rounded text-sm w-32 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="p-1 border rounded text-sm w-26 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
                 </select>
+                <div className="p-1 border rounded bg-gray-100 flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id="userNetworkFilter"
+                    checked={filters.userNetworkFilter}
+                    onChange={(e) =>
+                      handleFilterChange("userNetworkFilter", e.target.checked)
+                    }
+                  />
+                  <label htmlFor="userNetworkFilter" className="text-sm">
+                    {t("filterByUserNetwork")}
+                  </label>
+                </div>
               </div>
             </>
           ) : (
@@ -1092,7 +1106,7 @@ const Map: React.FC = () => {
                       handleSearchClick()
                     }
                   }}
-                  className="w-48 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-40 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   onClick={handleSearchClick}
@@ -1229,140 +1243,6 @@ const Map: React.FC = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {/* {(filters.entityType === "all" || filters.entityType === "migrant") &&
-          filteredMigrants.map((migrant) => {
-            const size = getNodeSize(
-              centralityValues[migrant.id] || 0,
-              centralityType,
-            )
-
-            const isHighlighted =
-              highlightedNode &&
-              highlightedNode.id === migrant.id &&
-              highlightedNode.type === "migrant"
-
-            return (
-              <Marker
-                key={`migrant-${migrant.id}`}
-                position={[migrant.latitude, migrant.longitude]}
-                icon={L.divIcon({
-                  className: "custom-marker",
-                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? "yellow" : "red"
-                  }; border-radius: 50%;"></div>`,
-                  iconSize: [size, size],
-                })}
-              >
-                <Tooltip>
-                  <h2 className="text-lg font-bold">{migrant.name}</h2>
-                  <p>id : {migrant.id} </p>
-                  <p>
-                    {t("registrantId")} : {migrant.registrantId}
-                  </p>
-                  <p>
-                    {t("centrality")}: {centralityValues[migrant.id] || 0}
-                  </p>
-                  <p>
-                    {t("nationality")}: {migrant.nationality}
-                  </p>
-                  <p>
-                    {t("ethnicity")}: {migrant.ethnicity}
-                  </p>
-                  <p>
-                    {t("migrationYear")}: {migrant.migrationYear}
-                  </p>
-                  <p>
-                    {t("age")}: {migrant.age}
-                  </p>
-                  <p>
-                    {t("occupation")}: {migrant.occupation}
-                  </p>
-                  <p>
-                    {t("education")}: {migrant.education}
-                  </p>
-                  <p>
-                    {t("languagesSpoken")}: {migrant.languagesSpoken.join(", ")}
-                  </p>
-                </Tooltip>
-              </Marker>
-            )
-          })} */}
-        {/* {(filters.entityType === "all" ||
-          filters.entityType === "organization") &&
-          filteredOrganizations.map((org) => {
-            const size = getNodeSize(
-              centralityValues[org.id] || 0,
-              centralityType,
-            )
-            const isHighlighted =
-              highlightedNode &&
-              highlightedNode.id === org.id &&
-              highlightedNode.type === "organization"
-            return (
-              <Marker
-                key={`org-${org.id}`}
-                position={[org.latitude, org.longitude]}
-                icon={L.divIcon({
-                  className: "custom-marker",
-                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${
-                    isHighlighted ? "yellow" : "blue"
-                  }; border-radius: 50%;"></div>`,
-                  iconSize: [size, size],
-                })}
-              >
-                <Tooltip>
-                  <div>
-                    <h2 className="text-lg font-bold">{org.name}</h2>
-                    <p>id: {org.id} </p>
-                    <p>
-                      {t("registrantId")} : {org.registrantId}
-                    </p>
-                    <p>
-                      {t("centrality")}: {centralityValues[org.id] || 0}
-                    </p>
-                    <p>
-                      {t("foundationYear")}: {org.foundationYear}
-                    </p>
-                    <p>
-                      {t("type")}: {org.type}
-                    </p>
-                    <p>
-                      {t("mission")}: {org.mission}
-                    </p>
-                    <p>
-                      {t("services")}: {org.services.join(", ")}
-                    </p>
-                    <p>
-                      {t("contactInfo")}: {org.contactInfo}
-                    </p>
-                  </div>
-                </Tooltip>
-              </Marker>
-            )
-          })}
-        {getEdges().map((edge, index) => {
-          const positions = edge.slice(0, 2) as unknown as [number, number][]
-          const color = edge[2] as unknown as string
-          const opacity = (edge[3] as unknown as number) * 0.16 + 0.2
-
-          return (
-            <Polyline
-              key={index}
-              positions={positions}
-              color={color}
-              weight={2}
-              opacity={opacity}
-            >
-              <Tooltip>
-                <span>
-                  {`${t("connectionType")}: ${t(String(edge[4]))}`}
-                  <br />
-                  {`${t("connectionStrength")}: ${edge[3]}`}
-                </span>
-              </Tooltip>
-            </Polyline>
-          )
-        })} */}
         {/* 지도에 표시될 네트워크 데이터 */}
         {(filters.entityType === "all" ||
           filters.entityType === "migrant" ||
@@ -1376,6 +1256,7 @@ const Map: React.FC = () => {
                 return network.type === "Organization"
               return true // Show all for "all"
             })
+
             .map((network) => {
               const size = getNodeSize(
                 centralityValues[network.id] || 0,
