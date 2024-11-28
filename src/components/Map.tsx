@@ -192,20 +192,8 @@ const Map: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
 
-  // useEffect(() => {
-  //   axios.defaults.withCredentials = true
-  //   const getCsrfToken = async () => {
-  //     const { data } = await axios.get<CsrfToken>(
-  //       `${process.env.REACT_APP_API_URL}/csrf`,
-  //     )
-  //     axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-  //   }
-  //   getCsrfToken()
-  // }, [])
-
   useEffect(() => {
     if (!data) {
-      console.error("No data available!")
       return
     }
 
@@ -237,11 +225,6 @@ const Map: React.FC = () => {
       markersLayer.clearLayers()
     }
   }, [Map, networks])
-
-  // useEffect(() => {
-  //   setMigrants(mockMigrants)
-  //   setOrganizations(mockOrganizations)
-  // }, [])
 
   // 필터링된 경로
   const filteredTraces =
@@ -460,12 +443,6 @@ const Map: React.FC = () => {
       })
     : []
 
-  const filteredOrganizations = organizations.filter(
-    (org) =>
-      org.foundationYear >= filters.yearRange[0] &&
-      org.foundationYear <= filters.yearRange[1],
-  )
-
   const uniqueNationalities = Array.from(
     new Set(migrants.map((m) => m.nationality)),
   )
@@ -659,32 +636,6 @@ const Map: React.FC = () => {
       return {
         id: Number(id),
         name: String(network ? network.title : "Unknown"),
-        centrality,
-      }
-    })
-
-  const topMigrants = Object.entries(centralityValues)
-    .filter(([id]) => migrants.some((m) => m.id === Number(id)))
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 5)
-    .map(([id, centrality]) => {
-      const migrant = migrants.find((m) => m.id === Number(id))
-      return {
-        id: Number(id),
-        name: migrant ? migrant.name : "Unknown",
-        centrality,
-      }
-    })
-
-  const topOrganizations = Object.entries(centralityValues)
-    .filter(([id]) => organizations.some((o) => o.id === Number(id)))
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 5)
-    .map(([id, centrality]) => {
-      const organization = organizations.find((o) => o.id === Number(id))
-      return {
-        id: Number(id),
-        name: organization ? organization.name : "Unknown",
         centrality,
       }
     })
