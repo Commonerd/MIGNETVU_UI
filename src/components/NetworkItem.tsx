@@ -33,7 +33,7 @@ const NetworkItemMemo: FC<
   const location = useLocation()
 
   return (
-    <li className="my-3 px-2 py-2 bg-white rounded shadow-md text-xs w-full max-w-lg">
+    <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
       <div className="flex justify-between items-center w-full max-w-lg">
         <span
           className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
