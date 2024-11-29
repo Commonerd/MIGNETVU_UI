@@ -438,11 +438,15 @@ const Map: React.FC = () => {
   const filteredNetworks = networks
     ? networks.filter((network) => {
         // 기존 필터 조건
+        const matchesEntityType =
+          filters.entityType.includes("all") ||
+          filters.entityType.includes(network.type)
         const matchesNationality =
-          filters.nationality === "all" ||
-          network.nationality === filters.nationality
+          filters.nationality.includes("all") ||
+          filters.nationality.includes(network.nationality)
         const matchesEthnicity =
-          filters.ethnicity === "all" || network.ethnicity === filters.ethnicity
+          filters.ethnicity.includes("all") ||
+          filters.ethnicity.includes(network.ethnicity)
         const matchesYearRange =
           network.migration_year >= filters.yearRange[0] &&
           network.migration_year <= filters.yearRange[1]
@@ -455,6 +459,7 @@ const Map: React.FC = () => {
 
         // 모든 필터 조건을 종합적으로 확인
         return (
+          matchesEntityType &&
           matchesNationality &&
           matchesEthnicity &&
           matchesYearRange &&
@@ -491,15 +496,24 @@ const Map: React.FC = () => {
       })
     : []
 
+  const uniqueEntityTypes = Array.from(
+    new Set(networks?.map((m) => m.type) ?? []),
+  )
+
   const uniqueNationalities = Array.from(
-    new Set(filteredNetworks.map((m) => m.nationality)),
+    new Set(networks?.map((m) => m.nationality) ?? []),
   )
   const uniqueEthnicities = Array.from(
-    new Set(filteredNetworks.map((m) => m.ethnicity)),
+    new Set(networks?.map((m) => m.ethnicity) ?? []),
   )
   const uniqueConnectionTypes = Array.from(
-    new Set(filteredNetworks.flatMap((m) => m.connections.map((c) => c.type))),
+    new Set(networks?.flatMap((m) => m.connections.map((c) => c.type)) ?? []),
   )
+
+  const entityTypeOptions = uniqueEntityTypes.map((type) => ({
+    value: type,
+    label: type,
+  }))
 
   const nationalityOptions = uniqueNationalities.map((nationality) => ({
     value: nationality,
@@ -944,62 +958,78 @@ const Map: React.FC = () => {
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
           <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
-            <select
-              value={filters.entityType}
-              onChange={(e) => handleFilterChange("entityType", e.target.value)}
-              className={`p-1 border rounded text-sm ${
-                user.isLoggedIn ? "w-24" : "w-42"
-              } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            >
-              <option value="all">{t("allEntityTypes")}</option>
-              <option value="migrant">{t("migrant")}</option>
-              <option value="organization">{t("organization")}</option>
-            </select>
-            {filters.entityType !== "organization" && (
-              <>
-                <Select
-                  options={nationalityOptions}
-                  onChange={(selectedOption: {
-                    value: string | boolean | number[]
-                  }) =>
-                    handleFilterChange(
-                      "nationality",
-                      selectedOption ? selectedOption.value : "all",
-                    )
-                  }
-                  placeholder={t("allNationalities")}
-                  isClearable
-                  className="w-40"
-                />
-                <Select
-                  options={ethnicityOptions}
-                  onChange={(selectedOption: {
-                    value: string | boolean | number[]
-                  }) =>
-                    handleFilterChange(
-                      "ethnicity",
-                      selectedOption ? selectedOption.value : "all",
-                    )
-                  }
-                  placeholder={t("allEthnicities")}
-                  isClearable
-                  className="w-40"
-                />
-              </>
-            )}
+            <Select
+              options={entityTypeOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "entityType",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allEntityTypes")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+            <Select
+              options={nationalityOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "nationality",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allNationalities")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+            <Select
+              options={ethnicityOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "ethnicity",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allEthnicities")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+
             <Select
               options={connectionTypeOptions}
-              onChange={(selectedOption: {
-                value: string | boolean | number[]
-              }) =>
+              onChange={(selectedOptions) =>
                 handleFilterChange(
                   "connectionType",
-                  selectedOption ? selectedOption.value : "all",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
                 )
               }
               placeholder={t("allConnectionTypes")}
               isClearable
-              className="w-40"
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             />
           </div>
 
@@ -1551,5 +1581,26 @@ const LegendBox = styled.div`
     }
   }
 `
+
+const customStyles = {
+  control: (
+    provided: { boxShadow: any; borderColor: any },
+    state: { isFocused: any },
+  ) => ({
+    ...provided,
+    boxShadow: state.isFocused
+      ? "0 0 0 2px rgba(251, 191, 36, 1)"
+      : provided.boxShadow,
+    borderColor: state.isFocused
+      ? "rgba(251, 191, 36, 1)"
+      : provided.borderColor,
+    "&:hover": {
+      borderColor: state.isFocused
+        ? "rgba(251, 191, 36, 1)"
+        : provided.borderColor,
+    },
+    borderRadius: "0.375rem", // 테두리 둥글게 설정 (연도 범위나 이주 추적 정도와 동일)
+  }),
+}
 
 export default Map
