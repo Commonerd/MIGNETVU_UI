@@ -34,6 +34,7 @@ import { useError } from "../hooks/useError"
 import axios from "axios"
 import ClipboardJS from "clipboard"
 import SearchResults from "./SearchResults"
+import Select from "react-select"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -491,11 +492,30 @@ const Map: React.FC = () => {
     : []
 
   const uniqueNationalities = Array.from(
-    new Set(migrants.map((m) => m.nationality)),
+    new Set(filteredNetworks.map((m) => m.nationality)),
   )
   const uniqueEthnicities = Array.from(
-    new Set(migrants.map((m) => m.ethnicity)),
+    new Set(filteredNetworks.map((m) => m.ethnicity)),
   )
+  const uniqueConnectionTypes = Array.from(
+    new Set(filteredNetworks.flatMap((m) => m.connections.map((c) => c.type))),
+  )
+
+  const nationalityOptions = uniqueNationalities.map((nationality) => ({
+    value: nationality,
+    label: nationality,
+  }))
+
+  const ethnicityOptions = uniqueEthnicities.map((ethnicity) => ({
+    value: ethnicity,
+    label: ethnicity,
+  }))
+
+  const connectionTypeOptions = uniqueConnectionTypes.map((type) => ({
+    value: type,
+    label: type,
+  }))
+
   // Utility function to calculate shortest path using BFS
   const bfsShortestPath = (
     startId: number,
@@ -937,56 +957,50 @@ const Map: React.FC = () => {
             </select>
             {filters.entityType !== "organization" && (
               <>
-                <select
-                  value={filters.nationality}
-                  onChange={(e) =>
-                    handleFilterChange("nationality", e.target.value)
+                <Select
+                  options={nationalityOptions}
+                  onChange={(selectedOption: {
+                    value: string | boolean | number[]
+                  }) =>
+                    handleFilterChange(
+                      "nationality",
+                      selectedOption ? selectedOption.value : "all",
+                    )
                   }
-                  className={`p-1 border rounded text-sm ${
-                    user.isLoggedIn ? "w-24" : "w-40"
-                  } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                >
-                  <option value="all">{t("allNationalities")}</option>
-                  {uniqueNationalities.map((nationality) => (
-                    <option key={nationality} value={nationality}>
-                      {nationality}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={filters.ethnicity}
-                  onChange={(e) =>
-                    handleFilterChange("ethnicity", e.target.value)
+                  placeholder={t("allNationalities")}
+                  isClearable
+                  className="w-40"
+                />
+                <Select
+                  options={ethnicityOptions}
+                  onChange={(selectedOption: {
+                    value: string | boolean | number[]
+                  }) =>
+                    handleFilterChange(
+                      "ethnicity",
+                      selectedOption ? selectedOption.value : "all",
+                    )
                   }
-                  className={`p-1 border rounded text-sm ${
-                    user.isLoggedIn ? "w-24" : "w-40"
-                  } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                >
-                  <option value="all">{t("allEthnicities")}</option>
-                  {uniqueEthnicities.map((ethnicity) => (
-                    <option key={ethnicity} value={ethnicity}>
-                      {ethnicity}
-                    </option>
-                  ))}
-                </select>
+                  placeholder={t("allEthnicities")}
+                  isClearable
+                  className="w-40"
+                />
               </>
             )}
-            <select
-              value={filters.connectionType}
-              onChange={(e) =>
-                handleFilterChange("connectionType", e.target.value)
+            <Select
+              options={connectionTypeOptions}
+              onChange={(selectedOption: {
+                value: string | boolean | number[]
+              }) =>
+                handleFilterChange(
+                  "connectionType",
+                  selectedOption ? selectedOption.value : "all",
+                )
               }
-              className={`p-1 border rounded text-sm ${
-                user.isLoggedIn ? "w-24" : "w-40"
-              } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            >
-              <option value="all">{t("allConnectionTypes")}</option>
-              <option value="friend">{t("friend")}</option>
-              <option value="colleague">{t("colleague")}</option>
-              <option value="family">{t("family")}</option>
-              <option value="professional">{t("professional")}</option>
-              <option value="cultural">{t("cultural")}</option>
-            </select>
+              placeholder={t("allConnectionTypes")}
+              isClearable
+              className="w-40"
+            />
           </div>
 
           {/* Year Range */}
