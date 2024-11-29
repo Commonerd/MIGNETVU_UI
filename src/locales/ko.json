@@ -67,5 +67,6 @@
   "nodeCount": "노드",
   "topEntities": "상위 5위 중심성",
   "migrationTraceability": "이주추적",
-  "filterByUserNetwork": "나의 노드"
+  "filterByUserNetwork": "나의 노드",
+  "filterByUserNetworkTrace": "나의 이주추적"
 }

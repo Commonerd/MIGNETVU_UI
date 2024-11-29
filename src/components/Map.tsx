@@ -169,6 +169,7 @@ const Map: React.FC = () => {
     entityType: "all",
     yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
     userNetworkFilter: false, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
+    userNetworkTraceFilter: false,
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -226,14 +227,21 @@ const Map: React.FC = () => {
     }
   }, [Map, networks])
 
-  // 필터링된 경로
   const filteredTraces =
     networks?.flatMap((network) =>
-      network.migration_traces.filter(
-        (trace) =>
+      network.migration_traces.filter((trace) => {
+        // 기존 필터 조건: 이주 연도 범위
+        const matchesYearRange =
           trace.migration_year >= yearRange[0] &&
-          trace.migration_year <= yearRange[1],
-      ),
+          trace.migration_year <= yearRange[1]
+
+        // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
+        const matchesUserNetworkTrace =
+          !filters.userNetworkTraceFilter || network.user_name === user.name
+
+        // 모든 조건을 종합적으로 확인
+        return matchesYearRange && matchesUserNetworkTrace
+      }),
     ) ?? [] // Fallback to an empty array if undefined
 
   const positions = filteredTraces.map(
@@ -418,6 +426,32 @@ const Map: React.FC = () => {
   }
 
   const filteredNetworks = networks
+    ? networks.filter((network) => {
+        // 기존 필터 조건
+        const matchesNationality =
+          filters.nationality === "all" ||
+          network.nationality === filters.nationality
+        const matchesEthnicity =
+          filters.ethnicity === "all" || network.ethnicity === filters.ethnicity
+        const matchesYearRange =
+          network.migration_year >= filters.yearRange[0] &&
+          network.migration_year <= filters.yearRange[1]
+
+        // 새로 추가된 유저 이름 필터
+        const matchesUserNetwork =
+          !filters.userNetworkFilter || network.user_name === user.name
+
+        // 모든 필터 조건을 종합적으로 확인
+        return (
+          matchesNationality &&
+          matchesEthnicity &&
+          matchesYearRange &&
+          matchesUserNetwork
+        )
+      })
+    : []
+
+  const filteredNetworkTraces = networks
     ? networks.filter((network) => {
         // 기존 필터 조건
         const matchesNationality =
@@ -1028,7 +1062,7 @@ const Map: React.FC = () => {
                   <div className="flex items-center gap-0.5">
                     <input
                       type="checkbox"
-                      id="userNetworkFilter1"
+                      id="userNetworkFilter"
                       className="w-2 h-2"
                       checked={filters.userNetworkFilter}
                       onChange={(e) =>
@@ -1038,25 +1072,25 @@ const Map: React.FC = () => {
                         )
                       }
                     />
-                    <label htmlFor="userNetworkFilter1" className="text-xs">
+                    <label htmlFor="userNetworkFilter" className="text-xs">
                       {t("filterByUserNetwork")}
                     </label>
                   </div>
                   <div className="flex items-center gap-0.5">
                     <input
                       type="checkbox"
-                      id="userNetworkFilter2"
+                      id="userNetworkTraceFilter"
                       className="w-2 h-2"
-                      checked={filters.userNetworkFilter}
+                      checked={filters.userNetworkTraceFilter}
                       onChange={(e) =>
                         handleFilterChange(
-                          "userNetworkFilter",
+                          "userNetworkTraceFilter",
                           e.target.checked,
                         )
                       }
                     />
-                    <label htmlFor="userNetworkFilter2" className="text-xs">
-                      {t("filterByUserNetwork")}
+                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
+                      {t("filterByUserNetworkTrace")}
                     </label>
                   </div>
                 </div>

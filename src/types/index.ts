@@ -95,6 +95,7 @@ export interface Connection {
 export type EntityType = "migrant" | "organization"
 
 export type FilterOptions = {
+  userNetworkTraceFilter: any
   userNetworkFilter: any
   networkIds: any
   nationality: string

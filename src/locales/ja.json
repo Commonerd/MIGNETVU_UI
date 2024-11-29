@@ -59,5 +59,7 @@
   "topRegistrants": "ノード登録貢献者TOP3",
   "nodeCount": "ノード",
   "topEntities": "中心性トップ",
-  "migrationTraceability": "移住追跡"
+  "migrationTraceability": "移住追跡",
+  "filterByUserNetwork": "マイノード",
+  "filterByUserNetworkTrace": "マイ移住追跡"
 }
