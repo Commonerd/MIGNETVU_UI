@@ -916,12 +916,12 @@ const Map: React.FC = () => {
       <div className="p-2 bg-[#d1c6b1] relative">
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
-          <div className="p-2 border rounded bg-[#d1c6b1] flex flex-wrap gap-2 items-center border-2 border-[#9e9d89]">
+          <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
             <select
               value={filters.entityType}
               onChange={(e) => handleFilterChange("entityType", e.target.value)}
               className={`p-1 border rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-40"
+                user.isLoggedIn ? "w-24" : "w-42"
               } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             >
               <option value="all">{t("allEntityTypes")}</option>
@@ -983,7 +983,7 @@ const Map: React.FC = () => {
           </div>
 
           {/* Year Range */}
-          <div className="p-2 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
             <label className="text-sm">{t("yearRange")}</label>
             <input
               type="number"
@@ -995,7 +995,7 @@ const Map: React.FC = () => {
                 ])
               }
               className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-16" : "w-24"
+                user.isLoggedIn ? "w-14" : "w-22"
               }`}
             />
             <span className="text-sm">-</span>
@@ -1009,13 +1009,13 @@ const Map: React.FC = () => {
                 ])
               }
               className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-16" : "w-24"
+                user.isLoggedIn ? "w-14" : "w-22"
               }`}
             />
           </div>
 
           {/* Migration Traceability */}
-          <div className="p-2 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
             <label className="text-sm">{t("migrationTraceability")}</label>
             <input
               type="number"
@@ -1038,7 +1038,7 @@ const Map: React.FC = () => {
                 setYearRange([value, yearRange[1]])
               }}
               className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-16" : "w-24"
+                user.isLoggedIn ? "w-14" : "w-22"
               }`}
             />
             <span className="text-sm">-</span>
@@ -1063,7 +1063,7 @@ const Map: React.FC = () => {
                 setYearRange([yearRange[0], value])
               }}
               className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-16" : "w-24"
+                user.isLoggedIn ? "w-14" : "w-22"
               }`}
             />
           </div>
@@ -1071,7 +1071,7 @@ const Map: React.FC = () => {
           {user.isLoggedIn ? (
             <>
               {/* Centrality */}
-              <div className="p-2 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
                 <select
                   value={centralityType}
                   onChange={(e) => setCentralityType(e.target.value)}
@@ -1089,7 +1089,7 @@ const Map: React.FC = () => {
           {user.isLoggedIn ? (
             <>
               {/* Search */}
-              <div className="p-2 border rounded bg-[#d1c6b1] flex gap-3 items-center border-2 border-[#9e9d89]">
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
                 <div className="ml-1 flex items-center gap-0.5">
                   <input
                     type="checkbox"
@@ -1151,7 +1151,7 @@ const Map: React.FC = () => {
                       handleSearchClick()
                     }
                   }}
-                  className="w-40 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   onClick={handleSearchClick}
