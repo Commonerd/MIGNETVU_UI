@@ -240,7 +240,9 @@ const Map: React.FC = () => {
 
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
         const matchesUserNetworkTrace =
-          !filters.userNetworkTraceFilter || network.user_name === user.name
+          !filters.userNetworkFilter ||
+          !user.name ||
+          network.user_name === user.name
 
         // 모든 조건을 종합적으로 확인
         return matchesYearRange && matchesUserNetworkTrace
@@ -385,6 +387,7 @@ const Map: React.FC = () => {
           // 유저 네트워크 커넥션 필터 조건
           const matchesUserNetworkConnection =
             !filters.userNetworkConnectionFilter ||
+            !user.name ||
             network.user_name === user.name ||
             (target && target.user_name === user.name)
 
@@ -445,7 +448,9 @@ const Map: React.FC = () => {
 
         // 새로 추가된 유저 이름 필터
         const matchesUserNetwork =
-          !filters.userNetworkFilter || network.user_name === user.name
+          !filters.userNetworkFilter ||
+          !user.name ||
+          network.user_name === user.name
 
         // 모든 필터 조건을 종합적으로 확인
         return (
@@ -471,7 +476,9 @@ const Map: React.FC = () => {
 
         // 새로 추가된 유저 이름 필터
         const matchesUserNetwork =
-          !filters.userNetworkFilter || network.user_name === user.name
+          !filters.userNetworkFilter ||
+          !user.name ||
+          network.user_name === user.name
 
         // 모든 필터 조건을 종합적으로 확인
         return (
