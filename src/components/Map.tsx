@@ -907,10 +907,10 @@ const Map: React.FC = () => {
 
   return (
     <div className="h-[calc(85vh-64px)] relative">
-      <div className="p-2 bg-gray-100 relative">
-        <div className="flex flex-wrap gap-3">
+      <div className="p-2 bg-[#d1c6b1] relative">
+        <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
-          <div className="p-2 border rounded bg-gray-100 flex flex-wrap gap-2 items-center">
+          <div className="p-2 border rounded bg-[#d1c6b1] flex flex-wrap gap-2 items-center border-2 border-[#9e9d89]">
             <select
               value={filters.entityType}
               onChange={(e) => handleFilterChange("entityType", e.target.value)}
@@ -969,7 +969,7 @@ const Map: React.FC = () => {
           </div>
 
           {/* Year Range */}
-          <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
+          <div className="p-2 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
             <label className="text-sm">{t("yearRange")}</label>
             <input
               type="number"
@@ -997,7 +997,7 @@ const Map: React.FC = () => {
           </div>
 
           {/* Migration Traceability */}
-          <div className="p-2 border rounded bg-gray-100 flex gap-2 items-center">
+          <div className="p-2 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
             <label className="text-sm">{t("migrationTraceability")}</label>
             <input
               type="number"
@@ -1049,7 +1049,7 @@ const Map: React.FC = () => {
           {user.isLoggedIn ? (
             <>
               {/* Centrality */}
-              <div className="p-2 border rounded bg-gray-100 flex items-center">
+              <div className="p-2 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
                 <select
                   value={centralityType}
                   onChange={(e) => setCentralityType(e.target.value)}
@@ -1103,7 +1103,7 @@ const Map: React.FC = () => {
           {user.isLoggedIn ? (
             <>
               {/* Search */}
-              <div className="p-2 border rounded bg-gray-100 flex gap-3 items-center">
+              <div className="p-2 border rounded bg-[#d1c6b1] flex gap-3 items-center border-2 border-[#9e9d89]">
                 <input
                   type="text"
                   placeholder={t("Search Networks")}
