@@ -119,12 +119,14 @@ const Legend = ({
           .map(
             (entity, index) =>
               //`<div style="cursor: pointer;" data-id="${entity.id}" data-type="${entity.type}">${index + 1}. ${
-              `<div style="cursor: pointer;" data-id="${entity.id}">${index + 1}. ${
-                entity.name
-              }: ${entity.centrality.toFixed(2)}</div>`,
+              `<div style="cursor: pointer;" data-id="${entity.id}">${
+                index + 1
+              }. ${entity.name}: ${entity.centrality.toFixed(2)}</div>`,
           )
           .join("")
-        div.innerHTML += `<br><br><strong>${t("topEntities")}</strong><br>${topEntitiesHtml}`
+        div.innerHTML += `<br><br><strong>${t(
+          "topEntities",
+        )}</strong><br>${topEntitiesHtml}`
       }
 
       return div
@@ -168,8 +170,9 @@ const Map: React.FC = () => {
     connectionType: "all",
     entityType: "all",
     yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
-    userNetworkFilter: false, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
-    userNetworkTraceFilter: false,
+    userNetworkFilter: true, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
+    userNetworkTraceFilter: true,
+    userNetworkConnectionFilter: true, // 추가
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -377,11 +380,15 @@ const Map: React.FC = () => {
           Number(connection.year) >= Number(filters.yearRange[0]) &&
           Number(connection.year) <= Number(filters.yearRange[1])
         ) {
-          console.log(`Matched connection: ${JSON.stringify(connection)}`)
-
           const target = networks?.find((n) => n.id === connection.targetId)
 
-          if (target) {
+          // 유저 네트워크 커넥션 필터 조건
+          const matchesUserNetworkConnection =
+            !filters.userNetworkConnectionFilter ||
+            network.user_name === user.name ||
+            (target && target.user_name === user.name)
+
+          if (target && matchesUserNetworkConnection) {
             edges.push([
               [network.latitude, network.longitude],
               [target.latitude, target.longitude],
@@ -395,7 +402,6 @@ const Map: React.FC = () => {
       })
     }
 
-    // Filter and add edges for Network entities based on filters
     networks?.forEach((network) => {
       const migration_year = new Date(network.migration_year)
 
@@ -914,7 +920,9 @@ const Map: React.FC = () => {
             <select
               value={filters.entityType}
               onChange={(e) => handleFilterChange("entityType", e.target.value)}
-              className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-30" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              className={`p-1 border rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-40"
+              } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             >
               <option value="all">{t("allEntityTypes")}</option>
               <option value="migrant">{t("migrant")}</option>
@@ -927,7 +935,9 @@ const Map: React.FC = () => {
                   onChange={(e) =>
                     handleFilterChange("nationality", e.target.value)
                   }
-                  className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                  className={`p-1 border rounded text-sm ${
+                    user.isLoggedIn ? "w-24" : "w-40"
+                  } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 >
                   <option value="all">{t("allNationalities")}</option>
                   {uniqueNationalities.map((nationality) => (
@@ -941,7 +951,9 @@ const Map: React.FC = () => {
                   onChange={(e) =>
                     handleFilterChange("ethnicity", e.target.value)
                   }
-                  className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                  className={`p-1 border rounded text-sm ${
+                    user.isLoggedIn ? "w-24" : "w-40"
+                  } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 >
                   <option value="all">{t("allEthnicities")}</option>
                   {uniqueEthnicities.map((ethnicity) => (
@@ -957,7 +969,9 @@ const Map: React.FC = () => {
               onChange={(e) =>
                 handleFilterChange("connectionType", e.target.value)
               }
-              className={`p-1 border rounded text-sm ${user.isLoggedIn ? "w-24" : "w-40"} h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              className={`p-1 border rounded text-sm ${
+                user.isLoggedIn ? "w-24" : "w-40"
+              } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             >
               <option value="all">{t("allConnectionTypes")}</option>
               <option value="friend">{t("friend")}</option>
@@ -980,7 +994,9 @@ const Map: React.FC = () => {
                   filters.yearRange[1],
                 ])
               }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                user.isLoggedIn ? "w-16" : "w-24"
+              }`}
             />
             <span className="text-sm">-</span>
             <input
@@ -992,7 +1008,9 @@ const Map: React.FC = () => {
                   parseInt(e.target.value),
                 ])
               }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                user.isLoggedIn ? "w-16" : "w-24"
+              }`}
             />
           </div>
 
@@ -1019,7 +1037,9 @@ const Map: React.FC = () => {
                   e.target.value === "" ? 0 : parseInt(e.target.value)
                 setYearRange([value, yearRange[1]])
               }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                user.isLoggedIn ? "w-16" : "w-24"
+              }`}
             />
             <span className="text-sm">-</span>
             <input
@@ -1042,7 +1062,9 @@ const Map: React.FC = () => {
                   e.target.value === "" ? 0 : parseInt(e.target.value)
                 setYearRange([yearRange[0], value])
               }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${user.isLoggedIn ? "w-16" : "w-24"}`}
+              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                user.isLoggedIn ? "w-16" : "w-24"
+              }`}
             />
           </div>
 
@@ -1058,41 +1080,56 @@ const Map: React.FC = () => {
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
                 </select>
-                <div className="ml-2 p-1 border rounded bg-gray-100 flex flex-col gap-0.5">
-                  <div className="flex items-center gap-0.5">
-                    <input
-                      type="checkbox"
-                      id="userNetworkFilter"
-                      className="w-2 h-2"
-                      checked={filters.userNetworkFilter}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "userNetworkFilter",
-                          e.target.checked,
-                        )
-                      }
-                    />
-                    <label htmlFor="userNetworkFilter" className="text-xs">
-                      {t("filterByUserNetwork")}
-                    </label>
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    <input
-                      type="checkbox"
-                      id="userNetworkTraceFilter"
-                      className="w-2 h-2"
-                      checked={filters.userNetworkTraceFilter}
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "userNetworkTraceFilter",
-                          e.target.checked,
-                        )
-                      }
-                    />
-                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
-                      {t("filterByUserNetworkTrace")}
-                    </label>
-                  </div>
+                <div className="ml-2 flex items-center gap-１">
+                  <input
+                    type="checkbox"
+                    id="userNetworkFilter"
+                    className="w-2 h-2"
+                    checked={filters.userNetworkFilter}
+                    onChange={(e) =>
+                      handleFilterChange("userNetworkFilter", e.target.checked)
+                    }
+                  />
+                  <label htmlFor="userNetworkFilter" className="text-xs">
+                    {t("filterByUserNetwork")}
+                  </label>
+                </div>
+                <div className="ml-2 flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id="userNetworkTraceFilter"
+                    className="w-2 h-2"
+                    checked={filters.userNetworkTraceFilter}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "userNetworkTraceFilter",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                  <label htmlFor="userNetworkTraceFilter" className="text-xs">
+                    {t("filterByUserNetworkTrace")}
+                  </label>
+                </div>
+                <div className="ml-2 flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    id="userNetworkConnectionFilter"
+                    className="w-2 h-2"
+                    checked={filters.userNetworkConnectionFilter}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "userNetworkConnectionFilter",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor="userNetworkConnectionFilter"
+                    className="text-xs"
+                  >
+                    {t("filterByUserNetworkConnection")}
+                  </label>
                 </div>
               </div>
             </>

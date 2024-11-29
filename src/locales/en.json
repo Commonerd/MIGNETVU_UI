@@ -68,5 +68,6 @@
   "topEntities": "Top 5 Centrality",
   "migrationTraceability": "Migration Trace",
   "filterByUserNetwork": "My Nodes",
-  "filterByUserNetworkTrace": "My Traces"
+  "filterByUserNetworkTrace": "My Traces",
+  "filterByUserNetworkConnection": "My Connections"
 }
