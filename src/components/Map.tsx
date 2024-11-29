@@ -1222,7 +1222,7 @@ const Map: React.FC = () => {
         center={[37.5665, 126.978]}
         zoom={2}
         style={{
-          height: "calc(100% - 25px)",
+          height: "calc(100% - 24px)",
           width: "100%",
           position: "relative",
           zIndex: 0,
