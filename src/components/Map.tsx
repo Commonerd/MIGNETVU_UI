@@ -1080,7 +1080,17 @@ const Map: React.FC = () => {
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
                 </select>
-                <div className="ml-2 flex items-center gap-１">
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
+
+          {user.isLoggedIn ? (
+            <>
+              {/* Search */}
+              <div className="p-2 border rounded bg-[#d1c6b1] flex gap-3 items-center border-2 border-[#9e9d89]">
+                <div className="ml-1 flex items-center gap-0.5">
                   <input
                     type="checkbox"
                     id="userNetworkFilter"
@@ -1094,7 +1104,7 @@ const Map: React.FC = () => {
                     {t("filterByUserNetwork")}
                   </label>
                 </div>
-                <div className="ml-2 flex items-center gap-1">
+                <div className="ml-1 flex items-center gap-0.5">
                   <input
                     type="checkbox"
                     id="userNetworkTraceFilter"
@@ -1111,7 +1121,7 @@ const Map: React.FC = () => {
                     {t("filterByUserNetworkTrace")}
                   </label>
                 </div>
-                <div className="ml-2 flex items-center gap-1">
+                <div className="ml-1 flex items-center gap-0.5">
                   <input
                     type="checkbox"
                     id="userNetworkConnectionFilter"
@@ -1131,16 +1141,6 @@ const Map: React.FC = () => {
                     {t("filterByUserNetworkConnection")}
                   </label>
                 </div>
-              </div>
-            </>
-          ) : (
-            <></>
-          )}
-
-          {user.isLoggedIn ? (
-            <>
-              {/* Search */}
-              <div className="p-2 border rounded bg-[#d1c6b1] flex gap-3 items-center border-2 border-[#9e9d89]">
                 <input
                   type="text"
                   placeholder={t("Search Networks")}
