@@ -29,7 +29,12 @@ const Header: React.FC = () => {
     <header className="bg-[#3E2723] text-white p-4">
       <div className="container mx-auto flex justify-between items-center flex-wrap">
         <Link to="/" className="flex items-center mb-2 md:mb-0">
-          <Globe className="mr-2 w-4 h-4 md:w-6 md:h-6" />
+          <img
+            src="/hisnetvu2.png"
+            alt="Globe"
+            className="mr-2 w-4 h-4 md:w-6 md:h-6"
+          />
+
           <span className="text-xs md:text-lg font-bold">HisNetVu </span>
           <span className="text-xs md:text-sm font-bold">
             　{t("appSubName")}{" "}

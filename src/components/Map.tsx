@@ -1024,18 +1024,41 @@ const Map: React.FC = () => {
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
                 </select>
-                <div className="p-1 border rounded bg-gray-100 flex items-center gap-1">
-                  <input
-                    type="checkbox"
-                    id="userNetworkFilter"
-                    checked={filters.userNetworkFilter}
-                    onChange={(e) =>
-                      handleFilterChange("userNetworkFilter", e.target.checked)
-                    }
-                  />
-                  <label htmlFor="userNetworkFilter" className="text-sm">
-                    {t("filterByUserNetwork")}
-                  </label>
+                <div className="ml-2 p-1 border rounded bg-gray-100 flex flex-col gap-0.5">
+                  <div className="flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkFilter1"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkFilter}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkFilter1" className="text-xs">
+                      {t("filterByUserNetwork")}
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkFilter2"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkFilter}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkFilter2" className="text-xs">
+                      {t("filterByUserNetwork")}
+                    </label>
+                  </div>
                 </div>
               </div>
             </>

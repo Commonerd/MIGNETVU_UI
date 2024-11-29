@@ -284,8 +284,8 @@ export const Network = () => {
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-gray-100">
-      <div className="flex items-center my-6">
-        <GlobeIcon className="h-8 w-8 mr-3 text-amber-800" />
+      <div className="flex items-center my-5">
+        <GlobeIcon className="h-7 w-7 mr-3 text-amber-900" />
         <span className="text-center text-xl font-extrabold">
           Network Manager
         </span>

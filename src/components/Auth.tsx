@@ -15,7 +15,7 @@ export const Auth = () => {
   const [pw, setPw] = useState("")
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
-  const [csrfLoaded, setCsrfLoaded] = useState(false) // CSRF 토큰 로딩 상태 추가
+  const [csrfLoaded, setCsrfLoaded] = useState(false)
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -50,7 +50,6 @@ export const Auth = () => {
         { email, password: pw, name: "0" },
         {
           onSuccess: (res) => {
-            // 로그인 리스폰스로부터 이름을 가져와 setUser 상태 업데이트
             setUser({ email: res.email, isLoggedIn: true, name: res.name })
           },
         },
@@ -121,19 +120,43 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 80vh;
-  background-color: #f3f4f6;
+  min-height: 85vh;
   padding: 1rem;
+  background-image: url("/hisnetvu1.png");
+  background-size: contain; /* Adjust the size of the background image */
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  border-radius: 16px; /* Rounded corners for the background image */
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.2); /* Lighter dark overlay */
+    backdrop-filter: blur(6px); /* Subtle blur effect */
+    border-radius: 16px; /* Ensure overlay matches rounded corners */
+    z-index: -1;
+  }
 `
 
 const LoginBox = styled.div`
-  background-color: #e5e7eb;
+  background-color: rgba(
+    229,
+    231,
+    235,
+    0.9
+  ); /* Slightly transparent background for login box */
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 32px;
   width: 20rem;
   height: auto;
   text-align: center;
+  position: relative;
 
   @media (max-width: 600px) {
     padding: 20px;
