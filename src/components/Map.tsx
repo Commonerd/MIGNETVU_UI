@@ -919,7 +919,7 @@ const Map: React.FC = () => {
   }
 
   return (
-    <div className="h-[calc(85vh-64px)] relative">
+    <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative">
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
