@@ -1,5 +1,5 @@
 import { useState, FormEvent, useEffect } from "react"
-import { CheckBadgeIcon, ArrowPathIcon } from "@heroicons/react/24/solid"
+import { ArrowPathIcon, LockClosedIcon } from "@heroicons/react/24/solid"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { useTranslation } from "react-i18next"
 import useStore from "../store"
@@ -72,7 +72,10 @@ export const Auth = () => {
     <Container>
       <LoginBox>
         <Header>
-          <CheckBadgeIcon className="h-8 w-8 mr-2 text-amber-800" />
+          <LockClosedIcon className="h-8 w-8 mr-2 text-amber-800" />{" "}
+          {/* Example: Lock icon */}
+          {/* Replace with login icon */}
+          {/* Use the lock icon */}
           <span className="text-2xl font-extrabold">HisNetVu</span>
         </Header>
         <span className="text-xs">{t("appSubName")}</span>
