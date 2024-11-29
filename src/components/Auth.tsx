@@ -124,10 +124,11 @@ const Container = styled.div`
   padding: 1rem;
   background-image: url("/hisnetvu1.png");
   background-size: contain; /* Adjust the size of the background image */
+  background-color: #d1c6b1; /* Faded yellowish "aged paper" color for the sides */
+
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-  border-radius: 16px; /* Rounded corners for the background image */
 
   &::before {
     content: "";
