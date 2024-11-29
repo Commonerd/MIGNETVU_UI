@@ -123,7 +123,7 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 85vh;
+  min-height: 86vh;
   padding: 1rem;
   background-image: url("/hisnetvu1.png");
   background-size: contain; /* Adjust the size of the background image */
