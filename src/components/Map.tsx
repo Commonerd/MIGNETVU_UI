@@ -240,7 +240,7 @@ const Map: React.FC = () => {
 
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
         const matchesUserNetworkTrace =
-          !filters.userNetworkFilter ||
+          !filters.userNetworkTraceFilter ||
           !user.name ||
           network.user_name === user.name
 
