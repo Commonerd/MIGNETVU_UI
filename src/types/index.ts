@@ -99,9 +99,9 @@ export type FilterOptions = {
   userNetworkTraceFilter: any
   userNetworkFilter: any
   networkIds: any
-  nationality: string
-  ethnicity: string
-  connectionType: string
+  nationality: string[] | string
+  ethnicity: string[] | string
+  connectionType: string[] | string
   entityType: string
   yearRange: [number, number]
 }

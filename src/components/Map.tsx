@@ -166,9 +166,9 @@ const Map: React.FC = () => {
   const [migrants, setMigrants] = useState<Migrant[]>([])
   const [organizations, setOrganizations] = useState<Organization[]>([])
   const [filters, setFilters] = useState<FilterOptions>({
-    nationality: "all",
-    ethnicity: "all",
-    connectionType: "all",
+    nationality: ["all"],
+    ethnicity: ["all"],
+    connectionType: ["all"],
     entityType: "all",
     yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
     userNetworkFilter: true, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
@@ -427,10 +427,26 @@ const Map: React.FC = () => {
 
   const handleFilterChange = (
     key: keyof FilterOptions,
-    value: boolean | string | number[],
+    value: boolean | string | string[] | number[],
   ) => {
     setFilters((prev) => {
       const updatedFilters = { ...prev, [key]: value }
+
+      // 필터링 조건이 초기화되었을 때 다시 계산
+      if (key === "nationality" && Array.isArray(value) && value.length === 0) {
+        updatedFilters.nationality = ["all"]
+      }
+      if (key === "ethnicity" && Array.isArray(value) && value.length === 0) {
+        updatedFilters.ethnicity = ["all"]
+      }
+      if (
+        key === "connectionType" &&
+        Array.isArray(value) &&
+        value.length === 0
+      ) {
+        updatedFilters.connectionType = ["all"]
+      }
+
       return updatedFilters
     })
   }
@@ -439,10 +455,11 @@ const Map: React.FC = () => {
     ? networks.filter((network) => {
         // 기존 필터 조건
         const matchesNationality =
-          filters.nationality === "all" ||
-          network.nationality === filters.nationality
+          filters.nationality.includes("all") ||
+          filters.nationality.includes(network.nationality)
         const matchesEthnicity =
-          filters.ethnicity === "all" || network.ethnicity === filters.ethnicity
+          filters.ethnicity.includes("all") ||
+          filters.ethnicity.includes(network.ethnicity)
         const matchesYearRange =
           network.migration_year >= filters.yearRange[0] &&
           network.migration_year <= filters.yearRange[1]
@@ -501,17 +518,23 @@ const Map: React.FC = () => {
     new Set(filteredNetworks.flatMap((m) => m.connections.map((c) => c.type))),
   )
 
-  const nationalityOptions = uniqueNationalities.map((nationality) => ({
+  const nationalityOptions = Array.from(
+    new Set(networks?.map((m) => m.nationality)),
+  ).map((nationality) => ({
     value: nationality,
     label: nationality,
   }))
 
-  const ethnicityOptions = uniqueEthnicities.map((ethnicity) => ({
+  const ethnicityOptions = Array.from(
+    new Set(networks?.map((m) => m.ethnicity)),
+  ).map((ethnicity) => ({
     value: ethnicity,
     label: ethnicity,
   }))
 
-  const connectionTypeOptions = uniqueConnectionTypes.map((type) => ({
+  const connectionTypeOptions = Array.from(
+    new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
+  ).map((type) => ({
     value: type,
     label: type,
   }))
@@ -959,46 +982,52 @@ const Map: React.FC = () => {
               <>
                 <Select
                   options={nationalityOptions}
-                  onChange={(selectedOption: {
-                    value: string | boolean | number[]
-                  }) =>
+                  onChange={(selectedOptions) =>
                     handleFilterChange(
                       "nationality",
-                      selectedOption ? selectedOption.value : "all",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
                     )
                   }
                   placeholder={t("allNationalities")}
                   isClearable
+                  isMulti
+                  styles={customStyles}
                   className="w-40"
                 />
                 <Select
                   options={ethnicityOptions}
-                  onChange={(selectedOption: {
-                    value: string | boolean | number[]
-                  }) =>
+                  onChange={(selectedOptions) =>
                     handleFilterChange(
                       "ethnicity",
-                      selectedOption ? selectedOption.value : "all",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
                     )
                   }
                   placeholder={t("allEthnicities")}
                   isClearable
+                  isMulti
+                  styles={customStyles}
                   className="w-40"
                 />
               </>
             )}
             <Select
               options={connectionTypeOptions}
-              onChange={(selectedOption: {
-                value: string | boolean | number[]
-              }) =>
+              onChange={(selectedOptions) =>
                 handleFilterChange(
                   "connectionType",
-                  selectedOption ? selectedOption.value : "all",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
                 )
               }
               placeholder={t("allConnectionTypes")}
               isClearable
+              isMulti
+              styles={customStyles}
               className="w-40"
             />
           </div>
@@ -1551,5 +1580,26 @@ const LegendBox = styled.div`
     }
   }
 `
+
+const customStyles = {
+  control: (
+    provided: { boxShadow: any; borderColor: any },
+    state: { isFocused: any },
+  ) => ({
+    ...provided,
+    boxShadow: state.isFocused
+      ? "0 0 0 2px rgba(251, 191, 36, 1)"
+      : provided.boxShadow,
+    borderColor: state.isFocused
+      ? "rgba(251, 191, 36, 1)"
+      : provided.borderColor,
+    "&:hover": {
+      borderColor: state.isFocused
+        ? "rgba(251, 191, 36, 1)"
+        : provided.borderColor,
+    },
+    borderRadius: "0.375rem", // 테두리 둥글게 설정 (연도 범위나 이주 추적 정도와 동일)
+  }),
+}
 
 export default Map
