@@ -41,6 +41,7 @@ export const Network = () => {
       connections,
       user_id,
       migration_traces, // Get migration traces data
+      photo, // 추가된 부분
     } = editedNetwork
 
     // Ensure type is either 'Migrant' or 'Organization'
@@ -62,6 +63,7 @@ export const Network = () => {
       connections: connections || [], // Default to an empty array if no connections
       user_id,
       migration_traces, // Get migration traces data
+      photo, // 추가된 부분
     }
     console.log("-------", migration_traces)
     if (id === 0) {
@@ -77,6 +79,7 @@ export const Network = () => {
         connections: connections || [],
         user_id: Number(user_id),
         migration_traces: migration_traces || [], // Get migration traces data
+        photo, // 추가된 부분
       })
     } else {
       updateNetworkMutation.mutate({
@@ -87,8 +90,24 @@ export const Network = () => {
         longitude: Number(longitude),
         connections: connections || [],
         migration_traces: migration_traces || [], // Get migration traces data
+        photo, // 추가된 부분
       })
     }
+  }
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        updateNetwork({ ...editedNetwork, photo: file })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handlePhotoRemove = () => {
+    updateNetwork({ ...editedNetwork, photo: undefined })
   }
 
   const handleImportCSV = () => {
@@ -348,6 +367,34 @@ export const Network = () => {
               }
               value={editedNetwork.title || ""}
             />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold text-sm">
+              Photo
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            {editedNetwork.photo && (
+              <div className="mt-2">
+                <img
+                  src={editedNetwork.photo}
+                  alt="Network"
+                  className="w-full h-auto rounded"
+                />
+                <button
+                  type="button"
+                  onClick={handlePhotoRemove}
+                  className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                >
+                  Remove Photo
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Type, Nationality, and Ethnicity in a single row */}

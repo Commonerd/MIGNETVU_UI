@@ -376,7 +376,7 @@ const Map: React.FC = () => {
     const edges: any[] = []
 
     const addEdges = (network: Network) => {
-      network.connections.forEach((connection) => {
+      ;(network.connections || []).forEach((connection) => {
         if (
           (filters.connectionType.includes("all") ||
             filters.connectionType.includes(connection.type)) &&
@@ -509,15 +509,15 @@ const Map: React.FC = () => {
       })
     : []
 
-  const uniqueNationalities = Array.from(
-    new Set(filteredNetworks.map((m) => m.nationality)),
-  )
-  const uniqueEthnicities = Array.from(
-    new Set(filteredNetworks.map((m) => m.ethnicity)),
-  )
-  const uniqueConnectionTypes = Array.from(
-    new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
-  )
+  // const uniqueNationalities = Array.from(
+  //   new Set(filteredNetworks.map((m) => m.nationality)),
+  // )
+  // const uniqueEthnicities = Array.from(
+  //   new Set(filteredNetworks.map((m) => m.ethnicity)),
+  // )
+  // const uniqueConnectionTypes = Array.from(
+  //   new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
+  // )
 
   const nationalityOptions = Array.from(
     new Set(networks?.map((m) => m.nationality)),
@@ -534,7 +534,9 @@ const Map: React.FC = () => {
   }))
 
   const connectionTypeOptions = Array.from(
-    new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
+    new Set(
+      (networks || []).flatMap((m) => (m.connections || []).map((c) => c.type)),
+    ),
   ).map((type) => ({
     value: type,
     label: type,
@@ -570,7 +572,7 @@ const Map: React.FC = () => {
     // Build a connections map
     //;[...migrants, ...organizations].forEach((entity) => {
     ;[...(networks ?? [])].forEach((entity) => {
-      connectionsMap[entity.id] = entity.connections.map(
+      connectionsMap[entity.id] = (entity.connections || []).map(
         (connection) => connection.targetId,
       )
     })

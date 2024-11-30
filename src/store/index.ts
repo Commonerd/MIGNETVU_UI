@@ -43,6 +43,7 @@ type EditedNetwork = {
   longitude: number
   migration_traces: MigrationTrace[] // Add migration traces
   connections: Connection[] // Add connections as an array
+  photo?: File // Add photo field
 }
 
 type State = {
@@ -86,6 +87,7 @@ const useStore = create<State>((set) => ({
     connections: [
       { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
     ],
+    photo: undefined, // Add photo field
   },
   updateEditedNetwork: (payload) => {
     set({
@@ -115,6 +117,7 @@ const useStore = create<State>((set) => ({
             year: 0,
           },
         ],
+        photo: undefined, // Add photo field
       },
     })
   },

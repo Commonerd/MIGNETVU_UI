@@ -43,6 +43,7 @@ export type Network = {
     year: number
   }>
   migration_traces: MigrationTrace[]
+  photo: File
 }
 
 export type CsrfToken = {

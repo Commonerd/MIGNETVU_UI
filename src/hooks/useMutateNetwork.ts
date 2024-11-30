@@ -10,19 +10,35 @@ export const useMutateNetwork = () => {
   const resetEditedNetwork = useStore((state) => state.resetEditedNetwork)
 
   const createNetworkMutation = useMutation(
-    (network: Omit<Network, "id" | "created_at" | "updated_at">) =>
-      axios.post<Network>(`${process.env.REACT_APP_API_URL}/networks`, {
-        title: network.title,
-        type: network.type,
-        nationality: network.nationality,
-        ethnicity: network.ethnicity,
-        migration_year: network.migration_year,
-        end_year: network.end_year,
-        latitude: network.latitude,
-        longitude: network.longitude,
-        connections: network.connections, // Include connections in the request
-        migration_traces: network.migration_traces,
-      }),
+    (network: Omit<Network, "id" | "created_at" | "updated_at">) => {
+      const formData = new FormData()
+      formData.append("title", network.title)
+      formData.append("type", network.type)
+      formData.append("nationality", network.nationality)
+      formData.append("ethnicity", network.ethnicity)
+      formData.append("migration_year", network.migration_year.toString())
+      formData.append("end_year", network.end_year.toString())
+      formData.append("latitude", network.latitude.toString())
+      formData.append("longitude", network.longitude.toString())
+      formData.append("connections", JSON.stringify(network.connections))
+      formData.append(
+        "migration_traces",
+        JSON.stringify(network.migration_traces),
+      )
+      if (network.photo) {
+        formData.append("photo", network.photo)
+      }
+
+      return axios.post<Network>(
+        `${process.env.REACT_APP_API_URL}/networks`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
+      )
+    },
     {
       onSuccess: (res) => {
         const previousNetworks = queryClient.getQueryData<Network[]>([
@@ -47,22 +63,35 @@ export const useMutateNetwork = () => {
   )
 
   const updateNetworkMutation = useMutation(
-    (network: Omit<Network, "created_at" | "updated_at">) =>
-      axios.put<Network>(
+    (network: Omit<Network, "created_at" | "updated_at">) => {
+      const formData = new FormData()
+      formData.append("title", network.title)
+      formData.append("type", network.type)
+      formData.append("nationality", network.nationality)
+      formData.append("ethnicity", network.ethnicity)
+      formData.append("migration_year", network.migration_year.toString())
+      formData.append("end_year", network.end_year.toString())
+      formData.append("latitude", network.latitude.toString())
+      formData.append("longitude", network.longitude.toString())
+      formData.append("connections", JSON.stringify(network.connections))
+      formData.append(
+        "migration_traces",
+        JSON.stringify(network.migration_traces),
+      )
+      if (network.photo) {
+        formData.append("photo", network.photo)
+      }
+
+      return axios.put<Network>(
         `${process.env.REACT_APP_API_URL}/networks/${network.id}`,
+        formData,
         {
-          title: network.title,
-          type: network.type,
-          nationality: network.nationality,
-          ethnicity: network.ethnicity,
-          migration_year: network.migration_year,
-          end_year: network.end_year,
-          latitude: network.latitude,
-          longitude: network.longitude,
-          connections: network.connections, // Include connections in the request
-          migration_traces: network.migration_traces,
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         },
-      ),
+      )
+    },
     {
       onSuccess: (res, variables) => {
         const previousNetworks = queryClient.getQueryData<Network[]>([
