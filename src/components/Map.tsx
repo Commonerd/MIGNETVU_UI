@@ -378,8 +378,8 @@ const Map: React.FC = () => {
     const addEdges = (network: Network) => {
       network.connections.forEach((connection) => {
         if (
-          (filters.connectionType === "all" ||
-            connection.type === filters.connectionType) &&
+          (filters.connectionType.includes("all") ||
+            filters.connectionType.includes(connection.type)) &&
           Number(connection.year) >= Number(filters.yearRange[0]) &&
           Number(connection.year) <= Number(filters.yearRange[1])
         ) {
@@ -410,11 +410,12 @@ const Map: React.FC = () => {
       const migration_year = new Date(network.migration_year)
 
       if (
-        (filters.entityType === "all" || filters.entityType === network.type) &&
-        (filters.nationality === "all" ||
-          network.nationality === filters.nationality) &&
-        (filters.ethnicity === "all" ||
-          network.ethnicity === filters.ethnicity) &&
+        (filters.entityType.includes("all") ||
+          filters.entityType.includes(network.type)) &&
+        (filters.nationality.includes("all") ||
+          filters.nationality.includes(network.nationality)) &&
+        (filters.ethnicity.includes("all") ||
+          filters.ethnicity.includes(network.ethnicity)) &&
         migration_year.getFullYear() >= filters.yearRange[0] &&
         migration_year.getFullYear() <= filters.yearRange[1]
       ) {
@@ -515,7 +516,7 @@ const Map: React.FC = () => {
     new Set(filteredNetworks.map((m) => m.ethnicity)),
   )
   const uniqueConnectionTypes = Array.from(
-    new Set(filteredNetworks.flatMap((m) => m.connections.map((c) => c.type))),
+    new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
   )
 
   const nationalityOptions = Array.from(
@@ -970,9 +971,9 @@ const Map: React.FC = () => {
             <select
               value={filters.entityType}
               onChange={(e) => handleFilterChange("entityType", e.target.value)}
-              className={`p-1 border rounded text-sm ${
-                user.isLoggedIn ? "w-24" : "w-42"
-              } h-8 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              className={`p-1 ml-1 rounded-md text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-7 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             >
               <option value="all">{t("allEntityTypes")}</option>
               <option value="migrant">{t("migrant")}</option>
@@ -994,7 +995,9 @@ const Map: React.FC = () => {
                   isClearable
                   isMulti
                   styles={customStyles}
-                  className="w-40"
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 />
                 <Select
                   options={ethnicityOptions}
@@ -1010,7 +1013,9 @@ const Map: React.FC = () => {
                   isClearable
                   isMulti
                   styles={customStyles}
-                  className="w-40"
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 />
               </>
             )}
@@ -1024,11 +1029,23 @@ const Map: React.FC = () => {
                     : ["all"],
                 )
               }
+              value={
+                Array.isArray(filters.connectionType)
+                  ? filters.connectionType
+                      .filter((value) => value !== "all")
+                      .map((value) => ({
+                        value,
+                        label: value,
+                      }))
+                  : []
+              }
               placeholder={t("allConnectionTypes")}
               isClearable
               isMulti
               styles={customStyles}
-              className="w-40"
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
             />
           </div>
 
@@ -1599,6 +1616,18 @@ const customStyles = {
         : provided.borderColor,
     },
     borderRadius: "0.375rem", // 테두리 둥글게 설정 (연도 범위나 이주 추적 정도와 동일)
+  }),
+  placeholder: (provided: any) => ({
+    ...provided,
+    color: "black", // 플레이스홀더 글자 색깔을 검은색으로 설정
+  }),
+  singleValue: (provided: any) => ({
+    ...provided,
+    color: "black", // 선택된 값의 글자 색깔을 검은색으로 설정
+  }),
+  multiValueLabel: (provided: any) => ({
+    ...provided,
+    color: "black", // 멀티 셀렉트 텍스트 색깔을 검은색으로 설정
   }),
 }
 
