@@ -984,6 +984,15 @@ const Map: React.FC = () => {
     return null
   }
 
+  const HandleMapClick = () => {
+    useMapEvents({
+      click: () => {
+        setHighlightedNode(null) // 지도 클릭 시 하이라이트 해제
+      },
+    })
+    return null
+  }
+
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative">
@@ -1317,6 +1326,7 @@ const Map: React.FC = () => {
         minZoom={3} // 최소 줌 레벨 설정
       >
         <HandleRightClick />
+        <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
         {latLng && (
           <Marker position={latLng}>
             <Popup>
@@ -1418,6 +1428,7 @@ const Map: React.FC = () => {
                   })}
                   eventHandlers={{
                     mouseover: () => handleTooltipOpen(network.id),
+                    mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
                   }}
                 >
                   <Tooltip>
