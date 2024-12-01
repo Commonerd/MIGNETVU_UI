@@ -1082,6 +1082,7 @@ const Map: React.FC = () => {
             <label className="text-sm">{t("yearRange")}</label>
             <input
               type="number"
+              placeholder="1800"
               value={filters.yearRange[0]}
               onChange={(e) =>
                 handleFilterChange("yearRange", [
@@ -1096,6 +1097,7 @@ const Map: React.FC = () => {
             <span className="text-sm">-</span>
             <input
               type="number"
+              placeholder="2024"
               value={filters.yearRange[1]}
               onChange={(e) =>
                 handleFilterChange("yearRange", [
@@ -1115,6 +1117,7 @@ const Map: React.FC = () => {
             <input
               type="number"
               value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+              placeholder="1800"
               onFocus={() => {
                 // 포커스 시 값이 0이면 빈 문자열로 변환
                 if (yearRange[0] === 0) {
@@ -1139,6 +1142,7 @@ const Map: React.FC = () => {
             <span className="text-sm">-</span>
             <input
               type="number"
+              placeholder="2024"
               value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
               onFocus={() => {
                 // 포커스 시 값이 0이면 빈 문자열로 변환
@@ -1191,6 +1195,7 @@ const Map: React.FC = () => {
                     id="userNetworkFilter"
                     className="w-2 h-2"
                     checked={filters.userNetworkFilter}
+                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
                     onChange={(e) =>
                       handleFilterChange("userNetworkFilter", e.target.checked)
                     }
@@ -1205,6 +1210,7 @@ const Map: React.FC = () => {
                     id="userNetworkTraceFilter"
                     className="w-2 h-2"
                     checked={filters.userNetworkTraceFilter}
+                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
                     onChange={(e) =>
                       handleFilterChange(
                         "userNetworkTraceFilter",
@@ -1222,6 +1228,7 @@ const Map: React.FC = () => {
                     id="userNetworkConnectionFilter"
                     className="w-2 h-2"
                     checked={filters.userNetworkConnectionFilter}
+                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
                     onChange={(e) =>
                       handleFilterChange(
                         "userNetworkConnectionFilter",
