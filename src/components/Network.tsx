@@ -40,8 +40,8 @@ export const Network = () => {
       longitude,
       connections,
       user_id,
-      migration_traces, // Get migration traces data
-      photo, // 추가된 부분
+      migration_traces,
+      photo,
     } = editedNetwork
 
     // Ensure type is either 'Migrant' or 'Organization'
@@ -50,48 +50,30 @@ export const Network = () => {
       return
     }
 
-    // Ensure that connections is an empty array if it's undefined
-    const networkData = {
-      title,
-      type,
-      nationality,
-      ethnicity,
-      migration_year: Number(migration_year),
-      end_year: Number(end_year),
-      latitude: Number(latitude),
-      longitude: Number(longitude),
-      connections: connections || [], // Default to an empty array if no connections
-      user_id,
-      migration_traces, // Get migration traces data
-      photo, // 추가된 부분
+    const formData = new FormData()
+    formData.append("title", title)
+    formData.append("type", type)
+    formData.append("nationality", nationality)
+    formData.append("ethnicity", ethnicity)
+    formData.append("migration_year", migration_year.toString())
+    formData.append("end_year", end_year.toString())
+    formData.append("latitude", latitude.toString())
+    formData.append("longitude", longitude.toString())
+    formData.append("connections", JSON.stringify(connections || []))
+    formData.append("user_id", user_id.toString())
+    formData.append("migration_traces", JSON.stringify(migration_traces || []))
+    if (photo) {
+      formData.append("photo", photo)
     }
-    console.log("-------", migration_traces)
+
+    // FormData 내용 콘솔에 출력
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`)
+    }
     if (id === 0) {
-      createNetworkMutation.mutate({
-        title,
-        type,
-        nationality,
-        ethnicity,
-        migration_year: Number(migration_year),
-        end_year: Number(end_year),
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        connections: connections || [],
-        user_id: Number(user_id),
-        migration_traces: migration_traces || [], // Get migration traces data
-        photo, // 추가된 부분
-      })
+      createNetworkMutation.mutate(formData)
     } else {
-      updateNetworkMutation.mutate({
-        ...editedNetwork,
-        migration_year: Number(migration_year),
-        end_year: Number(end_year),
-        latitude: Number(latitude),
-        longitude: Number(longitude),
-        connections: connections || [],
-        migration_traces: migration_traces || [], // Get migration traces data
-        photo, // 추가된 부분
-      })
+      updateNetworkMutation.mutate({ ...editedNetwork, formData })
     }
   }
 

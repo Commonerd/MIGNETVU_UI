@@ -44,6 +44,7 @@ export type Network = {
   }>
   migration_traces: MigrationTrace[]
   photo: File
+  photoUrl: string
 }
 
 export type CsrfToken = {

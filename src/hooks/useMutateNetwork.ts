@@ -10,25 +10,7 @@ export const useMutateNetwork = () => {
   const resetEditedNetwork = useStore((state) => state.resetEditedNetwork)
 
   const createNetworkMutation = useMutation(
-    (network: Omit<Network, "id" | "created_at" | "updated_at">) => {
-      const formData = new FormData()
-      formData.append("title", network.title)
-      formData.append("type", network.type)
-      formData.append("nationality", network.nationality)
-      formData.append("ethnicity", network.ethnicity)
-      formData.append("migration_year", network.migration_year.toString())
-      formData.append("end_year", network.end_year.toString())
-      formData.append("latitude", network.latitude.toString())
-      formData.append("longitude", network.longitude.toString())
-      formData.append("connections", JSON.stringify(network.connections))
-      formData.append(
-        "migration_traces",
-        JSON.stringify(network.migration_traces),
-      )
-      if (network.photo) {
-        formData.append("photo", network.photo)
-      }
-
+    (formData: FormData) => {
       return axios.post<Network>(
         `${process.env.REACT_APP_API_URL}/networks`,
         formData,
@@ -63,27 +45,9 @@ export const useMutateNetwork = () => {
   )
 
   const updateNetworkMutation = useMutation(
-    (network: Omit<Network, "created_at" | "updated_at">) => {
-      const formData = new FormData()
-      formData.append("title", network.title)
-      formData.append("type", network.type)
-      formData.append("nationality", network.nationality)
-      formData.append("ethnicity", network.ethnicity)
-      formData.append("migration_year", network.migration_year.toString())
-      formData.append("end_year", network.end_year.toString())
-      formData.append("latitude", network.latitude.toString())
-      formData.append("longitude", network.longitude.toString())
-      formData.append("connections", JSON.stringify(network.connections))
-      formData.append(
-        "migration_traces",
-        JSON.stringify(network.migration_traces),
-      )
-      if (network.photo) {
-        formData.append("photo", network.photo)
-      }
-
+    ({ id, formData }: { id: number; formData: FormData }) => {
       return axios.put<Network>(
-        `${process.env.REACT_APP_API_URL}/networks/${network.id}`,
+        `${process.env.REACT_APP_API_URL}/networks/${id}`,
         formData,
         {
           headers: {

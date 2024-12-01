@@ -178,6 +178,7 @@ const Map: React.FC = () => {
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
     id: number
+    photo: string
     // type: EntityType
   } | null>(null)
   const [focusedNode, setFocusedNode] = useState<{
@@ -840,6 +841,25 @@ const Map: React.FC = () => {
     }
   }
 
+  const handleTooltipOpen = async (id: number) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
+        {
+          responseType: "blob",
+        },
+      )
+      const imageUrl = URL.createObjectURL(response.data)
+      setHighlightedNode((prev) => ({
+        ...prev,
+        id,
+        photo: imageUrl,
+      }))
+    } catch (error) {
+      console.error("Error fetching photo:", error)
+    }
+  }
+
   const CustomMapComponent = () => {
     const map = useMap()
     const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
@@ -1396,6 +1416,9 @@ const Map: React.FC = () => {
                     html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
                     iconSize: [size, size],
                   })}
+                  eventHandlers={{
+                    mouseover: () => handleTooltipOpen(network.id),
+                  }}
                 >
                   <Tooltip>
                     <div className="p-4">
@@ -1403,10 +1426,19 @@ const Map: React.FC = () => {
                         No.{network.id} : {network.title}
                       </strong>
                       <div className="text-gray-700 text-sm space-y-1">
+                        {highlightedNode?.id === network.id &&
+                          highlightedNode.photo && (
+                            <div className="flex justify-center mb-2">
+                              <img
+                                src={highlightedNode.photo}
+                                alt="Network"
+                                className="w-24 h-24 object-cover rounded-lg shadow-md"
+                              />
+                            </div>
+                          )}
                         <p>
                           <span className="font-medium">Creator Name:</span>{" "}
-                          {userNames[network.user_id]}{" "}
-                          {/* userNames 객체에서 유저 이름을 가져옵니다 */}
+                          {userNames[network.user_id]}
                         </p>
                         <p>
                           <span className="font-medium">Type:</span>{" "}
@@ -1425,25 +1457,23 @@ const Map: React.FC = () => {
                         </p>
                         <p>
                           <span className="font-medium">
-                            {" "}
                             {network.type === "Migrant"
                               ? "Birth Year"
                               : "Established Year"}
-                          </span>{" "}
+                          </span>
                           <span className="font-medium">
-                            :{network.migration_year}
-                          </span>{" "}
+                            : {network.migration_year}
+                          </span>
                         </p>
                         <p>
                           <span className="font-medium">
-                            {" "}
                             {network.type === "Migrant"
                               ? "Death Year"
                               : "Dissolved Year"}
-                          </span>{" "}
+                          </span>
                           <span className="font-medium">
-                            :{network.end_year}
-                          </span>{" "}
+                            : {network.end_year}
+                          </span>
                         </p>
                         <p>
                           <span className="font-medium">Latitude:</span>{" "}
