@@ -170,7 +170,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     connectionType: ["all"],
     entityType: "all",
-    yearRange: [0, new Date().getFullYear()], // 현재 연도를 자동으로 설정
+    yearRange: [1800, new Date().getFullYear()], // 현재 연도를 자동으로 설정
     userNetworkFilter: true, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
     userNetworkTraceFilter: true,
     userNetworkConnectionFilter: true, // 추가
@@ -191,10 +191,7 @@ const Map: React.FC = () => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[number, number]>([
-    0,
-    new Date().getFullYear(),
-  ]) // Year for migration trace
+  const [yearRange, setYearRange] = useState<[number, number]>([0, 0]) // Year for migration trace
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
 
