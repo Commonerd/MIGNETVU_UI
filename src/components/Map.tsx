@@ -578,12 +578,16 @@ const Map: React.FC = () => {
     switch (centralityType) {
       case "degree":
         for (const id in connectionsMap) {
-          centrality[id] = connectionsMap[id].length
+          centrality[id] = connectionsMap[id].reduce((sum, neighborId) => {
+            const connection = networks
+              ?.find((n) => n.id === Number(id))
+              ?.connections.find((c) => c.targetId === neighborId)
+            return sum + (connection ? connection.strength : 1)
+          }, 0)
         }
         break
 
       case "betweenness":
-        // Betweenness centrality implementation (as shown previously)
         for (const id in connectionsMap) {
           centrality[id] = 0
         }
@@ -606,11 +610,15 @@ const Map: React.FC = () => {
           while (queue.length > 0) {
             const current = queue.shift()!
             connectionsMap[current].forEach((neighbor) => {
+              const connection = networks
+                ?.find((n) => n.id === current)
+                ?.connections.find((c) => c.targetId === neighbor)
+              const weight = connection ? connection.strength : 1
               if (distances[neighbor] === Infinity) {
-                distances[neighbor] = distances[current] + 1
+                distances[neighbor] = distances[current] + weight
                 queue.push(neighbor)
               }
-              if (distances[neighbor] === distances[current] + 1) {
+              if (distances[neighbor] === distances[current] + weight) {
                 predecessors[neighbor].push(current)
               }
             })
@@ -657,13 +665,13 @@ const Map: React.FC = () => {
         break
 
       case "eigenvector":
-        // Initialize eigenvector centrality values to 1
+        // Initialize eigenvector centrality values to 1 / sqrt(numNodes)
         const numNodes = Object.keys(connectionsMap).length
         let eigenCentrality: { [id: number]: number } = {}
         let prevEigenCentrality: { [id: number]: number } = {}
 
         Object.keys(connectionsMap).forEach((id) => {
-          eigenCentrality[Number(id)] = 1
+          eigenCentrality[Number(id)] = 1 / Math.sqrt(numNodes)
         })
 
         const maxIterations = 100
@@ -707,9 +715,6 @@ const Map: React.FC = () => {
 
         // Assign eigenvector centrality to the result
         centrality = eigenCentrality
-        break
-
-      default:
         break
     }
 
@@ -1178,6 +1183,13 @@ const Map: React.FC = () => {
                 >
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
+                  <option value="betweeness">
+                    {t("betweenessCentrality")}
+                  </option>
+                  <option value="closeness">{t("closenessCentrality")}</option>
+                  <option value="eigenvector">
+                    {t("eigenvectorCentrality")}
+                  </option>
                 </select>
               </div>
             </>
