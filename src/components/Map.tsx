@@ -578,12 +578,27 @@ const Map: React.FC = () => {
     switch (centralityType) {
       case "degree":
         for (const id in connectionsMap) {
-          centrality[id] = connectionsMap[id].reduce((sum, neighborId) => {
+          centrality[id] = 0
+        }
+
+        for (const id in connectionsMap) {
+          // 아웃바운드 커넥션 합산
+          centrality[id] += connectionsMap[id].reduce((sum, neighborId) => {
             const connection = networks
               ?.find((n) => n.id === Number(id))
               ?.connections.find((c) => c.targetId === neighborId)
             return sum + (connection ? connection.strength : 1)
           }, 0)
+
+          // 인바운드 커넥션 합산
+          for (const neighborId in connectionsMap) {
+            if (connectionsMap[neighborId].includes(Number(id))) {
+              const connection = networks
+                ?.find((n) => n.id === Number(neighborId))
+                ?.connections.find((c) => c.targetId === Number(id))
+              centrality[id] += connection ? connection.strength : 1
+            }
+          }
         }
         break
 
@@ -593,39 +608,52 @@ const Map: React.FC = () => {
         }
 
         for (const startId in connectionsMap) {
-          const shortestPaths: { [id: number]: number[][] } = {}
+          const shortestPaths: { [id: number]: number } = {}
           const distances: { [id: number]: number } = {}
-          const queue: number[] = [Number(startId)]
           const predecessors: { [id: number]: number[] } = {}
+          const queue: number[] = []
+          const visited: Set<number> = new Set()
 
+          // 초기화
           Object.keys(connectionsMap).forEach((id) => {
             distances[Number(id)] = Infinity
-            shortestPaths[Number(id)] = []
+            shortestPaths[Number(id)] = 0
             predecessors[Number(id)] = []
           })
 
           distances[Number(startId)] = 0
-          shortestPaths[Number(startId)].push([Number(startId)])
+          shortestPaths[Number(startId)] = 1
+          queue.push(Number(startId))
 
+          // 다익스트라 알고리즘을 활용한 최단 경로 탐색
           while (queue.length > 0) {
             const current = queue.shift()!
+            visited.add(current)
+
             connectionsMap[current].forEach((neighbor) => {
               const connection = networks
                 ?.find((n) => n.id === current)
                 ?.connections.find((c) => c.targetId === neighbor)
               const weight = connection ? connection.strength : 1
-              if (distances[neighbor] === Infinity) {
-                distances[neighbor] = distances[current] + weight
-                queue.push(neighbor)
-              }
-              if (distances[neighbor] === distances[current] + weight) {
+
+              const newDistance = distances[current] + weight
+
+              // 최단 거리 갱신
+              if (newDistance < distances[neighbor]) {
+                distances[neighbor] = newDistance
+                predecessors[neighbor] = [current]
+                shortestPaths[neighbor] = shortestPaths[current] // 최단 경로 수 갱신
+                if (!visited.has(neighbor)) queue.push(neighbor)
+              } else if (newDistance === distances[neighbor]) {
+                // 최단 경로 추가
                 predecessors[neighbor].push(current)
+                shortestPaths[neighbor] += shortestPaths[current]
               }
             })
           }
 
+          // 매개중심성 계산
           const dependency: { [id: number]: number } = {}
-
           Object.keys(predecessors).forEach((id) => {
             dependency[Number(id)] = 0
           })
@@ -634,9 +662,11 @@ const Map: React.FC = () => {
             .map(Number)
             .sort((a, b) => distances[b] - distances[a])
 
+          // 역순으로 의존도 계산
           nodes.forEach((w) => {
             predecessors[w].forEach((v) => {
-              const fraction = (1 + dependency[w]) / predecessors[w].length
+              const fraction =
+                (shortestPaths[v] / shortestPaths[w]) * (1 + dependency[w])
               dependency[v] += fraction
             })
 
@@ -646,6 +676,7 @@ const Map: React.FC = () => {
           })
         }
 
+        // 매개중심성 정규화
         const totalNodes = Object.keys(connectionsMap).length
         Object.keys(centrality).forEach((id) => {
           centrality[Number(id)] /= (totalNodes - 1) * (totalNodes - 2)
