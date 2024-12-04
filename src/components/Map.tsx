@@ -551,7 +551,7 @@ const Map: React.FC = () => {
 
     while (queue.length > 0) {
       const [current, dist] = queue.shift()!
-      connectionsMap[current].forEach((neighbor) => {
+      ;(connectionsMap[current] || []).forEach((neighbor) => {
         if (!visited.has(neighbor)) {
           visited.add(neighbor)
           distances[neighbor] = dist + 1
@@ -772,7 +772,7 @@ const Map: React.FC = () => {
     let scaleFactor = 5
 
     if (centralityType === "degree") {
-      scaleFactor = 3
+      scaleFactor = 2
     } else if (
       centralityType === "closeness" ||
       centralityType === "eigenvector"
