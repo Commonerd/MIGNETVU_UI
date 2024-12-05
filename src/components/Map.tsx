@@ -696,13 +696,13 @@ const Map: React.FC = () => {
         break
 
       case "eigenvector":
-        // Initialize eigenvector centrality values to 1 / sqrt(numNodes)
         const numNodes = Object.keys(connectionsMap).length
         let eigenCentrality: { [id: number]: number } = {}
         let prevEigenCentrality: { [id: number]: number } = {}
 
+        // Initialize eigenvector centrality values to 1 / numNodes
         Object.keys(connectionsMap).forEach((id) => {
-          eigenCentrality[Number(id)] = 1 / Math.sqrt(numNodes)
+          eigenCentrality[Number(id)] = 1 / numNodes
         })
 
         const maxIterations = 100
@@ -718,7 +718,11 @@ const Map: React.FC = () => {
           for (const id in connectionsMap) {
             let sum = 0
             connectionsMap[Number(id)].forEach((neighbor) => {
-              sum += prevEigenCentrality[neighbor]
+              const connection = networks
+                ?.find((n) => n.id === Number(id))
+                ?.connections.find((c) => c.targetId === neighbor)
+              const weight = connection ? connection.strength : 1
+              sum += prevEigenCentrality[neighbor] * weight
             })
             eigenCentrality[Number(id)] = sum
           }
@@ -731,7 +735,7 @@ const Map: React.FC = () => {
             ),
           )
           for (const id in eigenCentrality) {
-            eigenCentrality[Number(id)] /= norm
+            eigenCentrality[Number(id)] /= norm || 1 // Avoid division by zero
           }
 
           // Calculate the delta (change) between iterations
