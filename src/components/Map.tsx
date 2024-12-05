@@ -625,7 +625,7 @@ const Map: React.FC = () => {
           shortestPaths[Number(startId)] = 1
           queue.push(Number(startId))
 
-          // 다익스트라 알고리즘을 활용한 최단 경로 탐색
+          // 다익스트라 알고리즘에 기반한 최단 경로 탐색
           while (queue.length > 0) {
             const current = queue.shift()!
             visited.add(current)
@@ -642,7 +642,7 @@ const Map: React.FC = () => {
               if (newDistance < distances[neighbor]) {
                 distances[neighbor] = newDistance
                 predecessors[neighbor] = [current]
-                shortestPaths[neighbor] = shortestPaths[current] // 최단 경로 수 갱신
+                shortestPaths[neighbor] = shortestPaths[current]
                 if (!visited.has(neighbor)) queue.push(neighbor)
               } else if (newDistance === distances[neighbor]) {
                 // 최단 경로 추가
@@ -652,7 +652,7 @@ const Map: React.FC = () => {
             })
           }
 
-          // 매개중심성 계산
+          // 매개 중심성 계산
           const dependency: { [id: number]: number } = {}
           Object.keys(predecessors).forEach((id) => {
             dependency[Number(id)] = 0
@@ -660,9 +660,8 @@ const Map: React.FC = () => {
 
           const nodes = Object.keys(predecessors)
             .map(Number)
-            .sort((a, b) => distances[b] - distances[a])
+            .sort((a, b) => distances[b] - distances[a]) // 내림차순으로 처리
 
-          // 역순으로 의존도 계산
           nodes.forEach((w) => {
             predecessors[w].forEach((v) => {
               const fraction =
@@ -676,7 +675,7 @@ const Map: React.FC = () => {
           })
         }
 
-        // 매개중심성 정규화
+        // 매개 중심성 정규화
         const totalNodes = Object.keys(connectionsMap).length
         Object.keys(centrality).forEach((id) => {
           centrality[Number(id)] /= (totalNodes - 1) * (totalNodes - 2)
@@ -786,7 +785,7 @@ const Map: React.FC = () => {
     })
 
   const getNodeSize = (centrality: number, centralityType: string) => {
-    let baseSize = 5
+    let baseSize = 10
     let scaleFactor = 2
 
     if (centralityType === "degree") {
@@ -1232,7 +1231,7 @@ const Map: React.FC = () => {
                 >
                   <option value="none">{t("selectCentrality")}</option>
                   <option value="degree">{t("degreeCentrality")}</option>
-                  <option value="betweeness">
+                  <option value="betweenness">
                     {t("betweenessCentrality")}
                   </option>
                   <option value="closeness">{t("closenessCentrality")}</option>
