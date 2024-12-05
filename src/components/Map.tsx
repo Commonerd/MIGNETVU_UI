@@ -786,18 +786,18 @@ const Map: React.FC = () => {
     })
 
   const getNodeSize = (centrality: number, centralityType: string) => {
-    let baseSize = 10
-    let scaleFactor = 5
+    let baseSize = 5
+    let scaleFactor = 2
 
     if (centralityType === "degree") {
-      scaleFactor = 2
+      scaleFactor = 1
     } else if (
       centralityType === "closeness" ||
       centralityType === "eigenvector"
     ) {
-      scaleFactor = 30
+      scaleFactor = 10
     } else if (centralityType === "betweenness") {
-      scaleFactor = 500
+      scaleFactor = 50
     }
 
     return Math.max(baseSize, centrality * scaleFactor + baseSize)
