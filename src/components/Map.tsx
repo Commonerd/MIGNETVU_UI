@@ -700,9 +700,9 @@ const Map: React.FC = () => {
         let eigenCentrality: { [id: number]: number } = {}
         let prevEigenCentrality: { [id: number]: number } = {}
 
-        // Initialize eigenvector centrality values to 1 / numNodes
+        // Initialize eigenvector centrality values to 1 / sqrt(numNodes)
         Object.keys(connectionsMap).forEach((id) => {
-          eigenCentrality[Number(id)] = 1 / numNodes
+          eigenCentrality[Number(id)] = 1 / Math.sqrt(numNodes)
         })
 
         const maxIterations = 100
@@ -717,6 +717,8 @@ const Map: React.FC = () => {
 
           for (const id in connectionsMap) {
             let sum = 0
+
+            // 아웃바운드 커넥션 합산
             connectionsMap[Number(id)].forEach((neighbor) => {
               const connection = networks
                 ?.find((n) => n.id === Number(id))
@@ -724,6 +726,18 @@ const Map: React.FC = () => {
               const weight = connection ? connection.strength : 1
               sum += prevEigenCentrality[neighbor] * weight
             })
+
+            // 인바운드 커넥션 합산
+            for (const neighborId in connectionsMap) {
+              if (connectionsMap[neighborId].includes(Number(id))) {
+                const connection = networks
+                  ?.find((n) => n.id === Number(neighborId))
+                  ?.connections.find((c) => c.targetId === Number(id))
+                const weight = connection ? connection.strength : 1
+                sum += prevEigenCentrality[Number(neighborId)] * weight
+              }
+            }
+
             eigenCentrality[Number(id)] = sum
           }
 
