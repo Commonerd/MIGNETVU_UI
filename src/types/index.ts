@@ -107,3 +107,13 @@ export type FilterOptions = {
   entityType: string
   yearRange: [number, number]
 }
+
+export interface Comment {
+  userName: ReactI18NextChildren | Iterable<ReactI18NextChildren>
+  id: number
+  network_id: number
+  user_id: number
+  content: string
+  createdAt: Date
+  updatedAt: Date
+}

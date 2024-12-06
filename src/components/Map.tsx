@@ -35,6 +35,7 @@ import axios from "axios"
 import ClipboardJS from "clipboard"
 import SearchResults from "./SearchResults"
 import Select from "react-select"
+import CommentSection from "./CommentSection"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -900,13 +901,16 @@ const Map: React.FC = () => {
         },
       )
       const imageUrl = URL.createObjectURL(response.data)
-      setHighlightedNode((prev) => ({
-        ...prev,
+      setHighlightedNode({
         id,
         photo: imageUrl,
-      }))
+      })
     } catch (error) {
       console.error("Error fetching photo:", error)
+      setHighlightedNode({
+        id,
+        photo: "",
+      })
     }
   }
 
@@ -1478,7 +1482,7 @@ const Map: React.FC = () => {
               let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
               if (isHighlighted) {
                 // Highlighted nodes are yellow regardless of type
-                color = "yellow"
+                color = "orange"
               }
 
               return (
@@ -1491,12 +1495,14 @@ const Map: React.FC = () => {
                     iconSize: [size, size],
                   })}
                   eventHandlers={{
-                    mouseover: () => handleTooltipOpen(network.id),
-                    mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
+                    click: () => handleTooltipOpen(network.id),
+                    // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
                   }}
                 >
-                  <Tooltip>
-                    <div className="p-4">
+                  <Popup>
+                    <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
+                      {" "}
+                      {/* 팝업 크기를 제한 */}
                       <strong className="text-lg font-semibold block mb-2">
                         No.{network.id} : {network.title}
                       </strong>
@@ -1560,7 +1566,11 @@ const Map: React.FC = () => {
                         </p>
                       </div>
                     </div>
-                  </Tooltip>
+                    {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
+                    <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
+                      <CommentSection networkId={network.id} />
+                    </div>
+                  </Popup>
                 </Marker>
               )
             })}
