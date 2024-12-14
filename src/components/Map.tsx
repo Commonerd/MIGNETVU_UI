@@ -8,6 +8,7 @@ import {
   Tooltip,
   Popup,
   useMapEvents,
+  CircleMarker,
 } from "react-leaflet"
 import { useTranslation } from "react-i18next"
 import "leaflet/dist/leaflet.css"
@@ -36,6 +37,7 @@ import ClipboardJS from "clipboard"
 import SearchResults from "./SearchResults"
 import Select from "react-select"
 import CommentSection from "./CommentSection"
+import "leaflet-polylinedecorator"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -265,8 +267,8 @@ const Map: React.FC = () => {
     return "blue"
   }
 
-  const migrationTraces =
-    networks?.map((network) => network.migration_traces) ?? []
+  // const migrationTraces =
+  //   networks?.map((network) => network.migration_traces) ?? []
 
   // // 구간별 폴리라인 생성
   // const segments = migrationTraces
@@ -1023,6 +1025,42 @@ const Map: React.FC = () => {
         }
       })
 
+      // 마이그레이션 트레이스에 화살표 추가
+      migrationTraces.forEach((traces) => {
+        const positions = traces.map((trace) => [
+          trace.latitude,
+          trace.longitude,
+        ])
+        const polyline = L.polyline(positions, {
+          color: "purple",
+          weight: 3,
+          opacity: 0.7,
+          dashArray: "5, 5",
+          lineCap: "round",
+          lineJoin: "round",
+        }).addTo(newEdgeLayer)
+
+        if (L.Symbol && L.Symbol.arrowHead) {
+          const decorator = L.polylineDecorator(polyline, {
+            patterns: [
+              {
+                offset: 50, // 화살표 시작 위치
+                repeat: 300, // 화살표 반복 간격
+                symbol: L.Symbol.arrowHead({
+                  pixelSize: 10,
+                  polygon: false,
+                  pathOptions: { stroke: true, color: "purple" },
+                }),
+              },
+            ],
+          })
+
+          decorator.addTo(newEdgeLayer)
+        } else {
+          console.error("L.Symbol.arrowHead is not defined")
+        }
+      })
+
       return () => {
         // 컴포넌트가 언마운트될 때 레이어 정리
         if (newLayerGroup) {
@@ -1046,6 +1084,42 @@ const Map: React.FC = () => {
     })
     return null
   }
+
+  const getMigrationTraces = () => {
+    const tracesByNetwork: { [key: number]: any[] } = {}
+
+    networks?.forEach((network) => {
+      network.migration_traces.forEach((trace) => {
+        if (!tracesByNetwork[network.id]) {
+          tracesByNetwork[network.id] = []
+        }
+        tracesByNetwork[network.id].push(trace)
+      })
+    })
+
+    return Object.values(tracesByNetwork)
+      .map((traces) =>
+        traces.sort((a, b) => a.migration_year - b.migration_year),
+      )
+      .filter((traces) => {
+        // 연도 필터링
+        const matchesYearRange = traces.some(
+          (trace) =>
+            trace.migration_year >= filters.yearRange[0] &&
+            trace.migration_year <= filters.yearRange[1],
+        )
+
+        // 내가 등록한 이주 추적 필터링
+        const matchesUserNetworkTrace =
+          !filters.userNetworkTraceFilter ||
+          !user.name ||
+          traces.some((trace) => trace.user_name === user.name)
+
+        return matchesYearRange && matchesUserNetworkTrace
+      })
+  }
+
+  const migrationTraces = getMigrationTraces()
 
   return (
     <div className="h-[calc(87vh-64px)] relative">
@@ -1607,7 +1681,15 @@ const Map: React.FC = () => {
               | null
               | undefined
           }) => (
-            <Marker key={trace.id} position={[trace.latitude, trace.longitude]}>
+            <CircleMarker
+              key={trace.id}
+              center={[trace.latitude, trace.longitude]}
+              radius={5}
+              color="blue"
+              fillColor="blue"
+              fillOpacity={0.5}
+            >
+              {" "}
               <Popup>
                 <div
                   style={{
@@ -1631,33 +1713,25 @@ const Map: React.FC = () => {
                   </div>
                 </div>
               </Popup>
-            </Marker>
+            </CircleMarker>
           ),
         )}
-        <Polyline
-          positions={positions}
-          color="#42A5F5"
-          weight={5}
-          opacity={0.7}
-          dashArray="5, 10"
-          lineCap="round"
-          lineJoin="round"
-        />
-        {/* {segments.map(
-          (
-            segment: {
-              positions: L.LatLngExpression[] | L.LatLngExpression[][]
-              color: string | undefined
-            },
-            index: React.Key | null | undefined,
-          ) => (
-            <Polyline
-              key={index}
-              positions={segment.positions}
-              color={segment.color}
-            />
-          ),
-        )} */}
+        {migrationTraces.map((traces, index) => (
+          <Polyline
+            key={index}
+            positions={traces.map((trace) => [trace.latitude, trace.longitude])}
+            color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+            weight={3}
+            opacity={0.7}
+            dashArray="5, 5"
+            lineCap="round"
+            lineJoin="round"
+          >
+            <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
+              <span>Network ID: {traces[0].network_id}</span>
+            </Tooltip>
+          </Polyline>
+        ))}
       </MapContainer>
     </div>
   )

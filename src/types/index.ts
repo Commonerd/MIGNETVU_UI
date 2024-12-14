@@ -12,6 +12,11 @@ export interface LoginResponse {
 }
 
 type MigrationTrace = {
+  map(
+    arg0: (trace: any) => any[],
+  ):
+    | import("leaflet").LatLngExpression[]
+    | import("leaflet").LatLngExpression[][]
   id: number
   network_id: number
   latitude: number
