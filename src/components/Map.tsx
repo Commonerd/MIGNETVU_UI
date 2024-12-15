@@ -1102,11 +1102,11 @@ const Map: React.FC = () => {
         traces.sort((a, b) => a.migration_year - b.migration_year),
       )
       .filter((traces) => {
-        // 연도 필터링
+        // 이주 추적 연도 필터링
         const matchesYearRange = traces.some(
           (trace) =>
-            trace.migration_year >= filters.yearRange[0] &&
-            trace.migration_year <= filters.yearRange[1],
+            trace.migration_year >= yearRange[0] &&
+            trace.migration_year <= yearRange[1],
         )
 
         // 내가 등록한 이주 추적 필터링
@@ -1117,6 +1117,13 @@ const Map: React.FC = () => {
 
         return matchesYearRange && matchesUserNetworkTrace
       })
+      .map((traces) =>
+        traces.filter(
+          (trace) =>
+            trace.migration_year >= yearRange[0] &&
+            trace.migration_year <= yearRange[1],
+        ),
+      )
   }
 
   const migrationTraces = getMigrationTraces()
