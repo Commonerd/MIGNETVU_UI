@@ -247,8 +247,15 @@ const Map: React.FC = () => {
           !user.name ||
           network.user_name === user.name
 
+        // 이주 추적 원인 필터 조건
+        const matchesMigrationReasons =
+          filters.migrationReasons.includes("all") ||
+          filters.migrationReasons.includes(trace.reason)
+
         // 모든 조건을 종합적으로 확인
-        return matchesYearRange && matchesUserNetworkTrace
+        return (
+          matchesYearRange && matchesUserNetworkTrace && matchesMigrationReasons
+        )
       }),
     ) ?? [] // Fallback to an empty array if undefined
 
@@ -1134,6 +1141,7 @@ const Map: React.FC = () => {
         // 이주 추적 원인 필터링
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
+          filters.migrationReasons.length === 0 ||
           traces.some((trace) =>
             filters.migrationReasons.includes(trace.reason),
           )
@@ -1148,11 +1156,11 @@ const Map: React.FC = () => {
             trace.migration_year >= yearRange[0] &&
             trace.migration_year <= yearRange[1] &&
             (filters.migrationReasons.includes("all") ||
+              filters.migrationReasons.length === 0 ||
               filters.migrationReasons.includes(trace.reason)),
         ),
       )
   }
-
   const migrationTraces = getMigrationTraces()
 
   return (
@@ -1790,9 +1798,10 @@ const Map: React.FC = () => {
                       .setLatLng(e.latlng)
                       .setContent(
                         `<div>
+                  <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
                   <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
-                  <strong>Migration Place:</strong> ${nextTrace.location_name}<br/>
-                  <strong>Migration Reason:</strong> ${nextTrace.reason}
+                  <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
+                  <strong>Reason:</strong> ${nextTrace.reason}
                 </div>`,
                       )
                       .openOn(e.target._map)
