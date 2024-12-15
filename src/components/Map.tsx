@@ -1723,35 +1723,40 @@ const Map: React.FC = () => {
             </CircleMarker>
           ),
         )}
-        {migrationTraces.map((traces, index) => (
-          <Polyline
-            key={index}
-            positions={traces.map((trace) => [trace.latitude, trace.longitude])}
-            color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
-            weight={3}
-            opacity={0.7}
-            dashArray="5, 5"
-            lineCap="round"
-            lineJoin="round"
-            eventHandlers={{
-              click: (e) => {
-                const nextTrace = traces[index + 1]
-                if (nextTrace) {
-                  L.popup()
-                    .setLatLng(e.latlng)
-                    .setContent(
-                      `<div>
-                <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
-                <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
-                <strong>Reason:</strong> ${nextTrace.reason}
-              </div>`,
-                    )
-                    .openOn(e.target._map)
-                }
-              },
-            }}
-          />
-        ))}
+        {migrationTraces.map((traces) =>
+          traces.slice(0, -1).map((trace, index) => {
+            const nextTrace = traces[index + 1]
+            return (
+              <Polyline
+                key={`${trace.id}-${nextTrace.id}`}
+                positions={[
+                  [trace.latitude, trace.longitude],
+                  [nextTrace.latitude, nextTrace.longitude],
+                ]}
+                color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+                weight={3}
+                opacity={0.7}
+                dashArray="5, 5"
+                lineCap="round"
+                lineJoin="round"
+                eventHandlers={{
+                  click: (e) => {
+                    L.popup()
+                      .setLatLng(e.latlng)
+                      .setContent(
+                        `<div>
+                  <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
+                  <strong>Migration Place:</strong> ${nextTrace.location_name}<br/>
+                  <strong>Migration Reason:</strong> ${nextTrace.reason}
+                </div>`,
+                      )
+                      .openOn(e.target._map)
+                  },
+                }}
+              />
+            )
+          }),
+        )}
       </MapContainer>
     </div>
   )
