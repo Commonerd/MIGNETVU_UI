@@ -1733,11 +1733,24 @@ const Map: React.FC = () => {
             dashArray="5, 5"
             lineCap="round"
             lineJoin="round"
-          >
-            <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent>
-              <span>Network ID: {traces[0].network_id}</span>
-            </Tooltip>
-          </Polyline>
+            eventHandlers={{
+              click: (e) => {
+                const nextTrace = traces[index + 1]
+                if (nextTrace) {
+                  L.popup()
+                    .setLatLng(e.latlng)
+                    .setContent(
+                      `<div>
+                <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
+                <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
+                <strong>Reason:</strong> ${nextTrace.reason}
+              </div>`,
+                    )
+                    .openOn(e.target._map)
+                }
+              },
+            }}
+          />
         ))}
       </MapContainer>
     </div>
