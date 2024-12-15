@@ -173,10 +173,11 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     connectionType: ["all"],
     entityType: "all",
-    yearRange: [1800, new Date().getFullYear()], // 현재 연도를 자동으로 설정
-    userNetworkFilter: true, // 유저 이름과 일치하는 네트워크만 필터링하는 상태
+    yearRange: [1800, new Date().getFullYear()],
+    userNetworkFilter: true,
     userNetworkTraceFilter: true,
-    userNetworkConnectionFilter: true, // 추가
+    userNetworkConnectionFilter: true,
+    migrationReasons: ["all"],
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -541,6 +542,17 @@ const Map: React.FC = () => {
   ).map((type) => ({
     value: type,
     label: type,
+  }))
+
+  const migrationReasonOptions = Array.from(
+    new Set(
+      networks?.flatMap((network) =>
+        network.migration_traces.map((trace) => trace.reason),
+      ),
+    ),
+  ).map((reason) => ({
+    value: reason,
+    label: reason,
   }))
 
   // Utility function to calculate shortest path using BFS
@@ -1119,13 +1131,24 @@ const Map: React.FC = () => {
               network.user_name === user.name,
           )
 
-        return matchesYearRange && matchesUserNetworkTrace
+        // 이주 추적 원인 필터링
+        const matchesMigrationReasons =
+          filters.migrationReasons.includes("all") ||
+          traces.some((trace) =>
+            filters.migrationReasons.includes(trace.reason),
+          )
+
+        return (
+          matchesYearRange && matchesUserNetworkTrace && matchesMigrationReasons
+        )
       })
       .map((traces) =>
         traces.filter(
           (trace) =>
             trace.migration_year >= yearRange[0] &&
-            trace.migration_year <= yearRange[1],
+            trace.migration_year <= yearRange[1] &&
+            (filters.migrationReasons.includes("all") ||
+              filters.migrationReasons.includes(trace.reason)),
         ),
       )
   }
@@ -1210,6 +1233,24 @@ const Map: React.FC = () => {
                   : []
               }
               placeholder={t("allConnectionTypes")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+            <Select
+              options={migrationReasonOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "migrationReasons",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allMigrationReasons")}
               isClearable
               isMulti
               styles={customStyles}

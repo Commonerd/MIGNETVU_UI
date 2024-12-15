@@ -111,6 +111,7 @@ export type FilterOptions = {
   connectionType: string[] | string
   entityType: string
   yearRange: [number, number]
+  migrationReasons: string[] | string
 }
 
 export interface Comment {
