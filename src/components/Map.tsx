@@ -1745,8 +1745,8 @@ const Map: React.FC = () => {
               key={trace.id}
               center={[trace.latitude, trace.longitude]}
               radius={5}
-              color="blue"
-              fillColor="blue"
+              color="purple"
+              fillColor="purple"
               fillOpacity={0.5}
             >
               {" "}
