@@ -1113,7 +1113,11 @@ const Map: React.FC = () => {
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
           !user.name ||
-          traces.some((trace) => trace.user_name === user.name)
+          networks?.some(
+            (network) =>
+              network.id === traces[0].network_id &&
+              network.user_name === user.name,
+          )
 
         return matchesYearRange && matchesUserNetworkTrace
       })
