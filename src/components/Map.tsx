@@ -250,6 +250,7 @@ const Map: React.FC = () => {
         // 이주 추적 원인 필터 조건
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
+          filters.migrationReasons.length === 0 ||
           filters.migrationReasons.includes(trace.reason)
 
         // 모든 조건을 종합적으로 확인
