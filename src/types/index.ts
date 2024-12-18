@@ -109,7 +109,7 @@ export type FilterOptions = {
   nationality: string[] | string
   ethnicity: string[] | string
   connectionType: string[] | string
-  entityType: string
+  entityType: string[] | string
   yearRange: [number, number]
   migrationReasons: string[] | string
 }

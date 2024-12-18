@@ -457,6 +457,9 @@ const Map: React.FC = () => {
       ) {
         updatedFilters.connectionType = ["all"]
       }
+      if (key === "entityType" && Array.isArray(value) && value.length === 0) {
+        updatedFilters.entityType = ["all"]
+      }
 
       return updatedFilters
     })
@@ -481,12 +484,18 @@ const Map: React.FC = () => {
           !user.name ||
           network.user_name === user.name
 
+        // 엔티티 유형 필터 조건
+        const matchesEntityType =
+          filters.entityType.includes("all") ||
+          filters.entityType.includes(network.type)
+
         // 모든 필터 조건을 종합적으로 확인
         return (
           matchesNationality &&
           matchesEthnicity &&
           matchesYearRange &&
-          matchesUserNetwork
+          matchesUserNetwork &&
+          matchesEntityType
         )
       })
     : []
@@ -528,6 +537,13 @@ const Map: React.FC = () => {
   // const uniqueConnectionTypes = Array.from(
   //   new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
   // )
+
+  const entityOptions = Array.from(new Set(networks?.map((m) => m.type))).map(
+    (type) => ({
+      value: type,
+      label: type,
+    }),
+  )
 
   const nationalityOptions = Array.from(
     new Set(networks?.map((m) => m.nationality)),
@@ -1170,57 +1186,61 @@ const Map: React.FC = () => {
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
           <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
-            <select
-              value={filters.entityType}
-              onChange={(e) => handleFilterChange("entityType", e.target.value)}
-              className={`p-1 ml-1 rounded-md text-sm ${
+            <Select
+              options={entityOptions}
+              onChange={(entityOptions) =>
+                handleFilterChange(
+                  "entityType",
+                  entityOptions
+                    ? entityOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allEntityTypes")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
                 user.isLoggedIn ? "w-30" : "w-42"
-              } h-7 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            >
-              <option value="all">{t("allEntityTypes")}</option>
-              <option value="migrant">{t("migrant")}</option>
-              <option value="organization">{t("organization")}</option>
-            </select>
-            {filters.entityType !== "organization" && (
-              <>
-                <Select
-                  options={nationalityOptions}
-                  onChange={(selectedOptions) =>
-                    handleFilterChange(
-                      "nationality",
-                      selectedOptions
-                        ? selectedOptions.map((option) => option.value)
-                        : ["all"],
-                    )
-                  }
-                  placeholder={t("allNationalities")}
-                  isClearable
-                  isMulti
-                  styles={customStyles}
-                  className={`p-1 rounded text-sm ${
-                    user.isLoggedIn ? "w-30" : "w-42"
-                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                />
-                <Select
-                  options={ethnicityOptions}
-                  onChange={(selectedOptions) =>
-                    handleFilterChange(
-                      "ethnicity",
-                      selectedOptions
-                        ? selectedOptions.map((option) => option.value)
-                        : ["all"],
-                    )
-                  }
-                  placeholder={t("allEthnicities")}
-                  isClearable
-                  isMulti
-                  styles={customStyles}
-                  className={`p-1 rounded text-sm ${
-                    user.isLoggedIn ? "w-30" : "w-42"
-                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-                />
-              </>
-            )}
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+            <Select
+              options={nationalityOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "nationality",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allNationalities")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+            <Select
+              options={ethnicityOptions}
+              onChange={(selectedOptions) =>
+                handleFilterChange(
+                  "ethnicity",
+                  selectedOptions
+                    ? selectedOptions.map((option) => option.value)
+                    : ["all"],
+                )
+              }
+              placeholder={t("allEthnicities")}
+              isClearable
+              isMulti
+              styles={customStyles}
+              className={`p-1 rounded text-sm ${
+                user.isLoggedIn ? "w-30" : "w-42"
+              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+            />
+
             <Select
               options={connectionTypeOptions}
               onChange={(selectedOptions) =>
@@ -1591,124 +1611,109 @@ const Map: React.FC = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
         {/* 지도에 표시될 네트워크 데이터 */}
-        {(filters.entityType === "all" ||
-          filters.entityType === "migrant" ||
-          filters.entityType === "organization") &&
-          filteredNetworks
-            .filter((network) => {
-              // Filter based on entityType
-              if (filters.entityType === "migrant")
-                return network.type === "Migrant"
-              if (filters.entityType === "organization")
-                return network.type === "Organization"
-              return true // Show all for "all"
-            })
+        // Update the JSX to remove the incorrect filtering logic
+        {filteredNetworks.map((network) => {
+          const size = getNodeSize(
+            centralityValues[network.id] || 0,
+            centralityType,
+          )
 
-            .map((network) => {
-              const size = getNodeSize(
-                centralityValues[network.id] || 0,
-                centralityType,
-              )
+          const isHighlighted =
+            highlightedNode && highlightedNode.id === network.id
 
-              const isHighlighted =
-                highlightedNode && highlightedNode.id === network.id
+          // Determine color: Organization is blue, highlighted is yellow, default is red
+          let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
+          if (isHighlighted) {
+            // Highlighted nodes are yellow regardless of type
+            color = "orange"
+          }
 
-              // Determine color: Organization is blue, highlighted is yellow, default is red
-              let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
-              if (isHighlighted) {
-                // Highlighted nodes are yellow regardless of type
-                color = "orange"
-              }
-
-              return (
-                <Marker
-                  key={network.id}
-                  position={[network.latitude, network.longitude]}
-                  icon={L.divIcon({
-                    className: "custom-marker",
-                    html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
-                    iconSize: [size, size],
-                  })}
-                  eventHandlers={{
-                    click: () => handleTooltipOpen(network.id),
-                    // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
-                  }}
-                >
-                  <Popup>
-                    <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
-                      {" "}
-                      {/* 팝업 크기를 제한 */}
-                      <strong className="text-lg font-semibold block mb-2">
-                        No.{network.id} : {network.title}
-                      </strong>
-                      <div className="text-gray-700 text-sm space-y-1">
-                        {highlightedNode?.id === network.id &&
-                          highlightedNode.photo && (
-                            <div className="flex justify-center mb-2">
-                              <img
-                                src={highlightedNode.photo}
-                                alt="Network"
-                                className="w-24 h-24 object-cover rounded-lg shadow-md"
-                              />
-                            </div>
-                          )}
-                        <p>
-                          <span className="font-medium">Creator Name:</span>{" "}
-                          {userNames[network.user_id]}
-                        </p>
-                        <p>
-                          <span className="font-medium">Type:</span>{" "}
-                          {network.type}
-                        </p>
-                        <p>
-                          {t("centrality")}: {centralityValues[network.id] || 0}
-                        </p>
-                        <p>
-                          <span className="font-medium">Nationality:</span>{" "}
-                          {network.nationality}
-                        </p>
-                        <p>
-                          <span className="font-medium">Ethnicity:</span>{" "}
-                          {network.ethnicity}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Migrant"
-                              ? "Birth Year"
-                              : "Established Year"}
-                          </span>
-                          <span className="font-medium">
-                            : {network.migration_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Migrant"
-                              ? "Death Year"
-                              : "Dissolved Year"}
-                          </span>
-                          <span className="font-medium">
-                            : {network.end_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">Latitude:</span>{" "}
-                          {network.latitude.toFixed(5)}
-                        </p>
-                        <p>
-                          <span className="font-medium">Longitude:</span>{" "}
-                          {network.longitude.toFixed(5)}
-                        </p>
-                      </div>
-                    </div>
-                    {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
-                    <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
-                      <CommentSection networkId={network.id} />
-                    </div>
-                  </Popup>
-                </Marker>
-              )
-            })}
+          return (
+            <Marker
+              key={network.id}
+              position={[network.latitude, network.longitude]}
+              icon={L.divIcon({
+                className: "custom-marker",
+                html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
+                iconSize: [size, size],
+              })}
+              eventHandlers={{
+                click: () => handleTooltipOpen(network.id),
+                // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
+              }}
+            >
+              <Popup>
+                <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
+                  {" "}
+                  {/* 팝업 크기를 제한 */}
+                  <strong className="text-lg font-semibold block mb-2">
+                    No.{network.id} : {network.title}
+                  </strong>
+                  <div className="text-gray-700 text-sm space-y-1">
+                    {highlightedNode?.id === network.id &&
+                      highlightedNode.photo && (
+                        <div className="flex justify-center mb-2">
+                          <img
+                            src={highlightedNode.photo}
+                            alt="Network"
+                            className="w-24 h-24 object-cover rounded-lg shadow-md"
+                          />
+                        </div>
+                      )}
+                    <p>
+                      <span className="font-medium">Creator Name:</span>{" "}
+                      {userNames[network.user_id]}
+                    </p>
+                    <p>
+                      <span className="font-medium">Type:</span> {network.type}
+                    </p>
+                    <p>
+                      {t("centrality")}: {centralityValues[network.id] || 0}
+                    </p>
+                    <p>
+                      <span className="font-medium">Nationality:</span>{" "}
+                      {network.nationality}
+                    </p>
+                    <p>
+                      <span className="font-medium">Ethnicity:</span>{" "}
+                      {network.ethnicity}
+                    </p>
+                    <p>
+                      <span className="font-medium">
+                        {network.type === "Migrant"
+                          ? "Birth Year"
+                          : "Established Year"}
+                      </span>
+                      <span className="font-medium">
+                        : {network.migration_year}
+                      </span>
+                    </p>
+                    <p>
+                      <span className="font-medium">
+                        {network.type === "Migrant"
+                          ? "Death Year"
+                          : "Dissolved Year"}
+                      </span>
+                      <span className="font-medium">: {network.end_year}</span>
+                    </p>
+                    <p>
+                      <span className="font-medium">Latitude:</span>{" "}
+                      {network.latitude.toFixed(5)}
+                    </p>
+                    <p>
+                      <span className="font-medium">Longitude:</span>{" "}
+                      {network.longitude.toFixed(5)}
+                    </p>
+                  </div>
+                </div>
+                {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
+                <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
+                  <CommentSection networkId={network.id} />
+                </div>
+              </Popup>
+            </Marker>
+          )
+        })}
         <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
         {filteredTraces.map(
           (trace: {
