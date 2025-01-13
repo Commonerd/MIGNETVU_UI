@@ -70,5 +70,6 @@
   "migrationTraceability": "Migration Trace",
   "filterByUserNetwork": "My Nodes",
   "filterByUserNetworkTrace": "My Traces",
-  "filterByUserNetworkConnection": "My Connections"
+  "filterByUserNetworkConnection": "My Connections",
+  "editProfile": "Edit Profile"
 }

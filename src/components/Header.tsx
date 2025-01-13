@@ -1,7 +1,17 @@
 import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import { Globe, User, UserPlus, LogOut } from "lucide-react"
+import {
+  Globe,
+  User,
+  UserPlus,
+  LogOut,
+  Edit,
+  Edit2Icon,
+  PlusCircle,
+  UserCheck,
+  LucideEdit2,
+} from "lucide-react"
 import useStore from "../store"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { useQueryClient } from "@tanstack/react-query"
@@ -54,8 +64,17 @@ const Header: React.FC = () => {
                     to="/network"
                     className="flex items-center text-xs md:text-base"
                   >
-                    <UserPlus className="mr-1" />
+                    <PlusCircle className="mr-1" />
                     {t("addNetwork")}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/editprofile"
+                    className="flex items-center text-xs md:text-base"
+                  >
+                    <Edit className="mr-1" />
+                    {t("editProfile")}
                   </Link>
                 </li>
                 <li>

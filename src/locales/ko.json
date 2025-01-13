@@ -70,5 +70,6 @@
   "migrationTraceability": "이주추적",
   "filterByUserNetwork": "나의 노드",
   "filterByUserNetworkTrace": "나의 이주추적",
-  "filterByUserNetworkConnection": "나의 관계망"
+  "filterByUserNetworkConnection": "나의 관계망",
+  "editProfile": "회원정보 수정"
 }

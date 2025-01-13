@@ -17,6 +17,7 @@ import Map from "./components/Map"
 import { Network } from "./components/Network"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import useStore from "./store"
+import EditProfile from "./components/EditProfile"
 
 function App() {
   useEffect(() => {
@@ -63,6 +64,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Auth />} />
               <Route path="/network" element={<Network />} />
+              <Route path="/editprofile" element={<EditProfile />} />
               <Route path="/todo" element={<Todo />} />
               {/* 잠정 */}
               <Route path="/" element={<Map user={user} setUser={setUser} />} />
