@@ -1,69 +1,43 @@
-import { useState, FormEvent, useEffect } from "react"
+import { useState, FormEvent } from "react"
 import { LockClosedIcon } from "@heroicons/react/24/solid"
-import { useMutateAuth } from "../hooks/useMutateAuth"
+import { useMutateProfile } from "../hooks/useMutateProfile"
 import { useTranslation } from "react-i18next"
 import useStore from "../store"
 import styled from "styled-components"
-import { CsrfToken } from "../types"
-import axios from "axios"
+import { ProfileUpdateData } from "../types"
 
 export const EditProfile = () => {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const { user, setUser } = useStore()
   const [name, setName] = useState(user.name)
   const [email, setEmail] = useState(user.email)
   const [currentPw, setCurrentPw] = useState("")
   const [newPw, setNewPw] = useState("")
   const [confirmNewPw, setConfirmNewPw] = useState("")
-  const { updateProfileMutation } = useMutateAuth()
-  const [csrfLoaded, setCsrfLoaded] = useState(false)
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng)
-  }
-
-  useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-        const { data } = await axios.get<CsrfToken>(
-          `${process.env.REACT_APP_API_URL}/csrf`,
-        )
-        axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-        setCsrfLoaded(true)
-      } catch (err) {
-        alert(err)
-      }
-    }
-    axios.defaults.withCredentials = true
-    getCsrfToken()
-  }, [])
+  const { updateProfileMutation } = useMutateProfile()
 
   const submitProfileHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (!csrfLoaded) {
-      alert(
-        "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
-      )
-      return
-    }
+
     if (newPw !== confirmNewPw) {
       alert("New passwords do not match. Please try again.")
       return
     }
-    await updateProfileMutation
-      .mutateAsync({
+    try {
+      console.log(name, email, currentPw, newPw)
+      const profileData: ProfileUpdateData = {
         name,
         email,
-        currentPassword: currentPw,
-        newPassword: newPw,
-      })
-      .then((res) => {
-        setUser({ email: res.email, isLoggedIn: true, name: res.name })
-        alert("Profile updated successfully!")
-      })
-      .catch((err) => {
-        alert("Failed to update profile. Please try again.")
-      })
+        current_password: currentPw,
+        new_password: newPw,
+      }
+      console.log(profileData)
+      const res = await updateProfileMutation.mutateAsync(profileData)
+      // setUser({ email: res.email, isLoggedIn: true, name: res.name })
+      if (res != null) alert("Profile updated successfully!")
+    } catch {
+      alert("Failed to update profile. Please try again.")
+    }
   }
 
   return (
@@ -71,7 +45,7 @@ export const EditProfile = () => {
       <ProfileBox>
         <Header>
           <LockClosedIcon className="h-8 w-8 mr-2 text-amber-800" />
-          <span className="text-2xl font-extrabold">Edit Profile</span>
+          <span className="text-2xl font-extrabold">{t("editProfile")}</span>
         </Header>
         <form onSubmit={submitProfileHandler}>
           <Input

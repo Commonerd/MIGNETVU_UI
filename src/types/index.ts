@@ -123,3 +123,21 @@ export interface Comment {
   createdAt: Date
   updatedAt: Date
 }
+
+export type ProfileUpdateData = {
+  name?: string
+  email?: string
+  current_password?: string // 기존 비밀번호 (비밀번호 변경 시 필수)
+  new_password?: string // 새 비밀번호
+}
+
+export type ProfileUpdateResponse = {
+  success: boolean
+  message?: string
+  updatedProfile?: {
+    id: number
+    name: string
+    email: string
+    updatedAt: Date
+  }
+}

@@ -65,7 +65,7 @@ export const Network = () => {
     if (photo) {
       formData.append("photo", photo)
     }
-
+    console.log(formData)
     // FormData 내용 콘솔에 출력
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`)
