@@ -5,6 +5,10 @@ import { useTranslation } from "react-i18next"
 import useStore from "../store"
 import styled from "styled-components"
 import { ProfileUpdateData } from "../types"
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { ClipLoader } from "react-spinners"
+// import { useRouter } from "next/router"
 
 export const EditProfile = () => {
   const { t } = useTranslation()
@@ -14,89 +18,110 @@ export const EditProfile = () => {
   const [currentPw, setCurrentPw] = useState("")
   const [newPw, setNewPw] = useState("")
   const [confirmNewPw, setConfirmNewPw] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const { updateProfileMutation } = useMutateProfile()
+  // const router = useRouter()
 
   const submitProfileHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (newPw !== confirmNewPw) {
-      alert("New passwords do not match. Please try again.")
+      toast.error("New passwords do not match. Please try again.")
       return
     }
     try {
-      console.log(name, email, currentPw, newPw)
+      setIsLoading(true)
       const profileData: ProfileUpdateData = {
         name,
         email,
         current_password: currentPw,
         new_password: newPw,
       }
-      console.log(profileData)
       const res = await updateProfileMutation.mutateAsync(profileData)
-      // setUser({ email: res.email, isLoggedIn: true, name: res.name })
-      if (res != null) alert("Profile updated successfully!")
+      setIsLoading(false)
+      if (res != null) {
+        toast.success("Profile updated successfully!")
+        // setTimeout(() => {
+        //   router.push("/") // 톱 화면으로 이동
+        // }, 3000) // 3초 후에 이동
+      }
     } catch {
-      alert("Failed to update profile. Please try again.")
+      setIsLoading(false)
+      toast.error("Failed to update profile. Please try again.")
     }
   }
 
   return (
-    <Container>
-      <ProfileBox>
-        <Header>
-          <LockClosedIcon className="h-8 w-8 mr-2 text-amber-800" />
-          <span className="text-2xl font-extrabold">{t("editProfile")}</span>
-        </Header>
-        <form onSubmit={submitProfileHandler}>
-          <Input
-            type="text"
-            name="name"
-            placeholder={t("name")}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <Input
-            type="email"
-            name="email"
-            placeholder={t("email")}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            name="currentPassword"
-            placeholder={t("currentPassword")}
-            value={currentPw}
-            onChange={(e) => setCurrentPw(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            name="newPassword"
-            placeholder={t("newPassword")}
-            value={newPw}
-            onChange={(e) => setNewPw(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            name="confirmNewPassword"
-            placeholder={t("confirmNewPassword")}
-            value={confirmNewPw}
-            onChange={(e) => setConfirmNewPw(e.target.value)}
-            required
-          />
-          <Button
-            type="submit"
-            disabled={!email || !name || !currentPw || !newPw || !confirmNewPw}
-          >
-            {t("updateProfile")}
-          </Button>
-        </form>
-      </ProfileBox>
-    </Container>
+    <>
+      <ToastContainer position="top-center" />
+      <Container>
+        <ProfileBox>
+          <Header>
+            <LockClosedIcon className="h-8 w-8 mr-2 text-amber-800" />
+            <span className="text-2xl font-extrabold">{t("editProfile")}</span>
+          </Header>
+          <form onSubmit={submitProfileHandler}>
+            <Input
+              type="text"
+              name="name"
+              placeholder={t("name")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              type="email"
+              name="email"
+              placeholder={t("email")}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              name="currentPassword"
+              placeholder={t("currentPassword")}
+              value={currentPw}
+              onChange={(e) => setCurrentPw(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              name="newPassword"
+              placeholder={t("newPassword")}
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              name="confirmNewPassword"
+              placeholder={t("confirmNewPassword")}
+              value={confirmNewPw}
+              onChange={(e) => setConfirmNewPw(e.target.value)}
+              required
+            />
+            <Button
+              type="submit"
+              disabled={
+                !email ||
+                !name ||
+                !currentPw ||
+                !newPw ||
+                !confirmNewPw ||
+                isLoading
+              }
+            >
+              {isLoading ? (
+                <ClipLoader size={50} color={"#fff"} />
+              ) : (
+                t("updateProfile")
+              )}
+            </Button>
+          </form>
+        </ProfileBox>
+      </Container>
+    </>
   )
 }
 
