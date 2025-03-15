@@ -39,6 +39,7 @@ export const Network = () => {
       latitude,
       longitude,
       connections,
+      edge,
       user_id,
       migration_traces,
       photo,
@@ -60,6 +61,7 @@ export const Network = () => {
     formData.append("latitude", latitude.toString())
     formData.append("longitude", longitude.toString())
     formData.append("connections", JSON.stringify(connections || []))
+    formData.append("edge", JSON.stringify(edge || []))
     formData.append("user_id", user_id.toString())
     formData.append("migration_traces", JSON.stringify(migration_traces || []))
     if (photo) {
@@ -256,6 +258,13 @@ export const Network = () => {
     })
   }
 
+  const deleteEdge = (idx: number) => {
+    updateNetwork({
+      ...editedNetwork,
+      edge: editedNetwork.edge?.filter((_, i) => i !== idx),
+    })
+  }
+
   const clearFormHandler = () => {
     updateNetwork({
       id: 0,
@@ -269,6 +278,7 @@ export const Network = () => {
       longitude: 0,
       migration_traces: [],
       connections: [],
+      edge: [],
       user_id: 0,
     })
   }
@@ -350,7 +360,6 @@ export const Network = () => {
               value={editedNetwork.title || ""}
             />
           </div>
-
           <div>
             <label className="block text-gray-700 font-semibold text-sm">
               Photo
@@ -378,7 +387,6 @@ export const Network = () => {
               </div>
             )}
           </div>
-
           {/* Type, Nationality, and Ethnicity in a single row */}
           <div className="flex space-x-4">
             <div className="w-1/3">
@@ -428,7 +436,6 @@ export const Network = () => {
               />
             </div>
           </div>
-
           {/* Migration Year, Latitude, and Longitude in a single row */}
           <div className="flex space-x-4">
             <div className="w-1/3">
@@ -676,7 +683,7 @@ export const Network = () => {
               </button>
             </div>
           </div>
-          {/* Connections section */}
+          Connections section
           <div>
             <label className="block text-gray-700 font-semibold text-sm mb-2">
               Connections
@@ -822,51 +829,226 @@ export const Network = () => {
                   </div>
                 </div>
               ))}
+              Edge section
+              <div>
+                <label className="block text-gray-700 font-semibold text-sm mb-2">
+                  Edge
+                </label>
+                <div className="space-y-3">
+                  {editedNetwork.edge?.map((edge, idx) => (
+                    <div key={idx}>
+                      {idx > 0 && <hr className="my-1 border-gray-300" />}
+                      <div className="flex justify-between space-x-2">
+                        {/* Target ID */}
+                        <div className="flex-1">
+                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                            Target ID
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
+                            value={edge.targetId}
+                            onChange={(e) =>
+                              updateNetwork({
+                                ...editedNetwork,
+                                edge: editedNetwork.edge?.map((c, i) =>
+                                  i === idx
+                                    ? { ...c, targetId: Number(e.target.value) }
+                                    : c,
+                                ),
+                              })
+                            }
+                            placeholder="ID"
+                          />
+                        </div>
 
+                        {/* Target Type */}
+                        <div className="flex-1">
+                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                            Target Type
+                          </label>
+                          <select
+                            className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
+                            value={edge.targetType || "Migrant"}
+                            onChange={(e) =>
+                              updateNetwork({
+                                ...editedNetwork,
+                                edge: editedNetwork.edge?.map((c, i) =>
+                                  i === idx
+                                    ? { ...c, targetType: e.target.value }
+                                    : c,
+                                ),
+                              })
+                            }
+                          >
+                            <option value="Migrant" className="text-sm">
+                              Migrant
+                            </option>
+                            <option value="Organization" className="text-sm">
+                              Organization
+                            </option>
+                          </select>
+                        </div>
+
+                        {/* Strength */}
+                        <div className="flex-1">
+                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                            Strength
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
+                            value={edge.strength}
+                            onChange={(e) =>
+                              updateNetwork({
+                                ...editedNetwork,
+                                edge: editedNetwork.edge?.map((c, i) =>
+                                  i === idx
+                                    ? { ...c, strength: Number(e.target.value) }
+                                    : c,
+                                ),
+                              })
+                            }
+                            placeholder="1~5"
+                            min="1"
+                            max="5"
+                          />
+                        </div>
+
+                        {/* Edge Type */}
+                        <div className="flex-1">
+                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                            Edge Type
+                          </label>
+                          <input
+                            type="text"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
+                            value={edge.edgeType}
+                            onChange={(e) =>
+                              updateNetwork({
+                                ...editedNetwork,
+                                edge: editedNetwork.edge?.map((c, i) =>
+                                  i === idx
+                                    ? { ...c, edgeType: e.target.value }
+                                    : c,
+                                ),
+                              })
+                            }
+                            placeholder="family"
+                          />
+                        </div>
+
+                        {/* Year */}
+                        <div className="flex-1">
+                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
+                            Year
+                          </label>
+                          <input
+                            type="number"
+                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
+                            value={edge.year || ""}
+                            onChange={(e) =>
+                              updateNetwork({
+                                ...editedNetwork,
+                                edge: editedNetwork.edge?.map((c, i) =>
+                                  i === idx
+                                    ? { ...c, year: Number(e.target.value) }
+                                    : c,
+                                ),
+                              })
+                            }
+                            placeholder="1920"
+                          />
+                        </div>
+
+                        {/* Delete Button */}
+                        <button
+                          type="button"
+                          className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
+                          onClick={() => deleteEdge(idx)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
+                    onClick={() => {
+                      updateNetwork({
+                        ...editedNetwork,
+                        connections: [
+                          ...(editedNetwork.connections || []),
+                          {
+                            targetId: 0,
+                            targetType: "",
+                            strength: 0,
+                            type: "",
+                            year: 0,
+                          },
+                        ],
+                      })
+                    }}
+                  >
+                    Add Connection
+                  </button>
+                </div>
+              </div>
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  onClick={clearFormHandler}
+                  className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
+                >
+                  Clear
+                </button>
+                <button
+                  type="button"
+                  className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
+                  onClick={() => {
+                    updateNetwork({
+                      ...editedNetwork,
+                      edge: [
+                        ...(editedNetwork.edge || []),
+                        {
+                          targetId: 0,
+                          targetType: "Migrant",
+                          strength: 0,
+                          edgeType: "",
+                          year: 0,
+                        },
+                      ],
+                    })
+                  }}
+                >
+                  Add Edge
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-between mt-4">
               <button
                 type="button"
-                className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
-                onClick={() => {
-                  updateNetwork({
-                    ...editedNetwork,
-                    connections: [
-                      ...(editedNetwork.connections || []),
-                      {
-                        targetId: 0,
-                        targetType: "",
-                        strength: 0,
-                        type: "",
-                        year: 0,
-                      },
-                    ],
-                  })
-                }}
+                onClick={clearFormHandler}
+                className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
               >
-                Add Connection
+                Clear
+              </button>
+              <button
+                className="w-full py-2 bg-gray-400 text-gray-800 rounded hover:bg-gray-600 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                disabled={
+                  !editedNetwork.title ||
+                  !editedNetwork.nationality ||
+                  !editedNetwork.ethnicity ||
+                  !editedNetwork.migration_year ||
+                  !editedNetwork.latitude ||
+                  !editedNetwork.longitude
+                }
+              >
+                {editedNetwork.id === 0 ? "Create" : "Update"}
               </button>
             </div>
-          </div>
-          <div className="flex justify-between mt-4">
-            <button
-              type="button"
-              onClick={clearFormHandler}
-              className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
-            >
-              Clear
-            </button>
-            <button
-              className="w-full py-2 bg-gray-400 text-gray-800 rounded hover:bg-gray-600 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              disabled={
-                !editedNetwork.title ||
-                !editedNetwork.nationality ||
-                !editedNetwork.ethnicity ||
-                !editedNetwork.migration_year ||
-                !editedNetwork.latitude ||
-                !editedNetwork.longitude
-              }
-            >
-              {editedNetwork.id === 0 ? "Create" : "Update"}
-            </button>
           </div>
         </form>
       </div>

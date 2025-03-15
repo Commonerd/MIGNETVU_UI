@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { Edge } from "../types"
 
 type User = {
   id: number
@@ -43,6 +44,7 @@ type EditedNetwork = {
   longitude: number
   migration_traces: MigrationTrace[] // Add migration traces
   connections: Connection[] // Add connections as an array
+  edge: Edge[]
   photo?: File // Add photo field
 }
 
@@ -86,6 +88,15 @@ const useStore = create<State>((set) => ({
     migration_traces: [],
     connections: [
       { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
+    ],
+    edge: [
+      {
+        targetId: 0,
+        targetType: "Migrant",
+        strength: 0,
+        edgeType: "",
+        year: 0,
+      },
     ],
     photo: undefined, // Add photo field
   },

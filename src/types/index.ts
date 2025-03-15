@@ -26,6 +26,15 @@ type MigrationTrace = {
   reason: string
 }
 
+export type Edge = {
+  // id: number
+  targetId: number
+  targetType: string
+  strength: number
+  edgeType: string
+  year: number
+}
+
 export type Network = {
   id: number
   user_id: number
@@ -45,6 +54,14 @@ export type Network = {
     targetType: string
     strength: number
     type: string
+    year: number
+  }>
+  edge: Array<{
+    //id: number
+    targetId: number
+    targetType: string
+    strength: number
+    edgeType: string
     year: number
   }>
   migration_traces: MigrationTrace[]
