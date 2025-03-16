@@ -1,18 +1,18 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React from "react"
+import { useTranslation } from "react-i18next"
 
 const Footer: React.FC = () => {
-  const { t } = useTranslation();
+  const { t } = useTranslation()
 
   return (
     <footer className="bg-gray-800 text-white p-4">
       <div className="container mx-auto text-center">
         <p>
-          &copy; 2024 {t("appName")}. {t("allRightsReserved")}
+          &copy; 2024 {t("Dr. Song Younghwa")}. {t("allRightsReserved")}
         </p>
       </div>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

@@ -56,14 +56,7 @@ export type Network = {
     type: string
     year: number
   }>
-  edge: Array<{
-    //id: number
-    targetId: number
-    targetType: string
-    strength: number
-    edgeType: string
-    year: number
-  }>
+  edges: Edge[]
   migration_traces: MigrationTrace[]
   photo: File
   photoUrl: string
@@ -119,6 +112,7 @@ export interface Connection {
 export type EntityType = "migrant" | "organization"
 
 export type FilterOptions = {
+  userNetworkEdgeFilter: any
   userNetworkConnectionFilter: any
   userNetworkTraceFilter: any
   userNetworkFilter: any
@@ -126,6 +120,7 @@ export type FilterOptions = {
   nationality: string[] | string
   ethnicity: string[] | string
   connectionType: string[] | string
+  edgeType: string[] | string
   entityType: string[] | string
   yearRange: [number, number]
   migrationReasons: string[] | string

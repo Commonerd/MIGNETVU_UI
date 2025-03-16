@@ -171,7 +171,7 @@ const Map: React.FC = () => {
   const [filters, setFilters] = useState<FilterOptions>({
     nationality: ["all"],
     ethnicity: ["all"],
-    connectionType: ["all"],
+    edgeType: ["all"],
     entityType: "all",
     yearRange: [1800, new Date().getFullYear()],
     userNetworkFilter: true,
@@ -364,7 +364,7 @@ const Map: React.FC = () => {
     return networks?.find((n) => n.id === id) || null
   }
 
-  const getConnectionColor = (type: Network["connections"][number]["type"]) => {
+  const getConnectionColor = (type: Network["edge"][number]["edgeType"]) => {
     switch (type) {
       // case 'friend':
       //   return 'blue'
@@ -386,14 +386,17 @@ const Map: React.FC = () => {
     const edges: any[] = []
 
     const addEdges = (network: Network) => {
-      ;(network.connections || []).forEach((connection) => {
+      console.log("111", network)
+      console.log("1112", networks)
+      console.log("1113", network.edges)
+      ;(network.edges || []).forEach((edge) => {
         if (
-          (filters.connectionType.includes("all") ||
-            filters.connectionType.includes(connection.type)) &&
-          Number(connection.year) >= Number(filters.yearRange[0]) &&
-          Number(connection.year) <= Number(filters.yearRange[1])
+          (filters.edgeType.includes("all") ||
+            filters.edgeType.includes(edge.edgeType)) &&
+          Number(edge.year) >= Number(filters.yearRange[0]) &&
+          Number(edge.year) <= Number(filters.yearRange[1])
         ) {
-          const target = networks?.find((n) => n.id === connection.targetId)
+          const target = networks?.find((n) => n.id === edge.targetId)
 
           // 유저 네트워크 커넥션 필터 조건
           const matchesUserNetworkConnection =
@@ -406,10 +409,10 @@ const Map: React.FC = () => {
             edges.push([
               [network.latitude, network.longitude],
               [target.latitude, target.longitude],
-              getConnectionColor(connection.type),
-              connection.strength,
-              connection.type,
-              connection.year,
+              getConnectionColor(edge.edgeType),
+              edge.strength,
+              edge.edgeType,
+              edge.year,
             ])
           }
         }
@@ -450,12 +453,8 @@ const Map: React.FC = () => {
       if (key === "ethnicity" && Array.isArray(value) && value.length === 0) {
         updatedFilters.ethnicity = ["all"]
       }
-      if (
-        key === "connectionType" &&
-        Array.isArray(value) &&
-        value.length === 0
-      ) {
-        updatedFilters.connectionType = ["all"]
+      if (key === "edgeType" && Array.isArray(value) && value.length === 0) {
+        updatedFilters.edgeType = ["all"]
       }
       if (key === "entityType" && Array.isArray(value) && value.length === 0) {
         updatedFilters.entityType = ["all"]
@@ -559,9 +558,9 @@ const Map: React.FC = () => {
     label: ethnicity,
   }))
 
-  const connectionTypeOptions = Array.from(
+  const edgeTypeOptions = Array.from(
     new Set(
-      (networks || []).flatMap((m) => (m.connections || []).map((c) => c.type)),
+      (networks || []).flatMap((m) => (m.edges || []).map((c) => c.edgeType)),
     ),
   ).map((type) => ({
     value: type,
@@ -973,11 +972,12 @@ const Map: React.FC = () => {
       setEdgeLayer(newEdgeLayer)
 
       const edges = getEdges() // 각 엣지의 정보를 가져오는 함수
+      console.log("222", edges) // edge 정보를 �����로 출력
       edges.forEach((edge) => {
         const positions = edge.slice(0, 2) as LatLngExpression[]
         const color = edge[2] as string
         const opacity = (edge[3] as number) * 0.16 + 0.2
-        const connectionType = edge[4] as string
+        const edgeType = edge[4] as string
         const connectionStrength = edge[3] as number
         const connectionYear = edge[5] as number
 
@@ -990,7 +990,7 @@ const Map: React.FC = () => {
 
         // Tooltip 내용 정의
         const tooltipContent = `<span>${t("connectionType")}: ${t(
-          connectionType,
+          edgeType,
         )}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t(
           "connectionYear",
         )}: ${connectionYear}</span>`
@@ -1056,42 +1056,6 @@ const Map: React.FC = () => {
           })
 
           decorator.addTo(newEdgeLayer) // edgeLayer에 추가
-        } else {
-          console.error("L.Symbol.arrowHead is not defined")
-        }
-      })
-
-      // 마이그레이션 트레이스에 화살표 추가
-      migrationTraces.forEach((traces) => {
-        const positions = traces.map((trace) => [
-          trace.latitude,
-          trace.longitude,
-        ])
-        const polyline = L.polyline(positions, {
-          color: "purple",
-          weight: 3,
-          opacity: 0.7,
-          dashArray: "5, 5",
-          lineCap: "round",
-          lineJoin: "round",
-        }).addTo(newEdgeLayer)
-
-        if (L.Symbol && L.Symbol.arrowHead) {
-          const decorator = L.polylineDecorator(polyline, {
-            patterns: [
-              {
-                offset: 50, // 화살표 시작 위치
-                repeat: 300, // 화살표 반복 간격
-                symbol: L.Symbol.arrowHead({
-                  pixelSize: 10,
-                  polygon: false,
-                  pathOptions: { stroke: true, color: "purple" },
-                }),
-              },
-            ],
-          })
-
-          decorator.addTo(newEdgeLayer)
         } else {
           console.error("L.Symbol.arrowHead is not defined")
         }
@@ -1242,18 +1206,18 @@ const Map: React.FC = () => {
             />
 
             <Select
-              options={connectionTypeOptions}
+              options={edgeTypeOptions}
               onChange={(selectedOptions) =>
                 handleFilterChange(
-                  "connectionType",
+                  "edgeType",
                   selectedOptions
                     ? selectedOptions.map((option) => option.value)
                     : ["all"],
                 )
               }
               value={
-                Array.isArray(filters.connectionType)
-                  ? filters.connectionType
+                Array.isArray(filters.edgeType)
+                  ? filters.edgeType
                       .filter((value) => value !== "all")
                       .map((value) => ({
                         value,
