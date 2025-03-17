@@ -194,11 +194,11 @@ const NetworkItemMemo: FC<
 
         {/* Render the connections */}
         <div className="mt-4">
-          <strong>Connections:</strong>
-          {connections?.length > 0 ? (
+          <strong>Edges:</strong>
+          {edges?.length > 0 ? (
             <div className="mt-2">
-              {connections?.map((connection, index) => (
-                <div key={connection.targetId}>
+              {edges?.map((edge, index) => (
+                <div key={edge.targetId}>
                   <table className="table-auto w-full mt-2 border-collapse text-xs">
                     <thead>
                       <tr>
@@ -222,25 +222,25 @@ const NetworkItemMemo: FC<
                     <tbody>
                       <tr>
                         <td className="px-2 py-1 border text-center">
-                          {connection.targetId}
+                          {edge.targetId}
                         </td>
                         <td className="px-2 py-1 border text-center">
-                          {connection.targetType}
+                          {edge.targetType}
                         </td>
                         <td className="px-2 py-1 border text-center">
-                          {connection.strength}
+                          {edge.strength}
                         </td>
                         <td className="px-2 py-1 border text-center">
-                          {connection.type}
+                          {edge.edgeType}
                         </td>
                         <td className="px-2 py-1 border text-center">
-                          {connection.year}
+                          {edge.year}
                         </td>
                       </tr>
                     </tbody>
                   </table>
 
-                  {index < connections.length - 1 && (
+                  {index < edges.length - 1 && (
                     <div className="border-t my-2"></div>
                   )}
                 </div>

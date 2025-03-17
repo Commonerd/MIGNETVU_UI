@@ -683,157 +683,12 @@ export const Network = () => {
               </button>
             </div>
           </div>
-          Connections section
           <div>
-            <label className="block text-gray-700 font-semibold text-sm mb-2">
-              Connections
-            </label>
             <div className="space-y-3">
-              {editedNetwork.connections?.map((conn, idx) => (
-                <div key={idx}>
-                  {idx > 0 && <hr className="my-1 border-gray-300" />}
-                  <div className="flex justify-between space-x-2">
-                    {/* Target ID */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Target ID
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={conn.targetId || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            connections: editedNetwork.connections?.map(
-                              (c, i) =>
-                                i === idx
-                                  ? { ...c, targetId: Number(e.target.value) }
-                                  : c,
-                            ),
-                          })
-                        }
-                        placeholder="ID"
-                      />
-                    </div>
-
-                    {/* Target Type */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Type
-                      </label>
-                      <select
-                        className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={conn.targetType || "Migrant"}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            connections: editedNetwork.connections?.map(
-                              (c, i) =>
-                                i === idx
-                                  ? { ...c, targetType: e.target.value }
-                                  : c,
-                            ),
-                          })
-                        }
-                      >
-                        <option value="Migrant" className="text-sm">
-                          Migrant
-                        </option>
-                        <option value="Organization" className="text-sm">
-                          Organization
-                        </option>
-                      </select>
-                    </div>
-
-                    {/* Strength */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Strength
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={conn.strength || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            connections: editedNetwork.connections?.map(
-                              (c, i) =>
-                                i === idx
-                                  ? { ...c, strength: Number(e.target.value) }
-                                  : c,
-                            ),
-                          })
-                        }
-                        placeholder="1~5"
-                        min="1"
-                        max="5"
-                      />
-                    </div>
-
-                    {/* Edge Type */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Edge Type
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={conn.type || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            connections: editedNetwork.connections?.map(
-                              (c, i) =>
-                                i === idx ? { ...c, type: e.target.value } : c,
-                            ),
-                          })
-                        }
-                        placeholder="family"
-                      />
-                    </div>
-
-                    {/* Year */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Year
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={conn.year || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            connections: editedNetwork.connections?.map(
-                              (c, i) =>
-                                i === idx
-                                  ? { ...c, year: Number(e.target.value) }
-                                  : c,
-                            ),
-                          })
-                        }
-                        placeholder="1920"
-                      />
-                    </div>
-
-                    {/* Delete Button */}
-                    <button
-                      type="button"
-                      className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
-                      onClick={() => deleteConnection(idx)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              ))}
-              Edge section
+              <label className="block text-gray-700 font-semibold text-sm mb-2">
+                Edge section
+              </label>
               <div>
-                <label className="block text-gray-700 font-semibold text-sm mb-2">
-                  Edge
-                </label>
                 <div className="space-y-3">
                   {editedNetwork.edge?.map((edge, idx) => (
                     <div key={idx}>
@@ -972,38 +827,9 @@ export const Network = () => {
                       </div>
                     </div>
                   ))}
-
-                  <button
-                    type="button"
-                    className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
-                    onClick={() => {
-                      updateNetwork({
-                        ...editedNetwork,
-                        connections: [
-                          ...(editedNetwork.connections || []),
-                          {
-                            targetId: 0,
-                            targetType: "",
-                            strength: 0,
-                            type: "",
-                            year: 0,
-                          },
-                        ],
-                      })
-                    }}
-                  >
-                    Add Connection
-                  </button>
                 </div>
               </div>
               <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  onClick={clearFormHandler}
-                  className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
-                >
-                  Clear
-                </button>
                 <button
                   type="button"
                   className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
