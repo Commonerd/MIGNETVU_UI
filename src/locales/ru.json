@@ -60,5 +60,7 @@
   "topRegistrants": "Помощники ТОП5",
   "nodeCount": "Узлы",
   "topEntities": "Топ-5 по центральности",
-  "migrationTraceability": "След Миграции"
+  "migrationTraceability": "След Миграции",
+  "OperaionTime": "Время работы",
+  "Inquiry": "Запрос"
 }

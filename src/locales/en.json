@@ -71,5 +71,7 @@
   "filterByUserNetwork": "My Nodes",
   "filterByUserNetworkTrace": "My Traces",
   "filterByUserNetworkConnection": "My Connections",
-  "editProfile": "Edit Profile"
+  "editProfile": "Edit Profile",
+  "OperaionTime": "Operaion Time",
+  "Inquiry": "Inquiry"
 }

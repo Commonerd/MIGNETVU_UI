@@ -63,5 +63,7 @@
   "migrationTraceability": "移住追跡",
   "filterByUserNetwork": "マイノード",
   "filterByUserNetworkTrace": "マイ移住追跡",
-  "filterByUserNetworkConnection": "マイ関係網"
+  "filterByUserNetworkConnection": "マイ関係網",
+  "OperaionTime": "運営時間",
+  "Inquiry": "問い合わせ"
 }

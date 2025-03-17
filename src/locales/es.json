@@ -67,5 +67,7 @@
   "topRegistrants": "Contribuyentes Top3",
   "nodeCount": "Nodos",
   "topEntities": "Los 5 principales en centralidad",
-  "migrationTraceability": "Rastreo de migración"
+  "migrationTraceability": "Rastreo de migración",
+  "OperaionTime": "Horario de atención",
+  "Inquiry": "Consulta"
 }

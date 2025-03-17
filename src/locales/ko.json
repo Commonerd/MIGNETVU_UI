@@ -33,7 +33,7 @@
   "entityType": "엔티티 유형",
   "allNationalities": "모든 국적",
   "allEthnicities": "모든 민족",
-  "allConnectionTypes": "모든 연결",
+  "allConnectionTypes": "모든 관계",
   "allEntityTypes": "모든 개체",
   "allMigrationReasons": "모든 이주",
   "yearRange": "관계연도",
@@ -71,5 +71,7 @@
   "filterByUserNetwork": "나의 노드",
   "filterByUserNetworkTrace": "나의 이주추적",
   "filterByUserNetworkConnection": "나의 관계망",
-  "editProfile": "회원정보 수정"
+  "editProfile": "회원정보 수정",
+  "OperaionTime": "운영시간",
+  "Inquiry": "문의"
 }
