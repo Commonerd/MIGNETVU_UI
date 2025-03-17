@@ -1500,7 +1500,7 @@ const Map: React.FC = () => {
         center={[37.5665, 126.978]}
         zoom={2}
         style={{
-          height: "calc(100% - 24px)",
+          height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
           width: "100%",
           position: "relative",
           zIndex: 0,

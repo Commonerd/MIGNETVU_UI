@@ -60,7 +60,9 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <div className="flex flex-col min-h-screen bg-gray-100">
           <Header />{" "}
-          <main className="flex-grow">
+          <main className="flex-grow mb-16">
+            {" "}
+            {/* mb-16 to account for the fixed footer height */}
             <Routes>
               <Route path="/login" element={<Auth />} />
               <Route path="/network" element={<Network />} />
@@ -68,11 +70,11 @@ function App() {
               <Route path="/todo" element={<Todo />} />
               {/* 잠정 */}
               <Route path="/" element={<Map user={user} setUser={setUser} />} />
-              <Route path="/add-network" element={<NetworkForm />} />
+              {/* <Route path="/add-network" element={<NetworkForm />} /> */}
               {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
               {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
             </Routes>
-          </main>
+          </main>{" "}
           <Footer />
         </div>
       </QueryClientProvider>
