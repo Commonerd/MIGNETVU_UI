@@ -1146,7 +1146,7 @@ const Map: React.FC = () => {
 
   return (
     <div className="h-[calc(87vh-64px)] relative">
-      <div className="p-2 bg-[#d1c6b1] relative">
+      <div className="p-2 bg-[#d1c6b1] relative w-full">
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
           {/* Entity Filters */}
           <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
