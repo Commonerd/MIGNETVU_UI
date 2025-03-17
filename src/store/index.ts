@@ -128,6 +128,15 @@ const useStore = create<State>((set) => ({
             year: 0,
           },
         ],
+        edge: [
+          {
+            targetId: 0,
+            targetType: "Migrant",
+            strength: 0,
+            edgeType: "",
+            year: 0,
+          },
+        ],
         photo: undefined, // Add photo field
       },
     })

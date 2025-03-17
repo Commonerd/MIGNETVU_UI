@@ -364,7 +364,7 @@ const Map: React.FC = () => {
     return networks?.find((n) => n.id === id) || null
   }
 
-  const getConnectionColor = (type: Network["edge"][number]["edgeType"]) => {
+  const getConnectionColor = (type: Network["edges"][number]["edgeType"]) => {
     switch (type) {
       // case 'friend':
       //   return 'blue'
@@ -1651,6 +1651,7 @@ const Map: React.FC = () => {
                       <span className="font-medium">
                         : {network.migration_year}
                       </span>
+                      S
                     </p>
                     <p>
                       <span className="font-medium">

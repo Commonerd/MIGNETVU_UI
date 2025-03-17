@@ -23,6 +23,7 @@ const NetworkItemMemo: FC<
   latitude,
   longitude,
   connections,
+  edges,
   migration_traces, // 추가된 마이그레이션 트레이스
   setFocusedNode, // 반드시 포함
   handleEntityClick,
@@ -64,6 +65,7 @@ const NetworkItemMemo: FC<
                 latitude: latitude,
                 longitude: longitude,
                 connections: connections,
+                edge: edges,
                 migration_traces: migration_traces,
                 user_id: 0,
               })
