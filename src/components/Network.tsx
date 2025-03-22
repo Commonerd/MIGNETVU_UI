@@ -308,7 +308,7 @@ export const Network = () => {
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-[#d1c6b1]">
-      <ToastContainer position="top-center" autoClose={2000} />
+      <ToastContainer position="top-center" autoClose={3000} />
       <div className="flex items-center my-5">
         <GlobeIcon className="h-7 w-7 mr-3 text-amber-900" />
         <span className="text-center text-xl font-extrabold">
