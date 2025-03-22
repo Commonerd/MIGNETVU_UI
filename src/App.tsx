@@ -45,7 +45,12 @@ function App() {
         })
         if (res.ok) {
           const user = await res.json()
-          setUser({ email: user.email, isLoggedIn: true, name: user.name })
+          setUser({
+            email: user.email,
+            isLoggedIn: true,
+            name: user.name,
+            role: user.role,
+          })
         }
       } catch (error) {
         console.error("Failed to sync user state:", error)

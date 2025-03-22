@@ -32,7 +32,13 @@ const Header: React.FC = () => {
   const logout = async () => {
     await logoutMutation.mutateAsync()
     queryClient.removeQueries(["networks"])
-    setUser({ email: "", isLoggedIn: false, name: "" }) // 로그아웃 시 사용자 상태 초기화
+    setUser({
+      email: "",
+      isLoggedIn: false,
+      name: "",
+      role: "",
+      id: 0,
+    }) // 로그아웃 시 사용자 상태 초기화
     alert(t("logoutSuccess"))
     navigate("/") // 로그아웃 후 홈으로 이동
     window.location.reload()
@@ -69,7 +75,7 @@ const Header: React.FC = () => {
           {user.isLoggedIn ? (
             <>
               <span className="text-xs md:text-base truncate max-w-[500px]">
-                {user.name} {t("welcome")}
+                {user.name} ({t(user.role)}) {t("welcome")}
               </span>
               <Link
                 to="/network"

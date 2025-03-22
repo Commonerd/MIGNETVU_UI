@@ -73,5 +73,8 @@
   "filterByUserNetworkConnection": "나의 관계망",
   "editProfile": "회원정보 수정",
   "OperaionTime": "운영시간",
-  "Inquiry": "문의"
+  "Inquiry": "문의",
+  "Researcher": "연구자",
+  "Teacher": "교사",
+  "Student": "학생"
 }

@@ -9,6 +9,7 @@ export interface LoginResponse {
   name: string
   email: string
   token: string // 필요한 다른 필드가 있으면 추가하세요.
+  role: string
 }
 
 type MigrationTrace = {
@@ -139,6 +140,7 @@ export interface Comment {
 export type ProfileUpdateData = {
   name?: string
   email?: string
+  role?: string
   current_password?: string // 기존 비밀번호 (비밀번호 변경 시 필수)
   new_password?: string // 새 비밀번호
 }

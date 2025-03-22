@@ -6,6 +6,7 @@ type User = {
   email: string
   isLoggedIn: boolean
   name: string
+  role: string
 }
 
 type EditedTask = {
@@ -61,9 +62,10 @@ type State = {
 }
 
 const useStore = create<State>((set) => ({
-  user: { email: "", isLoggedIn: false, name: "" },
+  user: { email: "", isLoggedIn: false, name: "", role: "" },
   setUser: (user) => set({ user }),
-  resetUser: () => set({ user: { email: "", isLoggedIn: false, name: "" } }),
+  resetUser: () =>
+    set({ user: { email: "", isLoggedIn: false, name: "", role: "" } }),
   editedTask: { id: 0, title: "" },
   updateEditedTask: (payload) => {
     set({

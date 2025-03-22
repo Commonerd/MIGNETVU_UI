@@ -15,6 +15,7 @@ export const EditProfile = () => {
   const { user, setUser } = useStore()
   const [name, setName] = useState(user.name)
   const [email, setEmail] = useState(user.email)
+  const [role, setRole] = useState(user.role)
   const [currentPw, setCurrentPw] = useState("")
   const [newPw, setNewPw] = useState("")
   const [confirmNewPw, setConfirmNewPw] = useState("")
@@ -34,6 +35,7 @@ export const EditProfile = () => {
       const profileData: ProfileUpdateData = {
         name,
         email,
+        role,
         current_password: currentPw,
         new_password: newPw,
       }
@@ -41,6 +43,14 @@ export const EditProfile = () => {
       setIsLoading(false)
       if (res != null) {
         toast.success("Profile updated successfully!")
+        console.log("res", res)
+        setUser({
+          isLoggedIn: true,
+          name: res.data.name,
+          email: res.data.email,
+          role: res.data.role,
+        })
+
         // setTimeout(() => {
         //   router.push("/") // 톱 화면으로 이동
         // }, 3000) // 3초 후에 이동
@@ -69,6 +79,16 @@ export const EditProfile = () => {
               onChange={(e) => setName(e.target.value)}
               required
             />
+            <Select
+              name="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+            >
+              <option value="Researcher">{t("Researcher")}</option>
+              <option value="Teacher">{t("Teacher")}</option>
+              <option value="Student">{t("Student")}</option>
+            </Select>
             <Input
               type="email"
               name="email"
@@ -218,6 +238,23 @@ const Button = styled.button`
   @media (max-width: 600px) {
     padding: 10px;
     font-size: 0.9rem;
+  }
+`
+const Select = styled.select`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px;
   }
 `
 

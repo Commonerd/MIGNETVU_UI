@@ -13,6 +13,7 @@ export const Auth = () => {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [pw, setPw] = useState("")
+  const [role, setRole] = useState("Researcher")
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
   const [csrfLoaded, setCsrfLoaded] = useState(false)
@@ -50,18 +51,24 @@ export const Auth = () => {
         { email, password: pw, name: "0" },
         {
           onSuccess: (res) => {
-            setUser({ email: res.email, isLoggedIn: true, name: res.name })
+            setUser({
+              email: res.email,
+              isLoggedIn: true,
+              name: res.name,
+              role: res.role,
+            })
           },
         },
       )
     } else {
       await registerMutation
-        .mutateAsync({ name, email, password: pw })
+        .mutateAsync({ name, email, password: pw, role }) // role 추가
         .then(() =>
           loginMutation.mutate(
             { email, password: pw, name },
             {
-              onSuccess: () => setUser({ email, isLoggedIn: true, name }),
+              onSuccess: () =>
+                setUser({ email, isLoggedIn: true, name, role: res.role }),
             },
           ),
         )
@@ -73,23 +80,32 @@ export const Auth = () => {
       <LoginBox>
         <Header>
           <LockClosedIcon className="h-8 w-8 mr-2 text-amber-800" />{" "}
-          {/* Example: Lock icon */}
-          {/* Replace with login icon */}
-          {/* Use the lock icon */}
           <span className="text-2xl font-extrabold">HisNetVu</span>
         </Header>
         <span className="text-xs">{t("appSubName")}</span>
         <Title>{isLogin ? t("login") : t("register")}</Title>
         <form onSubmit={submitAuthHandler}>
           {!isLogin && (
-            <Input
-              type="text"
-              name="name"
-              placeholder={t("name")}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+            <>
+              <Input
+                type="text"
+                name="name"
+                placeholder={t("name")}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              <Select
+                name="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                required
+              >
+                <option value="Researcher">{t("Researcher")}</option>
+                <option value="Teacher">{t("Teacher")}</option>
+                <option value="Student">{t("Student")}</option>
+              </Select>
+            </>
           )}
           <Input
             type="email"
@@ -107,7 +123,10 @@ export const Auth = () => {
             onChange={(e) => setPw(e.target.value)}
             required
           />
-          <Button type="submit" disabled={!email || !pw || (!isLogin && !name)}>
+          <Button
+            type="submit"
+            disabled={!email || !pw || (!isLogin && (!name || !role))}
+          >
             {isLogin ? t("login") : t("register")}
           </Button>
         </form>
@@ -126,9 +145,8 @@ const Container = styled.div`
   min-height: 86vh;
   padding: 1rem;
   background-image: url("/hisnetvu1.png");
-  background-size: contain; /* Adjust the size of the background image */
-  background-color: #d1c6b1; /* Faded yellowish "aged paper" color for the sides */
-
+  background-size: contain;
+  background-color: #d1c6b1;
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
@@ -140,20 +158,15 @@ const Container = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.2); /* Lighter dark overlay */
-    backdrop-filter: blur(6px); /* Subtle blur effect */
-    border-radius: 16px; /* Ensure overlay matches rounded corners */
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
     z-index: -1;
   }
 `
 
 const LoginBox = styled.div`
-  background-color: rgba(
-    229,
-    231,
-    235,
-    0.9
-  ); /* Slightly transparent background for login box */
+  background-color: rgba(229, 231, 235, 0.9);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 32px;
@@ -194,6 +207,24 @@ const Title = styled.h2`
 `
 
 const Input = styled.input`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  margin-bottom: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  }
+
+  @media (max-width: 600px) {
+    padding: 10px;
+  }
+`
+
+const Select = styled.select`
   width: 100%;
   padding: 12px;
   border: 1px solid #d1d5db;
