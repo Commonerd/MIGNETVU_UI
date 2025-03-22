@@ -7,27 +7,31 @@ import {
 import useStore from "../store"
 import { useQueryNetworks } from "../hooks/useQueryNetworks"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
-import { useMutateAuth } from "../hooks/useMutateAuth"
-import { NetworkItem } from "./NetworkItem"
 import SearchResults from "./SearchResults"
 import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { GlobeIcon } from "lucide-react"
+import { toast, ToastContainer } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import { ClipLoader } from "react-spinners"
 
 export const Network = () => {
   const { t } = useTranslation()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const { data, isLoading } = useQueryNetworks()
+  const { data } = useQueryNetworks()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
   const navigate = useNavigate()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const submitNetworkHandler = (e: FormEvent<HTMLFormElement>) => {
+  const submitNetworkHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const {
       id,
       title,
@@ -48,6 +52,7 @@ export const Network = () => {
     // Ensure type is either 'Migrant' or 'Organization'
     if (type !== "Migrant" && type !== "Organization") {
       alert('Type must be either "Migrant" or "Organization".')
+      setIsSubmitting(false)
       return
     }
 
@@ -72,10 +77,18 @@ export const Network = () => {
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`)
     }
-    if (id === 0) {
-      createNetworkMutation.mutate(formData)
-    } else {
-      updateNetworkMutation.mutate({ ...editedNetwork, formData })
+    try {
+      if (id === 0) {
+        await createNetworkMutation.mutateAsync(formData)
+        toast.success("Network created successfully!")
+      } else {
+        await updateNetworkMutation.mutateAsync({ ...editedNetwork, formData })
+        toast.success("Network updated successfully!")
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.")
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -295,6 +308,7 @@ export const Network = () => {
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-[#d1c6b1]">
+      <ToastContainer position="top-center" autoClose={2000} />
       <div className="flex items-center my-5">
         <GlobeIcon className="h-7 w-7 mr-3 text-amber-900" />
         <span className="text-center text-xl font-extrabold">
@@ -869,10 +883,17 @@ export const Network = () => {
                   !editedNetwork.ethnicity ||
                   !editedNetwork.migration_year ||
                   !editedNetwork.latitude ||
-                  !editedNetwork.longitude
+                  !editedNetwork.longitude ||
+                  isSubmitting
                 }
               >
-                {editedNetwork.id === 0 ? "Create" : "Update"}
+                {isSubmitting ? (
+                  <ClipLoader size={50} color={"#fff"} />
+                ) : editedNetwork.id === 0 ? (
+                  "Create"
+                ) : (
+                  "Update"
+                )}
               </button>
             </div>
           </div>

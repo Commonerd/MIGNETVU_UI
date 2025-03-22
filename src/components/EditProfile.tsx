@@ -63,7 +63,7 @@ export const EditProfile = () => {
 
   return (
     <>
-      <ToastContainer position="top-center" />
+      <ToastContainer position="top-center" autoClose={2000} />
       <Container>
         <ProfileBox>
           <Header>
