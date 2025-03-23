@@ -14,6 +14,7 @@ import { GlobeIcon } from "lucide-react"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { ClipLoader } from "react-spinners"
+import * as XLSX from "xlsx"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -108,7 +109,9 @@ export const Network = () => {
   }
 
   const handleImportCSV = () => {
-    fileInputRef.current?.click()
+    alert(t("This feature is still under development."))
+    return
+    // fileInputRef.current?.click()
   }
 
   const processFile = (file: File) => {
@@ -192,10 +195,12 @@ export const Network = () => {
     reader.readAsText(file)
   }
 
-  const handleExportCSV = () => {
+  const handleExportXLSX = () => {
     if (!data) return
 
-    const csvRows = [
+    console.log("Data:", data)
+
+    const networksSheet = [
       [
         "ID",
         "User ID",
@@ -207,7 +212,6 @@ export const Network = () => {
         "End Year",
         "Latitude",
         "Longitude",
-        "Connections",
       ],
       ...data.map(
         ({
@@ -221,13 +225,7 @@ export const Network = () => {
           end_year,
           latitude,
           longitude,
-          connections,
         }) => {
-          // connections 배열을 JSON 문자열로 변환
-          const connectionsString = JSON.stringify(connections || []).replace(
-            /"/g,
-            '""',
-          ) // CSV 내 큰따옴표 이스케이프
           return [
             id,
             user_id,
@@ -239,20 +237,73 @@ export const Network = () => {
             end_year,
             latitude,
             longitude,
-            `"${connectionsString}"`, // JSON 배열을 큰따옴표로 감싸기
-          ].join(",")
+          ]
         },
       ),
     ]
 
-    const csvContent = "data:text/csv;charset=utf-8," + csvRows.join("\n")
-    const encodedUri = encodeURI(csvContent)
-    const link = document.createElement("a")
-    link.setAttribute("href", encodedUri)
-    link.setAttribute("download", "networks.csv")
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+    const edgesSheet = [
+      [
+        "ID",
+        "Network ID",
+        "Target ID",
+        "Target Type",
+        "Strength",
+        "Edge Type",
+        "Year",
+      ],
+      ...data.flatMap((network) => {
+        console.log("Network Edges:", network.edges)
+        return (network.edges || []).map((edge) => [
+          edge.id,
+          network.id,
+          edge.targetId,
+          edge.targetType,
+          edge.strength,
+          edge.edgeType,
+          edge.year,
+        ])
+      }),
+    ]
+
+    const migrationTracesSheet = [
+      [
+        "ID",
+        "Network ID",
+        "Location Name",
+        "Latitude",
+        "Longitude",
+        "Year",
+        "Reason",
+      ],
+      ...data.flatMap((network) => {
+        console.log("Network Migration Traces:", network.migration_traces)
+        return (network.migration_traces || []).map((trace) => [
+          trace.id,
+          network.id,
+          trace.location_name,
+          trace.latitude,
+          trace.longitude,
+          trace.migration_year,
+          trace.reason,
+        ])
+      }),
+    ]
+
+    const workbook = XLSX.utils.book_new()
+    const networksWS = XLSX.utils.aoa_to_sheet(networksSheet)
+    const edgesWS = XLSX.utils.aoa_to_sheet(edgesSheet)
+    const migrationTracesWS = XLSX.utils.aoa_to_sheet(migrationTracesSheet)
+
+    XLSX.utils.book_append_sheet(workbook, networksWS, "Networks")
+    XLSX.utils.book_append_sheet(workbook, edgesWS, "Edges")
+    XLSX.utils.book_append_sheet(
+      workbook,
+      migrationTracesWS,
+      "Migration Traces",
+    )
+
+    XLSX.writeFile(workbook, "networks.xlsx")
   }
 
   const deleteMigrationTrace = (idx: number) => {
@@ -918,7 +969,7 @@ export const Network = () => {
           }}
         />
         <button
-          onClick={handleExportCSV}
+          onClick={handleExportXLSX}
           className="px-4 py-2 bg-[#6E7F7A] text-white rounded hover:bg-[#36454F]"
         >
           Export

@@ -28,7 +28,7 @@ type MigrationTrace = {
 }
 
 export type Edge = {
-  // id: number
+  id: number
   targetId: number
   targetType: string
   strength: number
