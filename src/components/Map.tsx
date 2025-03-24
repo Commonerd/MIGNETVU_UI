@@ -1157,7 +1157,7 @@ const Map: React.FC = () => {
           {/* 3D 모드 전환 버튼 추가 */}
           <button
             onClick={toggle3DMode}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-[#3E2723] text-white rounded hover:bg-[#5D4037] focus:outline-none focus:ring-2 focus:ring-[#3E2723]"
           >
             {is3DMode ? "2D" : "3D"}
           </button>
