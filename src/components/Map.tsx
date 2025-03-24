@@ -1591,7 +1591,6 @@ const Map: React.FC = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {/* 지도에 표시될 네트워크 데이터 */}
-          // Update the JSX to remove the incorrect filtering logic
           {filteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
