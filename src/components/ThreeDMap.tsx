@@ -63,21 +63,13 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
       networks.forEach((network) => {
         // migration_traces 추가
         network.migration_traces.forEach((trace) => {
-          const start = latLongToVector3(network.latitude, network.longitude, 5)
-          const end = latLongToVector3(trace.latitude, trace.longitude, 5)
-
-          // 곡선 생성
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
-            (start.z + end.z) / 2,
-          )
-          const curve = new THREE.CatmullRomCurve3([start, mid, end])
-
-          const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.1, 8, false)
-          const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
-          const tube = new THREE.Mesh(tubeGeometry, material)
-          scene.add(tube)
+          const material = new THREE.LineBasicMaterial({ color: 0xff0000 })
+          const points = []
+          points.push(latLongToVector3(network.latitude, network.longitude, 5))
+          points.push(latLongToVector3(trace.latitude, trace.longitude, 5))
+          const geometry = new THREE.BufferGeometry().setFromPoints(points)
+          const line = new THREE.Line(geometry, material)
+          sphere.add(line) // 지구본의 자식으로 선을 추가
         })
 
         // edges 추가
@@ -93,10 +85,11 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
           )
           const curve = new THREE.CatmullRomCurve3([start, mid, end])
 
-          const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.1, 8, false)
-          const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-          const tube = new THREE.Mesh(tubeGeometry, material)
-          scene.add(tube)
+          const points = curve.getPoints(50)
+          const geometry = new THREE.BufferGeometry().setFromPoints(points)
+          const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
+          const line = new THREE.Line(geometry, material)
+          sphere.add(line) // 지구본의 자식으로 선을 추가
         })
       })
     }
@@ -105,6 +98,7 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
     const animate = () => {
       requestAnimationFrame(animate)
       controls.update() // 애니메이션 루프에서 컨트롤 업데이트
+      // sphere.rotation.y += 0.01
       renderer.render(scene, camera)
     }
 
