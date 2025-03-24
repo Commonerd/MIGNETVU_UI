@@ -76,24 +76,44 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
             )
             const end = latLongToVector3(trace.latitude, trace.longitude, 5)
 
+            // 시작점과 도착점에서 약간의 오프셋 추가
+            const startOffset = start.clone().multiplyScalar(1.01)
+            const endOffset = end.clone().multiplyScalar(1.01)
+
             // 곡선 생성
             const mid = new THREE.Vector3(
-              (start.x + end.x) / 2,
-              (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
-              (start.z + end.z) / 2,
+              (startOffset.x + endOffset.x) / 2,
+              (startOffset.y + endOffset.y) / 2 + 1, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 1만큼 증가시킴
+              (startOffset.z + endOffset.z) / 2,
             )
-            const curve = new THREE.CatmullRomCurve3([start, mid, end])
+            const curve = new THREE.CatmullRomCurve3([
+              startOffset,
+              mid,
+              endOffset,
+            ])
 
             const tubeGeometry = new THREE.TubeGeometry(
               curve,
               64,
-              0.1,
+              0.05,
               8,
               false,
-            )
+            ) // 두께를 0.05로 설정
             const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
             const tube = new THREE.Mesh(tubeGeometry, material)
             scene.add(tube)
+
+            // 화살표 추가
+            const direction = new THREE.Vector3()
+              .subVectors(endOffset, startOffset)
+              .normalize()
+            const arrowHelper = new THREE.ArrowHelper(
+              direction,
+              endOffset,
+              0.5,
+              0xff0000,
+            ) // 화살표 길이와 색상 설정
+            scene.add(arrowHelper)
           }
         })
 
@@ -118,24 +138,44 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
               5,
             )
 
+            // 시작점과 도착점에서 약간의 오프셋 추가
+            const startOffset = start.clone().multiplyScalar(1.01)
+            const endOffset = end.clone().multiplyScalar(1.01)
+
             // 곡선 생성
             const mid = new THREE.Vector3(
-              (start.x + end.x) / 2,
-              (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
-              (start.z + end.z) / 2,
+              (startOffset.x + endOffset.x) / 2,
+              (startOffset.y + endOffset.y) / 2 + 0.5, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 1만큼 증가시킴
+              (startOffset.z + endOffset.z) / 2,
             )
-            const curve = new THREE.CatmullRomCurve3([start, mid, end])
+            const curve = new THREE.CatmullRomCurve3([
+              startOffset,
+              mid,
+              endOffset,
+            ])
 
             const tubeGeometry = new THREE.TubeGeometry(
               curve,
               64,
-              0.1,
+              0.001,
               8,
               false,
             )
             const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
             const tube = new THREE.Mesh(tubeGeometry, material)
             scene.add(tube)
+
+            // 화살표 추가
+            const direction = new THREE.Vector3()
+              .subVectors(endOffset, startOffset)
+              .normalize()
+            const arrowHelper = new THREE.ArrowHelper(
+              direction,
+              endOffset,
+              0.5,
+              0x00ff00,
+            ) // 화살표 길이와 색상 설정
+            scene.add(arrowHelper)
           }
         })
       })
