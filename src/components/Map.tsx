@@ -38,6 +38,7 @@ import SearchResults from "./SearchResults"
 import Select from "react-select"
 import CommentSection from "./CommentSection"
 import "leaflet-polylinedecorator"
+import ThreeDMap from "./ThreeDMap"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -198,6 +199,11 @@ const Map: React.FC = () => {
   const [yearRange, setYearRange] = useState<[number, number]>([0, 0]) // Year for migration trace
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
+  const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
+
+  const toggle3DMode = () => {
+    setIs3DMode(!is3DMode)
+  }
 
   useEffect(() => {
     if (!data) {
@@ -1148,6 +1154,13 @@ const Map: React.FC = () => {
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
         <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
+          {/* 3D 모드 전환 버튼 추가 */}
+          <button
+            onClick={toggle3DMode}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {is3DMode ? "2D" : "3D"}
+          </button>
           {/* Entity Filters */}
           <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
             <Select
@@ -1495,294 +1508,301 @@ const Map: React.FC = () => {
           </div>
         )}
       </div>
-
-      <MapContainer
-        center={[37.5665, 126.978]}
-        zoom={2}
-        style={{
-          height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
-          width: "100%",
-          position: "relative",
-          zIndex: 0,
-        }}
-        maxBounds={[
-          [90, -360], // 최소 위도, 경도
-          [-90, 360], // 최대 위도, 경도
-        ]}
-        maxBoundsViscosity={1.0} // 최대 경계 범위 조정
-        minZoom={3} // 최소 줌 레벨 설정
-      >
-        <HandleRightClick />
-        <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
-        {latLng && (
-          <Marker position={latLng}>
-            <Popup>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ marginBottom: "10px" }}>
-                  <strong>Lat:</strong> {latLng.lat}
-                </p>
-                <p style={{ marginBottom: "20px" }}>
-                  <strong>Lng:</strong> {latLng.lng}
-                </p>
-                <button
-                  className="copy-btn"
-                  data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
-                  onClick={copyToClipboard}
-                  style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    backgroundColor: copied ? "green" : "#007BFF", // 복사 후 버튼 색상은 녹색
-                    color: copied ? "#fff" : "#fff", // 글자 색상은 흰색으로 고정
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease", // 부드러운 배경색 변화
-                  }}
-                >
-                  {copied ? (
-                    <span>Copied!</span> // 복사 후 상태 표시
-                  ) : (
-                    "Copy"
-                  )}
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        )}
-        {focusedNode && (
-          <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
-        )}
-        <LegendBox>
-          <h2>{t("topRegistrants")}</h2>
-          <ul>
-            {topRegistrants.map((registrant) => (
-              <li key={registrant.registrantId}>
-                {registrant.medal} {registrant.userName} : {registrant.count}{" "}
-                {t("nodeCount")}
-              </li>
-            ))}
-          </ul>
-        </LegendBox>
-        <Legend
-          // topMigrants={topMigrants}
-          // topOrganizations={topOrganizations}
-          topNetworks={topNetworks}
-          onEntityClick={handleEntityClick}
-          centralityType={centralityType}
-        />
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {/* 지도에 표시될 네트워크 데이터 */}
-        // Update the JSX to remove the incorrect filtering logic
-        {filteredNetworks.map((network) => {
-          const size = getNodeSize(
-            centralityValues[network.id] || 0,
-            centralityType,
-          )
-
-          const isHighlighted =
-            highlightedNode && highlightedNode.id === network.id
-
-          // Determine color: Organization is blue, highlighted is yellow, default is red
-          let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
-          if (isHighlighted) {
-            // Highlighted nodes are yellow regardless of type
-            color = "orange"
-          }
-
-          return (
-            <Marker
-              key={network.id}
-              position={[network.latitude, network.longitude]}
-              icon={L.divIcon({
-                className: "custom-marker",
-                html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
-                iconSize: [size, size],
-              })}
-              eventHandlers={{
-                click: () => handleTooltipOpen(network.id),
-                // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
-              }}
-            >
+      {/* 3D 모드와 2D 모드 전환 */}
+      {is3DMode ? (
+        <ThreeDMap networks={networks} />
+      ) : (
+        <MapContainer
+          center={[37.5665, 126.978]}
+          zoom={2}
+          style={{
+            height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
+            width: "100%",
+            position: "relative",
+            zIndex: 0,
+          }}
+          maxBounds={[
+            [90, -360], // 최소 위도, 경도
+            [-90, 360], // 최대 위도, 경도
+          ]}
+          maxBoundsViscosity={1.0} // 최대 경계 범위 조정
+          minZoom={3} // 최소 줌 레벨 설정
+        >
+          <HandleRightClick />
+          <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
+          {latLng && (
+            <Marker position={latLng}>
               <Popup>
-                <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
-                  {" "}
-                  {/* 팝업 크기를 제한 */}
-                  <strong className="text-lg font-semibold block mb-2">
-                    No.{network.id} : {network.title}
-                  </strong>
-                  <div className="text-gray-700 text-sm space-y-1">
-                    {highlightedNode?.id === network.id &&
-                      highlightedNode.photo && (
-                        <div className="flex justify-center mb-2">
-                          <img
-                            src={highlightedNode.photo}
-                            alt="Network"
-                            className="w-24 h-24 object-cover rounded-lg shadow-md"
-                          />
-                        </div>
-                      )}
-                    <p>
-                      <span className="font-medium">Creator Name:</span>{" "}
-                      {userNames[network.user_id]}
-                    </p>
-                    <p>
-                      <span className="font-medium">Type:</span> {network.type}
-                    </p>
-                    <p>
-                      {t("centrality")}: {centralityValues[network.id] || 0}
-                    </p>
-                    <p>
-                      <span className="font-medium">Nationality:</span>{" "}
-                      {network.nationality}
-                    </p>
-                    <p>
-                      <span className="font-medium">Ethnicity:</span>{" "}
-                      {network.ethnicity}
-                    </p>
-                    <p>
-                      <span className="font-medium">
-                        {network.type === "Migrant"
-                          ? "Birth Year"
-                          : "Established Year"}
-                      </span>
-                      <span className="font-medium">
-                        : {network.migration_year}
-                      </span>
-                      S
-                    </p>
-                    <p>
-                      <span className="font-medium">
-                        {network.type === "Migrant"
-                          ? "Death Year"
-                          : "Dissolved Year"}
-                      </span>
-                      <span className="font-medium">: {network.end_year}</span>
-                    </p>
-                    <p>
-                      <span className="font-medium">Latitude:</span>{" "}
-                      {network.latitude.toFixed(5)}
-                    </p>
-                    <p>
-                      <span className="font-medium">Longitude:</span>{" "}
-                      {network.longitude.toFixed(5)}
-                    </p>
-                  </div>
-                </div>
-                {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
-                <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
-                  <CommentSection networkId={network.id} />
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ marginBottom: "10px" }}>
+                    <strong>Lat:</strong> {latLng.lat}
+                  </p>
+                  <p style={{ marginBottom: "20px" }}>
+                    <strong>Lng:</strong> {latLng.lng}
+                  </p>
+                  <button
+                    className="copy-btn"
+                    data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
+                    onClick={copyToClipboard}
+                    style={{
+                      padding: "10px 20px",
+                      fontSize: "16px",
+                      backgroundColor: copied ? "green" : "#007BFF", // 복사 후 버튼 색상은 녹색
+                      color: copied ? "#fff" : "#fff", // 글자 색상은 흰색으로 고정
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease", // 부드러운 배경색 변화
+                    }}
+                  >
+                    {copied ? (
+                      <span>Copied!</span> // 복사 후 상태 표시
+                    ) : (
+                      "Copy"
+                    )}
+                  </button>
                 </div>
               </Popup>
             </Marker>
-          )
-        })}
-        <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
-        {filteredTraces.map(
-          (trace: {
-            reason: string
-            id: React.Key | null | undefined
-            network_id: number
-            latitude: number
-            longitude: number
-            location_name:
-              | string
-              | number
-              | boolean
-              | React.ReactElement<
-                  any,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | null
-              | undefined
-            migration_year:
-              | string
-              | number
-              | boolean
-              | React.ReactElement<
-                  any,
-                  string | React.JSXElementConstructor<any>
-                >
-              | Iterable<React.ReactNode>
-              | React.ReactPortal
-              | null
-              | undefined
-          }) => (
-            <CircleMarker
-              key={trace.id}
-              center={[trace.latitude, trace.longitude]}
-              radius={5}
-              color="purple"
-              fillColor="purple"
-              fillOpacity={0.5}
-            >
-              {" "}
-              <Popup>
-                <div
-                  style={{
-                    fontSize: "18px",
-                    lineHeight: "1.6",
-                    margin: "0",
-                    padding: "0",
-                  }}
-                >
-                  <div>
-                    <strong>Network ID:</strong> {trace.network_id}
-                  </div>
-                  <div>
-                    <strong>Place:</strong> {trace.location_name}
-                  </div>
-                  <div>
-                    <strong>Migration Year:</strong> {trace.migration_year}
-                  </div>
-                  <div>
-                    <strong>Reason:</strong> {trace.reason}
-                  </div>
-                </div>
-              </Popup>
-            </CircleMarker>
-          ),
-        )}
-        {migrationTraces.map((traces) =>
-          traces.slice(0, -1).map((trace, index) => {
-            const nextTrace = traces[index + 1]
+          )}
+          {focusedNode && (
+            <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
+          )}
+          <LegendBox>
+            <h2>{t("topRegistrants")}</h2>
+            <ul>
+              {topRegistrants.map((registrant) => (
+                <li key={registrant.registrantId}>
+                  {registrant.medal} {registrant.userName} : {registrant.count}{" "}
+                  {t("nodeCount")}
+                </li>
+              ))}
+            </ul>
+          </LegendBox>
+          <Legend
+            // topMigrants={topMigrants}
+            // topOrganizations={topOrganizations}
+            topNetworks={topNetworks}
+            onEntityClick={handleEntityClick}
+            centralityType={centralityType}
+          />
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {/* 지도에 표시될 네트워크 데이터 */}
+          // Update the JSX to remove the incorrect filtering logic
+          {filteredNetworks.map((network) => {
+            const size = getNodeSize(
+              centralityValues[network.id] || 0,
+              centralityType,
+            )
+
+            const isHighlighted =
+              highlightedNode && highlightedNode.id === network.id
+
+            // Determine color: Organization is blue, highlighted is yellow, default is red
+            let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
+            if (isHighlighted) {
+              // Highlighted nodes are yellow regardless of type
+              color = "orange"
+            }
+
             return (
-              <Polyline
-                key={`${trace.id}-${nextTrace.id}`}
-                positions={[
-                  [trace.latitude, trace.longitude],
-                  [nextTrace.latitude, nextTrace.longitude],
-                ]}
-                color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
-                weight={3}
-                opacity={0.7}
-                dashArray="5, 5"
-                lineCap="round"
-                lineJoin="round"
+              <Marker
+                key={network.id}
+                position={[network.latitude, network.longitude]}
+                icon={L.divIcon({
+                  className: "custom-marker",
+                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
+                  iconSize: [size, size],
+                })}
                 eventHandlers={{
-                  click: (e) => {
-                    L.popup()
-                      .setLatLng(e.latlng)
-                      .setContent(
-                        `<div>
+                  click: () => handleTooltipOpen(network.id),
+                  // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
+                }}
+              >
+                <Popup>
+                  <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
+                    {" "}
+                    {/* 팝업 크기를 제한 */}
+                    <strong className="text-lg font-semibold block mb-2">
+                      No.{network.id} : {network.title}
+                    </strong>
+                    <div className="text-gray-700 text-sm space-y-1">
+                      {highlightedNode?.id === network.id &&
+                        highlightedNode.photo && (
+                          <div className="flex justify-center mb-2">
+                            <img
+                              src={highlightedNode.photo}
+                              alt="Network"
+                              className="w-24 h-24 object-cover rounded-lg shadow-md"
+                            />
+                          </div>
+                        )}
+                      <p>
+                        <span className="font-medium">Creator Name:</span>{" "}
+                        {userNames[network.user_id]}
+                      </p>
+                      <p>
+                        <span className="font-medium">Type:</span>{" "}
+                        {network.type}
+                      </p>
+                      <p>
+                        {t("centrality")}: {centralityValues[network.id] || 0}
+                      </p>
+                      <p>
+                        <span className="font-medium">Nationality:</span>{" "}
+                        {network.nationality}
+                      </p>
+                      <p>
+                        <span className="font-medium">Ethnicity:</span>{" "}
+                        {network.ethnicity}
+                      </p>
+                      <p>
+                        <span className="font-medium">
+                          {network.type === "Migrant"
+                            ? "Birth Year"
+                            : "Established Year"}
+                        </span>
+                        <span className="font-medium">
+                          : {network.migration_year}
+                        </span>
+                        S
+                      </p>
+                      <p>
+                        <span className="font-medium">
+                          {network.type === "Migrant"
+                            ? "Death Year"
+                            : "Dissolved Year"}
+                        </span>
+                        <span className="font-medium">
+                          : {network.end_year}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium">Latitude:</span>{" "}
+                        {network.latitude.toFixed(5)}
+                      </p>
+                      <p>
+                        <span className="font-medium">Longitude:</span>{" "}
+                        {network.longitude.toFixed(5)}
+                      </p>
+                    </div>
+                  </div>
+                  {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
+                  <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
+                    <CommentSection networkId={network.id} />
+                  </div>
+                </Popup>
+              </Marker>
+            )
+          })}
+          <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
+          {filteredTraces.map(
+            (trace: {
+              reason: string
+              id: React.Key | null | undefined
+              network_id: number
+              latitude: number
+              longitude: number
+              location_name:
+                | string
+                | number
+                | boolean
+                | React.ReactElement<
+                    any,
+                    string | React.JSXElementConstructor<any>
+                  >
+                | Iterable<React.ReactNode>
+                | React.ReactPortal
+                | null
+                | undefined
+              migration_year:
+                | string
+                | number
+                | boolean
+                | React.ReactElement<
+                    any,
+                    string | React.JSXElementConstructor<any>
+                  >
+                | Iterable<React.ReactNode>
+                | React.ReactPortal
+                | null
+                | undefined
+            }) => (
+              <CircleMarker
+                key={trace.id}
+                center={[trace.latitude, trace.longitude]}
+                radius={5}
+                color="purple"
+                fillColor="purple"
+                fillOpacity={0.5}
+              >
+                {" "}
+                <Popup>
+                  <div
+                    style={{
+                      fontSize: "18px",
+                      lineHeight: "1.6",
+                      margin: "0",
+                      padding: "0",
+                    }}
+                  >
+                    <div>
+                      <strong>Network ID:</strong> {trace.network_id}
+                    </div>
+                    <div>
+                      <strong>Place:</strong> {trace.location_name}
+                    </div>
+                    <div>
+                      <strong>Migration Year:</strong> {trace.migration_year}
+                    </div>
+                    <div>
+                      <strong>Reason:</strong> {trace.reason}
+                    </div>
+                  </div>
+                </Popup>
+              </CircleMarker>
+            ),
+          )}
+          {migrationTraces.map((traces) =>
+            traces.slice(0, -1).map((trace, index) => {
+              const nextTrace = traces[index + 1]
+              return (
+                <Polyline
+                  key={`${trace.id}-${nextTrace.id}`}
+                  positions={[
+                    [trace.latitude, trace.longitude],
+                    [nextTrace.latitude, nextTrace.longitude],
+                  ]}
+                  color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+                  weight={3}
+                  opacity={0.7}
+                  dashArray="5, 5"
+                  lineCap="round"
+                  lineJoin="round"
+                  eventHandlers={{
+                    click: (e) => {
+                      L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(
+                          `<div>
                   <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
                   <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
                   <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
                   <strong>Reason:</strong> ${nextTrace.reason}
                 </div>`,
-                      )
-                      .openOn(e.target._map)
-                  },
-                }}
-              />
-            )
-          }),
-        )}
-      </MapContainer>
+                        )
+                        .openOn(e.target._map)
+                    },
+                  }}
+                />
+              )
+            }),
+          )}
+        </MapContainer>
+      )}
     </div>
   )
 }
