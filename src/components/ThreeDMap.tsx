@@ -9,7 +9,7 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
   const mountRef = useRef<HTMLDivElement | null>(null)
 
   // 위도와 경도를 3D 좌표로 변환하는 함수
-  const latLongToVector3 = (lat: number, lon: number, radius: number) => {
+  const latLongToVector3 = (lat: number, lon: number, radius: number = 5) => {
     const phi = (90 - lat) * (Math.PI / 180)
     const theta = (lon + 180) * (Math.PI / 180)
 
@@ -63,33 +63,80 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
       networks.forEach((network) => {
         // migration_traces 추가
         network.migration_traces.forEach((trace) => {
-          const material = new THREE.LineBasicMaterial({ color: 0xff0000 })
-          const points = []
-          points.push(latLongToVector3(network.latitude, network.longitude, 5))
-          points.push(latLongToVector3(trace.latitude, trace.longitude, 5))
-          const geometry = new THREE.BufferGeometry().setFromPoints(points)
-          const line = new THREE.Line(geometry, material)
-          sphere.add(line) // 지구본의 자식으로 선을 추가
+          if (
+            network.latitude !== undefined &&
+            network.longitude !== undefined &&
+            trace.latitude !== undefined &&
+            trace.longitude !== undefined
+          ) {
+            const start = latLongToVector3(
+              network.latitude,
+              network.longitude,
+              5,
+            )
+            const end = latLongToVector3(trace.latitude, trace.longitude, 5)
+
+            // 곡선 생성
+            const mid = new THREE.Vector3(
+              (start.x + end.x) / 2,
+              (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
+              (start.z + end.z) / 2,
+            )
+            const curve = new THREE.CatmullRomCurve3([start, mid, end])
+
+            const tubeGeometry = new THREE.TubeGeometry(
+              curve,
+              64,
+              0.1,
+              8,
+              false,
+            )
+            const material = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+            const tube = new THREE.Mesh(tubeGeometry, material)
+            scene.add(tube)
+          }
         })
 
         // edges 추가
         network.edges.forEach((edge) => {
-          const start = latLongToVector3(network.latitude, network.longitude, 5)
-          const end = latLongToVector3(edge.latitude, edge.longitude, 5)
+          const targetNetwork = networks.find((n) => n.id === edge.targetId)
+          if (
+            network.latitude !== undefined &&
+            network.longitude !== undefined &&
+            targetNetwork &&
+            targetNetwork.latitude !== undefined &&
+            targetNetwork.longitude !== undefined
+          ) {
+            const start = latLongToVector3(
+              network.latitude,
+              network.longitude,
+              5,
+            )
+            const end = latLongToVector3(
+              targetNetwork.latitude,
+              targetNetwork.longitude,
+              5,
+            )
 
-          // 곡선 생성
-          const mid = new THREE.Vector3(
-            (start.x + end.x) / 2,
-            (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
-            (start.z + end.z) / 2,
-          )
-          const curve = new THREE.CatmullRomCurve3([start, mid, end])
+            // 곡선 생성
+            const mid = new THREE.Vector3(
+              (start.x + end.x) / 2,
+              (start.y + end.y) / 2 + 2, // 공중으로 붕 뜨는 효과를 위해 y 좌표를 증가시킴
+              (start.z + end.z) / 2,
+            )
+            const curve = new THREE.CatmullRomCurve3([start, mid, end])
 
-          const points = curve.getPoints(50)
-          const geometry = new THREE.BufferGeometry().setFromPoints(points)
-          const material = new THREE.LineBasicMaterial({ color: 0x00ff00 })
-          const line = new THREE.Line(geometry, material)
-          sphere.add(line) // 지구본의 자식으로 선을 추가
+            const tubeGeometry = new THREE.TubeGeometry(
+              curve,
+              64,
+              0.1,
+              8,
+              false,
+            )
+            const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+            const tube = new THREE.Mesh(tubeGeometry, material)
+            scene.add(tube)
+          }
         })
       })
     }
@@ -98,7 +145,6 @@ const ThreeDMap: React.FC<{ networks: Network[] | undefined }> = ({
     const animate = () => {
       requestAnimationFrame(animate)
       controls.update() // 애니메이션 루프에서 컨트롤 업데이트
-      // sphere.rotation.y += 0.01
       renderer.render(scene, camera)
     }
 
