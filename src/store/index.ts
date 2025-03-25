@@ -62,10 +62,10 @@ type State = {
 }
 
 const useStore = create<State>((set) => ({
-  user: { email: "", isLoggedIn: false, name: "", role: "" },
+  user: { id: 0, email: "", isLoggedIn: false, name: "", role: "" },
   setUser: (user) => set({ user }),
   resetUser: () =>
-    set({ user: { email: "", isLoggedIn: false, name: "", role: "" } }),
+    set({ user: { id: 0, email: "", isLoggedIn: false, name: "", role: "" } }),
   editedTask: { id: 0, title: "" },
   updateEditedTask: (payload) => {
     set({

@@ -46,6 +46,7 @@ function App() {
         if (res.ok) {
           const user = await res.json()
           setUser({
+            id: user.id,
             email: user.email,
             isLoggedIn: true,
             name: user.name,

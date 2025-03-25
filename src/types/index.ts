@@ -6,6 +6,7 @@ export type Task = {
 }
 
 export interface LoginResponse {
+  id: number
   name: string
   email: string
   token: string // 필요한 다른 필드가 있으면 추가하세요.
@@ -67,9 +68,11 @@ export type CsrfToken = {
   csrf_token: string
 }
 export type Credential = {
+  id: number
   email: string
   password: string
   name: string
+  role: string
 }
 
 // new
@@ -128,10 +131,10 @@ export type FilterOptions = {
 }
 
 export interface Comment {
-  userName: ReactI18NextChildren | Iterable<ReactI18NextChildren>
   id: number
   network_id: number
   user_id: number
+  user_name: string
   content: string
   createdAt: Date
   updatedAt: Date

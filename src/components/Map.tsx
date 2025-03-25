@@ -12,7 +12,12 @@ import {
 } from "react-leaflet"
 import { useTranslation } from "react-i18next"
 import "leaflet/dist/leaflet.css"
-import L, { LatLng, LatLngExpression, LeafletMouseEvent } from "leaflet"
+import L, {
+  LatLng,
+  LatLngExpression,
+  LeafletMouseEvent,
+  PolylineDecorator,
+} from "leaflet"
 import "leaflet-polylinedecorator"
 import {
   Migrant,
@@ -1775,7 +1780,7 @@ const Map: React.FC = () => {
                     [trace.latitude, trace.longitude],
                     [nextTrace.latitude, nextTrace.longitude],
                   ]}
-                  color="purple" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+                  color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
                   weight={3}
                   opacity={0.7}
                   dashArray="5, 5"
@@ -1796,6 +1801,34 @@ const Map: React.FC = () => {
                         .openOn(e.target._map)
                     },
                   }}
+                />
+              )
+            }),
+          )}
+          {migrationTraces.map((traces) =>
+            traces.slice(0, -1).map((trace, index) => {
+              const nextTrace = traces[index + 1]
+              return (
+                <PolylineDecorator
+                  key={`decorator-${trace.id}-${nextTrace.id}`}
+                  positions={[
+                    [trace.latitude, trace.longitude],
+                    [nextTrace.latitude, nextTrace.longitude],
+                  ]}
+                  patterns={[
+                    {
+                      offset: "100%",
+                      repeat: 0,
+                      symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        pathOptions: {
+                          fillOpacity: 1,
+                          weight: 0,
+                          color: "#3E2723",
+                        },
+                      }),
+                    },
+                  ]}
                 />
               )
             }),

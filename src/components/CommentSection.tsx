@@ -27,11 +27,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const handleCreateComment = async () => {
     if (newComment.trim()) {
       console.log("networkId", networkId)
+      console.log("333", user)
       await createComment({
         network_id: networkId,
         user_id: user.id,
+        user_name: user.name,
         content: newComment,
-        userName: undefined,
       })
       setNewComment("")
     }
@@ -50,7 +51,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
 
   return (
     <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
-      <h3 className="text-sm font-semibold mb-2">Sources</h3>
+      <h3 className="text-sm font-semibold mb-2">comments</h3>
       <ul className="space-y-2">
         {comments.map((comment) => (
           <li
@@ -71,33 +72,35 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
               />
             ) : (
               <p className="text-xs text-gray-800 overflow-y-auto">
-                <strong className="font-semibold">{comment.userName}</strong>:{" "}
+                <strong className="font-semibold">{comment.user_name}</strong>:{" "}
                 {comment.content}
               </p>
             )}
-            <div className="flex justify-end space-x-1 mt-1">
-              {editingComment?.id === comment.id ? (
+            {comment.user_id === user.id && (
+              <div className="flex justify-end space-x-1 mt-1">
+                {editingComment?.id === comment.id ? (
+                  <button
+                    onClick={handleUpdateComment}
+                    className="px-2 py-0.5 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setEditingComment(comment)}
+                    className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                  >
+                    Edit
+                  </button>
+                )}
                 <button
-                  onClick={handleUpdateComment}
-                  className="px-2 py-0.5 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                  onClick={() => handleDeleteComment(comment.id)}
+                  className="px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600"
                 >
-                  Save
+                  Delete
                 </button>
-              ) : (
-                <button
-                  onClick={() => setEditingComment(comment)}
-                  className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                >
-                  Edit
-                </button>
-              )}
-              <button
-                onClick={() => handleDeleteComment(comment.id)}
-                className="px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-              >
-                Delete
-              </button>
-            </div>
+              </div>
+            )}
           </li>
         ))}
       </ul>
@@ -106,14 +109,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
           type="text"
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add Sources"
+          placeholder="add comments"
           className="flex-1 p-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
         />
         <button
           onClick={handleCreateComment}
           className="px-3 py-1 mt-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
         >
-          Add
+          add
         </button>
       </div>
     </div>

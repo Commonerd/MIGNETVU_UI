@@ -48,10 +48,11 @@ export const Auth = () => {
     }
     if (isLogin) {
       loginMutation.mutate(
-        { email, password: pw, name: "0" },
+        { id: 0, email, password: pw, role: "", name: "" },
         {
           onSuccess: (res) => {
             setUser({
+              id: res.id,
               email: res.email,
               isLoggedIn: true,
               name: res.name,
@@ -62,13 +63,19 @@ export const Auth = () => {
       )
     } else {
       await registerMutation
-        .mutateAsync({ name, email, password: pw, role }) // role 추가
+        .mutateAsync({ id: 0, name, email, password: pw, role }) // role 추가
         .then(() =>
           loginMutation.mutate(
-            { email, password: pw, name },
+            { id: 0, email, password: pw, name, role },
             {
-              onSuccess: () =>
-                setUser({ email, isLoggedIn: true, name, role: res.role }),
+              onSuccess: (res) =>
+                setUser({
+                  id: res.id,
+                  email: res.email,
+                  isLoggedIn: true,
+                  name: res.name,
+                  role: res.role,
+                }),
             },
           ),
         )
