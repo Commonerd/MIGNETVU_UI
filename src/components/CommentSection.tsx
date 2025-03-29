@@ -70,8 +70,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
               />
             ) : (
               <p className="text-xs text-gray-800 overflow-y-auto">
-                <strong className="font-semibold">{comment.user_name}</strong>:{" "}
-                {comment.content}
+                <strong className="font-semibold">
+                  {comment.user_name}({comment.user_role})
+                </strong>
+                : {comment.content}
               </p>
             )}
             {comment.user_id === user.id && (
