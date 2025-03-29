@@ -128,6 +128,7 @@ export type FilterOptions = {
   entityType: string[] | string
   yearRange: [number, number]
   migrationReasons: string[] | string
+  selectedMigrationNetworkId: any
 }
 
 export interface Comment {

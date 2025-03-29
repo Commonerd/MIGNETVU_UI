@@ -10,12 +10,14 @@ interface SearchResultsProps {
     React.SetStateAction<{ lat: number; lng: number } | null>
   >
   handleEntityClick: (id: number) => void
+  handleMigrationTraceClick: (networkId: number) => void // 추가
 }
 
 const SearchResults: FC<SearchResultsProps> = ({
   searchQuery,
   setFocusedNode,
   handleEntityClick,
+  handleMigrationTraceClick,
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -107,6 +109,7 @@ const SearchResults: FC<SearchResultsProps> = ({
               {...network}
               setFocusedNode={setFocusedNode}
               handleEntityClick={handleEntityClick}
+              handleMigrationTraceClick={handleMigrationTraceClick} // 추가
             />
           ))}
         </ul>

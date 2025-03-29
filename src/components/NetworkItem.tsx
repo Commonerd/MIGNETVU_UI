@@ -9,6 +9,7 @@ const NetworkItemMemo: FC<
   Omit<Network, "created_at" | "updated_at"> & {
     setFocusedNode: (node: { lat: number; lng: number }) => void
     handleEntityClick: (id: number) => void
+    handleMigrationTraceClick: (networkId: number) => void // 추가
   }
 > = ({
   id,
@@ -27,6 +28,7 @@ const NetworkItemMemo: FC<
   migration_traces, // 추가된 마이그레이션 트레이스
   setFocusedNode, // 반드시 포함
   handleEntityClick,
+  handleMigrationTraceClick,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -164,7 +166,11 @@ const NetworkItemMemo: FC<
                 </thead>
                 <tbody>
                   {migration_traces.map((trace, index) => (
-                    <tr key={index}>
+                    <tr
+                      key={index}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
+                    >
                       <td className="px-2 py-1 border text-center">
                         {trace.location_name}
                       </td>

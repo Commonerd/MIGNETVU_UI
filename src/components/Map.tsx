@@ -186,6 +186,7 @@ const Map: React.FC = () => {
     userNetworkTraceFilter: true,
     userNetworkConnectionFilter: true,
     migrationReasons: ["all"],
+    selectedMigrationNetworkId: null, // 선택된 네트워크 ID 추가
   })
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -207,6 +208,9 @@ const Map: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
+  const [selectedMigrationNetworkId, setSelectedMigrationNetworkId] = useState<
+    number | null
+  >(null)
 
   const toggle3DMode = () => {
     setIs3DMode(!is3DMode)
@@ -370,6 +374,12 @@ const Map: React.FC = () => {
       // return { id, type }
       return { id }
     })
+  }
+
+  const handleMigrationTraceClick = (networkId: number) => {
+    setSelectedMigrationNetworkId(
+      (prev) => (prev === networkId ? null : networkId), // 같은 네트워크를 클릭하면 원상복귀
+    )
   }
 
   // Update getEntityById function
@@ -896,12 +906,18 @@ const Map: React.FC = () => {
     const tracesByNetwork: { [key: number]: any[] } = {}
 
     networks?.forEach((network) => {
-      network.migration_traces.forEach((trace) => {
-        if (!tracesByNetwork[network.id]) {
-          tracesByNetwork[network.id] = []
-        }
-        tracesByNetwork[network.id].push(trace)
-      })
+      // 특정 네트워크가 선택된 경우, 해당 네트워크의 마이그레이션 트레이스만 추가
+      if (
+        !selectedMigrationNetworkId || // 선택된 네트워크가 없거나
+        network.id === selectedMigrationNetworkId // 선택된 네트워크와 일치하는 경우
+      ) {
+        network.migration_traces.forEach((trace) => {
+          if (!tracesByNetwork[network.id]) {
+            tracesByNetwork[network.id] = []
+          }
+          tracesByNetwork[network.id].push(trace)
+        })
+      }
     })
 
     return Object.values(tracesByNetwork)
@@ -909,14 +925,13 @@ const Map: React.FC = () => {
         traces.sort((a, b) => a.migration_year - b.migration_year),
       )
       .filter((traces) => {
-        // 이주 추적 연도 필터링
+        // 기존 필터 조건 적용
         const matchesYearRange = traces.some(
           (trace) =>
             trace.migration_year >= yearRange[0] &&
             trace.migration_year <= yearRange[1],
         )
 
-        // 내가 등록한 이주 추적 필터링
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
           !user.name ||
@@ -926,7 +941,6 @@ const Map: React.FC = () => {
               network.user_name === user.name,
           )
 
-        // 이주 추적 원인 필터링
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
           filters.migrationReasons.length === 0 ||
@@ -1304,6 +1318,7 @@ const Map: React.FC = () => {
                 searchQuery={searchQuery}
                 setFocusedNode={setFocusedNode}
                 handleEntityClick={handleEntityClick}
+                handleMigrationTraceClick={handleMigrationTraceClick} // 추가
               />
             </div>
           </div>
