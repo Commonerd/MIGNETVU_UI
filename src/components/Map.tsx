@@ -44,6 +44,7 @@ import Select from "react-select"
 import CommentSection from "./CommentSection"
 import "leaflet-polylinedecorator"
 import ThreeDMap from "./ThreeDMap"
+import MigrationTraceDecorator from "./MigrationTraceDecorator"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -1738,10 +1739,10 @@ const Map: React.FC = () => {
               <CircleMarker
                 key={trace.id}
                 center={[trace.latitude, trace.longitude]}
-                radius={5}
-                color="purple"
-                fillColor="purple"
-                fillOpacity={0.5}
+                radius={6}
+                color="#BF360C" // 테두리 색상
+                fillColor="#FF5722" // 채우기 색상
+                fillOpacity={0.7} // 투명도
               >
                 {" "}
                 <Popup>
@@ -1808,29 +1809,20 @@ const Map: React.FC = () => {
           {migrationTraces.map((traces) =>
             traces.slice(0, -1).map((trace, index) => {
               const nextTrace = traces[index + 1]
-              return (
-                <PolylineDecorator
-                  key={`decorator-${trace.id}-${nextTrace.id}`}
-                  positions={[
-                    [trace.latitude, trace.longitude],
-                    [nextTrace.latitude, nextTrace.longitude],
-                  ]}
-                  patterns={[
-                    {
-                      offset: "100%",
-                      repeat: 0,
-                      symbol: L.Symbol.arrowHead({
-                        pixelSize: 10,
-                        pathOptions: {
-                          fillOpacity: 1,
-                          weight: 0,
-                          color: "#3E2723",
-                        },
-                      }),
-                    },
-                  ]}
-                />
-              )
+
+              // 데이터 검증: trace와 nextTrace가 유효한지 확인
+              if (
+                !trace ||
+                !nextTrace ||
+                !trace.latitude ||
+                !trace.longitude ||
+                !nextTrace.latitude ||
+                !nextTrace.longitude
+              ) {
+                console.warn("Invalid trace data:", { trace, nextTrace })
+                return null
+              }
+              return <MigrationTraceDecorator traces={migrationTraces.flat()} />
             }),
           )}
         </MapContainer>

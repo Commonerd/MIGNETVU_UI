@@ -26,8 +26,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
 
   const handleCreateComment = async () => {
     if (newComment.trim()) {
-      console.log("networkId", networkId)
-      console.log("333", user)
       await createComment({
         network_id: networkId,
         user_id: user.id,
