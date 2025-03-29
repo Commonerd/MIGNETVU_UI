@@ -298,18 +298,26 @@ export const Network = () => {
     } catch (error) {
       console.error("Failed to fetch comments:", error)
     }
-
     const commentsSheet = [
-      ["ID", "Network ID", "User ID", "Content", "Created At"],
+      [
+        "ID",
+        "Network ID",
+        "User ID",
+        "User Name",
+        "User Role",
+        "Comment",
+        "Created At",
+      ],
       ...comments.map((comment) => [
         comment.id,
         comment.network_id,
         comment.user_id,
+        comment.user_name,
+        comment.user_role,
         comment.content,
         comment.created_at,
       ]),
     ]
-
     const workbook = XLSX.utils.book_new()
     const networksWS = XLSX.utils.aoa_to_sheet(networksSheet)
     const edgesWS = XLSX.utils.aoa_to_sheet(edgesSheet)

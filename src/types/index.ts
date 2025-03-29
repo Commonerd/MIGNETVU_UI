@@ -134,7 +134,8 @@ export interface Comment {
   id: number
   network_id: number
   user_id: number
-  user_name: string
+  user_name: string // 작성자 이름
+  user_role: string // 작성자 역할
   content: string
   createdAt: Date
   updatedAt: Date
