@@ -15,6 +15,7 @@ import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { ClipLoader } from "react-spinners"
 import * as XLSX from "xlsx"
+import { fetchAllComments } from "../api/comments"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -195,7 +196,7 @@ export const Network = () => {
     reader.readAsText(file)
   }
 
-  const handleExportXLSX = () => {
+  const handleExportXLSX = async () => {
     if (!data) return
 
     console.log("Data:", data)
@@ -290,10 +291,30 @@ export const Network = () => {
       }),
     ]
 
+    // Fetch all comments
+    let comments: any[] = []
+    try {
+      comments = await fetchAllComments()
+    } catch (error) {
+      console.error("Failed to fetch comments:", error)
+    }
+
+    const commentsSheet = [
+      ["ID", "Network ID", "User ID", "Content", "Created At"],
+      ...comments.map((comment) => [
+        comment.id,
+        comment.network_id,
+        comment.user_id,
+        comment.content,
+        comment.created_at,
+      ]),
+    ]
+
     const workbook = XLSX.utils.book_new()
     const networksWS = XLSX.utils.aoa_to_sheet(networksSheet)
     const edgesWS = XLSX.utils.aoa_to_sheet(edgesSheet)
     const migrationTracesWS = XLSX.utils.aoa_to_sheet(migrationTracesSheet)
+    const commentsWS = XLSX.utils.aoa_to_sheet(commentsSheet)
 
     XLSX.utils.book_append_sheet(workbook, networksWS, "Networks")
     XLSX.utils.book_append_sheet(workbook, edgesWS, "Edges")
@@ -302,6 +323,7 @@ export const Network = () => {
       migrationTracesWS,
       "Migration Traces",
     )
+    XLSX.utils.book_append_sheet(workbook, commentsWS, "Comments")
 
     XLSX.writeFile(workbook, "networks.xlsx")
   }

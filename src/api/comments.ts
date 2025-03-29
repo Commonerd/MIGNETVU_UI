@@ -11,6 +11,11 @@ export const fetchComments = async (networkId: number) => {
   return response.data
 }
 
+export const fetchAllComments = async () => {
+  const response = await axios.get<Comment[]>(`${API_URL}/comments`)
+  return response.data
+}
+
 export const createComment = async (
   comment: Omit<Comment, "id" | "createdAt" | "updatedAt">,
 ) => {
