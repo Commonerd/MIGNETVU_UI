@@ -1673,7 +1673,6 @@ const Map: React.FC = () => {
                         <span className="font-medium">
                           : {network.migration_year}
                         </span>
-                        S
                       </p>
                       <p>
                         <span className="font-medium">
