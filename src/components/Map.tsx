@@ -860,7 +860,6 @@ const Map: React.FC = () => {
   const CustomMapComponent = () => {
     const map = useMap()
     const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
-    const [layerGroup, setLayerGroup] = useState<L.LayerGroup | null>(null)
     const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
 
     // `getEdges` 결과를 캐싱
@@ -877,16 +876,33 @@ const Map: React.FC = () => {
 
       edges.forEach((edge) => {
         const positions = edge.slice(0, 2) as LatLngExpression[]
-        const color = edge[2] as string
+        const color = "#8B4513" // 선 색상 (SaddleBrown)
+        const arrowColor = "#DAA520" // 화살표 색상 (GoldenRod)
         const opacity = (edge[3] as number) * 0.16 + 0.2
         const edgeType = edge[4] as string
         const connectionStrength = edge[3] as number
         const connectionYear = edge[5] as number
 
+        // Polyline 생성
         const leafletPolyline = L.polyline(positions, {
           color: color,
           weight: 2,
           opacity: opacity,
+        }).addTo(newEdgeLayer)
+
+        // 화살표 추가
+        const decorator = L.polylineDecorator(leafletPolyline, {
+          patterns: [
+            {
+              offset: "50%", // 화살표 위치
+              repeat: 0, // 반복 없음
+              symbol: L.Symbol.arrowHead({
+                pixelSize: 10, // 화살표 크기
+                polygon: true,
+                pathOptions: { color: arrowColor, fillOpacity: 1, weight: 0 },
+              }),
+            },
+          ],
         }).addTo(newEdgeLayer)
 
         const tooltipContent = `<span>${t("connectionType")}: ${t(
