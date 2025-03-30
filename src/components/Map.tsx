@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -477,15 +477,6 @@ const Map: React.FC = () => {
               edge.edgeType,
               edge.year,
             ])
-
-            // 타겟 네트워크를 강제로 포함
-            setFilters((prevFilters) => ({
-              ...prevFilters,
-              forceIncludeNetworkIds: [
-                ...(prevFilters.forceIncludeNetworkIds || []),
-                target.id,
-              ],
-            }))
           }
         }
       })
@@ -870,24 +861,20 @@ const Map: React.FC = () => {
     const map = useMap()
     const [activeTooltip, setActiveTooltip] = useState<L.Tooltip | null>(null)
     const [layerGroup, setLayerGroup] = useState<L.LayerGroup | null>(null)
-    const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null) // edgeLayer 상태 추가
+    const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
+
+    // `getEdges` 결과를 캐싱
+    const edges = useMemo(() => getEdges(), [filters, networks])
 
     useEffect(() => {
-      // 기존 레이어 제거
       if (edgeLayer) {
         edgeLayer.clearLayers()
-        edgeLayer.remove() // 기존 레이어 제거
+        edgeLayer.remove()
       }
 
-      // 새 레이어 그룹 생성
-      const newLayerGroup = L.layerGroup().addTo(map)
-      setLayerGroup(newLayerGroup)
-
-      const newEdgeLayer = L.layerGroup().addTo(map) // edgeLayer 생성
+      const newEdgeLayer = L.layerGroup().addTo(map)
       setEdgeLayer(newEdgeLayer)
 
-      const edges = getEdges() // 각 엣지의 정보를 가져오는 함수
-      console.log("222", edges) // edge 정보를 �����로 출력
       edges.forEach((edge) => {
         const positions = edge.slice(0, 2) as LatLngExpression[]
         const color = edge[2] as string
@@ -896,28 +883,24 @@ const Map: React.FC = () => {
         const connectionStrength = edge[3] as number
         const connectionYear = edge[5] as number
 
-        // Leaflet Polyline 객체 생성
         const leafletPolyline = L.polyline(positions, {
           color: color,
           weight: 2,
           opacity: opacity,
-        }).addTo(newEdgeLayer) // edgeLayer에 추가
+        }).addTo(newEdgeLayer)
 
-        // Tooltip 내용 정의
         const tooltipContent = `<span>${t("connectionType")}: ${t(
           edgeType,
         )}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t(
           "connectionYear",
         )}: ${connectionYear}</span>`
 
-        // 마우스를 올렸을 때만 툴팁 표시
         leafletPolyline.bindTooltip(tooltipContent, {
           permanent: false,
           direction: "top",
           opacity: 0.9,
         })
 
-        // 클릭 이벤트 리스너 추가: 클릭 시 툴팁 고정
         leafletPolyline.on("click", (e: LeafletMouseEvent) => {
           if (activeTooltip) {
             activeTooltip.remove()
@@ -932,61 +915,21 @@ const Map: React.FC = () => {
           setActiveTooltip(tooltip)
         })
 
-        // 더블 클릭 이벤트 리스너 추가: 더블 클릭 시 툴팁 닫기
         leafletPolyline.on("dblclick", () => {
           if (activeTooltip) {
             activeTooltip.remove()
             setActiveTooltip(null)
           }
         })
-
-        // arrowHead가 정의되어 있는지 확인
-        if (L.Symbol && L.Symbol.arrowHead) {
-          const decorator = L.polylineDecorator(leafletPolyline, {
-            patterns: [
-              {
-                offset: 0, // Start the arrow at the end of the polyline
-                repeat: 200, // Set a large repeat value to space out arrows
-                symbol: L.Symbol.arrowHead({
-                  pixelSize: 15,
-                  polygon: false,
-                  headAngle: 45,
-                  pathOptions: {
-                    stroke: false,
-                    color: "#7f8c8d",
-                    weight: 2,
-                    opacity: 0.85,
-                    lineCap: "round",
-                    lineJoin: "round",
-                    dashArray: "6,6",
-                    dashOffset: "0",
-                    fill: true,
-                    fillColor: "#27ae60",
-                    fillOpacity: 0.8,
-                    fillRule: "evenodd",
-                  },
-                }),
-              },
-            ],
-          })
-
-          decorator.addTo(newEdgeLayer) // edgeLayer에 추가
-        } else {
-          console.error("L.Symbol.arrowHead is not defined")
-        }
       })
 
       return () => {
-        // 컴포넌트가 언마운트될 때 레이어 정리
-        if (newLayerGroup) {
-          map.removeLayer(newLayerGroup)
-        }
         if (newEdgeLayer) {
           newEdgeLayer.clearLayers()
-          newEdgeLayer.remove() // edgeLayer를 명시적으로 정리
+          newEdgeLayer.remove()
         }
       }
-    }, [map, activeTooltip, filters]) // edgeLayer 추가 의존성
+    }, [map, edges, activeTooltip])
 
     return null
   }
