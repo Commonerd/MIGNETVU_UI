@@ -511,6 +511,39 @@ const Map: React.FC = () => {
     return edges
   }
 
+  // 3D 전용 getEdges 함수
+  const getEdgesFor3D = () => {
+    const edges: any[] = []
+
+    networks?.forEach((network) => {
+      ;(network.edges || []).forEach((edge) => {
+        const matchesEdgeType =
+          filters.edgeType.includes("all") ||
+          filters.edgeType.includes(edge.edgeType)
+
+        const matchesYearRange =
+          Number(edge.year) >= Number(filters.yearRange[0]) &&
+          Number(edge.year) <= Number(filters.yearRange[1])
+
+        if (matchesEdgeType && matchesYearRange) {
+          const target = networks.find((n) => n.id === edge.targetId)
+          if (target) {
+            edges.push({
+              startLat: network.latitude,
+              startLon: network.longitude,
+              endLat: target.latitude,
+              endLon: target.longitude,
+              edgeType: edge.edgeType,
+              year: edge.year,
+            })
+          }
+        }
+      })
+    })
+
+    return edges
+  }
+
   const handleFilterChange = (
     key: keyof FilterOptions,
     value: boolean | string | string[] | number[],
@@ -1393,7 +1426,15 @@ const Map: React.FC = () => {
       </div>
       {/* 3D 모드와 2D 모드 전환 */}
       {is3DMode ? (
-        <ThreeDMap networks={networks} />
+        <ThreeDMap
+          networks={networks}
+          filters={filters}
+          filteredNetworks={filteredNetworks}
+          filteredTraces={filteredTraces}
+          filteredEdges={getEdgesFor3D()}
+          handleEdgeClick={handleEdgeClick}
+          handleNetworkEdgesToggle={handleNetworkEdgesToggle}
+        />
       ) : (
         <MapContainer
           center={[37.5665, 126.978]}
