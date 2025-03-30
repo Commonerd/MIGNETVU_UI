@@ -217,60 +217,58 @@ const NetworkItemMemo: FC<
           </div>
           {edges?.length > 0 ? (
             <div className="mt-2">
-              {edges?.map((edge, index) => (
-                <div key={edge.targetId}>
-                  <table className="table-auto w-full mt-2 border-collapse text-xs">
-                    <thead>
-                      <tr>
-                        <th className="px-2 py-1 border font-semibold text-center">
-                          Target ID
-                        </th>
-                        <th className="px-2 py-1 border font-semibold text-center">
-                          Target Type
-                        </th>
-                        <th className="px-2 py-1 border font-semibold text-center">
-                          Strength
-                        </th>
-                        <th className="px-2 py-1 border font-semibold text-center">
-                          Connection Type
-                        </th>
-                        <th className="px-2 py-1 border font-semibold text-center">
-                          Year
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr
-                        className="cursor-pointer hover:bg-gray-100"
-                        onClick={() => handleEdgeClick(edge.targetId)} // 엣지 클릭 이벤트 추가
-                      >
-                        <td className="px-2 py-1 border text-center">
-                          {edge.targetId}
-                        </td>
-                        <td className="px-2 py-1 border text-center">
-                          {edge.targetType}
-                        </td>
-                        <td className="px-2 py-1 border text-center">
-                          {edge.strength}
-                        </td>
-                        <td className="px-2 py-1 border text-center">
-                          {edge.edgeType}
-                        </td>
-                        <td className="px-2 py-1 border text-center">
-                          {edge.year}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                  {index < edges.length - 1 && (
-                    <div className="border-t my-2"></div>
-                  )}
-                </div>
-              ))}
+              <table className="table-auto w-full mt-2 border-collapse text-xs">
+                <thead
+                  className="cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleEdgeClick(id)} // 테이블 헤더 클릭 이벤트 추가
+                >
+                  <tr>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Target ID
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Target Type
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Strength
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Connection Type
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      Year
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {edges.map((edge, index) => (
+                    <tr
+                      key={edge.targetId}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleEdgeClick(edge.targetId)} // 개별 엣지 클릭 이벤트
+                    >
+                      <td className="px-2 py-1 border text-center">
+                        {edge.targetId}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {edge.targetType}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {edge.strength}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {edge.edgeType}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {edge.year}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
-            <p className="text-xs">No connections available.</p>
+            <p className="text-xs">No edges available.</p>
           )}
         </div>
       </div>
