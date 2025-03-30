@@ -21,17 +21,16 @@ interface CommentState {
 const useCommentStore = create<CommentState>((set) => ({
   comments: [],
   fetchComments: async (networkId: number) => {
-    // 네트워크 ID가 변경될 때 comments를 초기화
-    set({ comments: [] })
+    set({ comments: [] }) // 네트워크 변경 시 초기화
     const comments = await fetchComments(networkId)
     set({ comments })
   },
   createComment: async (comment) => {
     const newComment = await createComment(comment)
     set((state) => ({
-      comments: [...(state.comments || []), newComment], // state.comments가 undefined일 경우 빈 배열로 처리
+      comments: [...(state.comments || []), newComment],
     }))
-    return newComment // 새로 생성된 댓글 반환
+    return newComment
   },
   updateComment: async (comment) => {
     const updatedComment = await updateComment(comment)
@@ -43,7 +42,9 @@ const useCommentStore = create<CommentState>((set) => ({
   },
   deleteComment: async (id) => {
     await deleteComment(id)
-    set((state) => ({ comments: state.comments.filter((c) => c.id !== id) }))
+    set((state) => ({
+      comments: state.comments.filter((c) => c.id !== id),
+    }))
   },
 }))
 

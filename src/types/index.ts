@@ -139,8 +139,8 @@ export interface Comment {
   user_name: string // 작성자 이름
   user_role: string // 작성자 역할
   content: string
-  createdAt: Date
-  updatedAt: Date
+  created_at: Date
+  updated_at: Date
 }
 
 export type ProfileUpdateData = {

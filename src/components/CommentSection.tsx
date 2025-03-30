@@ -73,12 +73,26 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
                   className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
                 />
               ) : (
-                <p className="text-xs text-gray-800 overflow-y-auto">
-                  <strong className="font-semibold">
-                    {comment.user_name}({comment.user_role})
-                  </strong>
-                  : {comment.content}
-                </p>
+                <div className="text-xs text-gray-800 overflow-y-auto">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-gray-900">
+                      {comment.user_name}
+                    </span>
+                    <span className="text-gray-500">({comment.user_role})</span>
+                    <span className="text-gray-400 text-[11px]">
+                      {comment.created_at instanceof Date
+                        ? comment.created_at
+                            .toISOString()
+                            .split("T")[0]
+                            .replace(/-/g, "/")
+                        : new Date(comment.created_at)
+                            .toISOString()
+                            .split("T")[0]
+                            .replace(/-/g, "/")}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-gray-700">{comment.content}</p>
+                </div>
               )}
               {comment.user_id === user.id && (
                 <div className="flex justify-end space-x-1 mt-1">
