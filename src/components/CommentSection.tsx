@@ -17,18 +17,23 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const { user } = useStore() // user 상태 가져오기
 
   useEffect(() => {
+    // 네트워크 ID가 변경될 때 comments를 초기화
     fetchComments(networkId)
   }, [networkId, fetchComments])
 
   const handleCreateComment = async () => {
     if (newComment.trim()) {
-      await createComment({
+      const commentData = {
         network_id: networkId,
         user_id: user.id,
         user_name: user.name,
+        user_role: user.role, // 유저 롤 추가
         content: newComment,
-      })
+      }
+      const createdComment = await createComment(commentData)
       setNewComment("")
+      // 새로 생성된 댓글을 comments 상태에 추가
+      fetchComments(networkId) // 상태를 다시 가져와 동기화
     }
   }
 
@@ -36,18 +41,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     if (editingComment && editingComment.content.trim()) {
       await updateComment(editingComment)
       setEditingComment(null)
+      fetchComments(networkId) // 댓글 수정 후 상태 동기화
     }
   }
 
   const handleDeleteComment = async (id: number) => {
     await deleteComment(id)
+    fetchComments(networkId) // 댓글 삭제 후 상태 동기화
   }
 
   return (
     <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
       <h3 className="text-sm font-semibold mb-2">comments</h3>
       <ul className="space-y-2">
-        {comments && comments.length > 0 ? ( // 조건부 렌더링 추가
+        {comments && comments.length > 0 ? (
           comments.map((comment) => (
             <li
               key={comment.id}
@@ -101,7 +108,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
             </li>
           ))
         ) : (
-          <p className="text-xs text-gray-500">No comments yet.</p> // 댓글이 없을 때 메시지 표시
+          <p className="text-xs text-gray-500">No comments yet.</p>
         )}
       </ul>
       <div className="flex flex-col mt-3">
