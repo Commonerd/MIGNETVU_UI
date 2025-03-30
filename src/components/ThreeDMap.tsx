@@ -35,6 +35,29 @@ const ThreeDMap: React.FC<{
       return new THREE.Vector3(x, y, z)
     }
 
+    // 두 점 사이의 곡선을 생성하여 지구본 표면을 따라가는 함수
+    const createCurveOnSurface = (
+      start: THREE.Vector3,
+      end: THREE.Vector3,
+      radius: number = 5,
+    ) => {
+      // 시작점에서 더 높게 올린 점을 계산
+      const elevatedStart = new THREE.Vector3()
+        .copy(start)
+        .normalize()
+        .multiplyScalar(radius * 1) // 시작점을 더 높게 설정 (1.3배)
+
+      // 중간점을 계산 (완만하게 설정)
+      const midPoint = new THREE.Vector3()
+        .addVectors(start, end)
+        .multiplyScalar(0.5)
+        .normalize()
+        .multiplyScalar(radius * 1.2) // 중간점을 완만하게 설정 (1.1배)
+
+      // 곡선을 생성
+      return new THREE.CatmullRomCurve3([elevatedStart, midPoint, end])
+    }
+
     useEffect(() => {
       if (!mountRef.current) return
 
@@ -92,7 +115,8 @@ const ThreeDMap: React.FC<{
         const start = latLongToVector3(edge.startLat, edge.startLon, 5)
         const end = latLongToVector3(edge.endLat, edge.endLon, 5)
 
-        const curve = new THREE.CatmullRomCurve3([start, end])
+        // 곡선을 생성하여 지구본 표면을 따라 연결
+        const curve = createCurveOnSurface(start, end)
         const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false)
         const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
         const tube = new THREE.Mesh(tubeGeometry, material)
