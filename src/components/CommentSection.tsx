@@ -4,13 +4,9 @@ import useCommentStore from "../store/comments"
 import { Comment } from "../types"
 import useStore from "../store"
 
-interface CommentSectionProps {
-  networkId: number
-}
-
 const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const {
-    comments,
+    comments = [], // 초기값을 빈 배열로 설정
     fetchComments,
     createComment,
     updateComment,
@@ -51,58 +47,62 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
       <h3 className="text-sm font-semibold mb-2">comments</h3>
       <ul className="space-y-2">
-        {comments.map((comment) => (
-          <li
-            key={comment.id}
-            className="flex flex-col bg-white p-2 border border-gray-200 rounded overflow-y-auto"
-          >
-            {editingComment?.id === comment.id ? (
-              <input
-                type="text"
-                value={editingComment.content}
-                onChange={(e) =>
-                  setEditingComment({
-                    ...editingComment,
-                    content: e.target.value,
-                  })
-                }
-                className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
-              />
-            ) : (
-              <p className="text-xs text-gray-800 overflow-y-auto">
-                <strong className="font-semibold">
-                  {comment.user_name}({comment.user_role})
-                </strong>
-                : {comment.content}
-              </p>
-            )}
-            {comment.user_id === user.id && (
-              <div className="flex justify-end space-x-1 mt-1">
-                {editingComment?.id === comment.id ? (
+        {comments && comments.length > 0 ? ( // 조건부 렌더링 추가
+          comments.map((comment) => (
+            <li
+              key={comment.id}
+              className="flex flex-col bg-white p-2 border border-gray-200 rounded overflow-y-auto"
+            >
+              {editingComment?.id === comment.id ? (
+                <input
+                  type="text"
+                  value={editingComment.content}
+                  onChange={(e) =>
+                    setEditingComment({
+                      ...editingComment,
+                      content: e.target.value,
+                    })
+                  }
+                  className="w-full p-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400 text-xs"
+                />
+              ) : (
+                <p className="text-xs text-gray-800 overflow-y-auto">
+                  <strong className="font-semibold">
+                    {comment.user_name}({comment.user_role})
+                  </strong>
+                  : {comment.content}
+                </p>
+              )}
+              {comment.user_id === user.id && (
+                <div className="flex justify-end space-x-1 mt-1">
+                  {editingComment?.id === comment.id ? (
+                    <button
+                      onClick={handleUpdateComment}
+                      className="px-2 py-0.5 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                    >
+                      Save
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setEditingComment(comment)}
+                      className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+                    >
+                      Edit
+                    </button>
+                  )}
                   <button
-                    onClick={handleUpdateComment}
-                    className="px-2 py-0.5 bg-green-500 text-white text-xs rounded hover:bg-green-600"
+                    onClick={() => handleDeleteComment(comment.id)}
+                    className="px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600"
                   >
-                    Save
+                    Delete
                   </button>
-                ) : (
-                  <button
-                    onClick={() => setEditingComment(comment)}
-                    className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-                  >
-                    Edit
-                  </button>
-                )}
-                <button
-                  onClick={() => handleDeleteComment(comment.id)}
-                  className="px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </div>
-            )}
-          </li>
-        ))}
+                </div>
+              )}
+            </li>
+          ))
+        ) : (
+          <p className="text-xs text-gray-500">No comments yet.</p> // 댓글이 없을 때 메시지 표시
+        )}
       </ul>
       <div className="flex flex-col mt-3">
         <input
