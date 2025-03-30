@@ -100,7 +100,7 @@ const ThreeDMap: React.FC<{
           network.longitude,
           5,
         )
-        const geometry = new THREE.SphereGeometry(0.1, 16, 16)
+        const geometry = new THREE.SphereGeometry(0.03, 16, 16) // 노드 크기를 줄임 (0.1 -> 0.05)
         const material = new THREE.MeshBasicMaterial({
           color: network.type === "Migrant" ? 0xff0000 : 0x0000ff, // 이민자면 빨간색, 단체면 파란색
         })
@@ -114,11 +114,23 @@ const ThreeDMap: React.FC<{
         const start = latLongToVector3(edge.startLat, edge.startLon, 5)
         const end = latLongToVector3(edge.endLat, edge.endLon, 5)
 
+        // 곡선 생성
         const curve = createCurveOnSurface(start, end)
-        const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false)
+        const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.005, 8, false) // 선 굵기를 줄임 (0.01 -> 0.005)
         const material = new THREE.MeshBasicMaterial({ color: 0xffa500 }) // 주황색
         const tube = new THREE.Mesh(tubeGeometry, material)
         scene.add(tube)
+
+        // 화살표 추가
+        const direction = new THREE.Vector3().subVectors(end, start).normalize()
+        const arrowLength = 0.2 // 화살표 길이를 줄임 (0.3 -> 0.2)
+        const arrowHelper = new THREE.ArrowHelper(
+          direction,
+          end,
+          arrowLength,
+          0xffa500,
+        ) // 주황색 화살표
+        scene.add(arrowHelper)
       })
 
       // 마이그레이션 트레이스 렌더링
@@ -131,15 +143,35 @@ const ThreeDMap: React.FC<{
             5,
           )
 
+          // 곡선 생성
           const curve = createCurveOnSurface(start, end)
-          const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false)
-          const material = new THREE.MeshBasicMaterial({
+
+          // 점선 스타일 적용
+          const dashedMaterial = new THREE.LineDashedMaterial({
             color: 0xffa500, // 주황색
-            opacity: 0.7,
-            transparent: true,
+            dashSize: 0.05, // 점선 길이를 줄임 (0.1 -> 0.05)
+            gapSize: 0.05, // 점선 간격을 줄임 (0.1 -> 0.05)
+            linewidth: 0.5, // 선 굵기를 줄임 (1 -> 0.5)
           })
-          const tube = new THREE.Mesh(tubeGeometry, material)
-          scene.add(tube)
+
+          const points = curve.getPoints(50)
+          const lineGeometry = new THREE.BufferGeometry().setFromPoints(points)
+          const line = new THREE.Line(lineGeometry, dashedMaterial)
+          line.computeLineDistances() // 점선 계산
+          scene.add(line)
+
+          // 화살표 추가
+          const direction = new THREE.Vector3()
+            .subVectors(end, start)
+            .normalize()
+          const arrowLength = 0.2 // 화살표 길이를 줄임 (0.3 -> 0.2)
+          const arrowHelper = new THREE.ArrowHelper(
+            direction,
+            end,
+            arrowLength,
+            0xffa500,
+          ) // 주황색 화살표
+          scene.add(arrowHelper)
         }
       })
 
