@@ -11,6 +11,8 @@ interface SearchResultsProps {
   >
   handleEntityClick: (id: number) => void
   handleMigrationTraceClick: (networkId: number) => void // 추가
+  handleEdgeClick: (edgeId: number) => void // 추가
+  handleNetworkEdgesToggle: (networkId: number) => void // 추가
 }
 
 const SearchResults: FC<SearchResultsProps> = ({
@@ -18,6 +20,8 @@ const SearchResults: FC<SearchResultsProps> = ({
   setFocusedNode,
   handleEntityClick,
   handleMigrationTraceClick,
+  handleEdgeClick, // 추가
+  handleNetworkEdgesToggle, // 추가
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -110,6 +114,8 @@ const SearchResults: FC<SearchResultsProps> = ({
               setFocusedNode={setFocusedNode}
               handleEntityClick={handleEntityClick}
               handleMigrationTraceClick={handleMigrationTraceClick} // 추가
+              handleEdgeClick={handleEdgeClick} // 추가
+              handleNetworkEdgesToggle={handleNetworkEdgesToggle} // 추가
             />
           ))}
         </ul>

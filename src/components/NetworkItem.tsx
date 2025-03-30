@@ -10,6 +10,8 @@ const NetworkItemMemo: FC<
     setFocusedNode: (node: { lat: number; lng: number }) => void
     handleEntityClick: (id: number) => void
     handleMigrationTraceClick: (networkId: number) => void // 추가
+    handleEdgeClick: (edgeId: number) => void // 추가
+    handleNetworkEdgesToggle: (networkId: number) => void // 추가
   }
 > = ({
   id,
@@ -29,6 +31,8 @@ const NetworkItemMemo: FC<
   setFocusedNode, // 반드시 포함
   handleEntityClick,
   handleMigrationTraceClick,
+  handleEdgeClick,
+  handleNetworkEdgesToggle,
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
@@ -141,7 +145,12 @@ const NetworkItemMemo: FC<
         </table>
         {/* 마이그레이션 트레이스 표시 */}
         <div className="mt-4">
-          <strong>Migration Trace:</strong>
+          <div
+            className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+            onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
+          >
+            <strong>Migration Trace</strong>
+          </div>
           {migration_traces && migration_traces.length > 0 ? (
             <div className="mt-2">
               <table className="table-auto w-full border-collapse text-xs">
@@ -200,7 +209,12 @@ const NetworkItemMemo: FC<
 
         {/* Render the connections */}
         <div className="mt-4">
-          <strong>Edges:</strong>
+          <div
+            className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+            onClick={() => handleNetworkEdgesToggle(id)} // 엣지 표제어 클릭 이벤트 추가
+          >
+            <strong>Edges</strong>
+          </div>
           {edges?.length > 0 ? (
             <div className="mt-2">
               {edges?.map((edge, index) => (
@@ -226,7 +240,10 @@ const NetworkItemMemo: FC<
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
+                      <tr
+                        className="cursor-pointer hover:bg-gray-100"
+                        onClick={() => handleEdgeClick(edge.targetId)} // 엣지 클릭 이벤트 추가
+                      >
                         <td className="px-2 py-1 border text-center">
                           {edge.targetId}
                         </td>

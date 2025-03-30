@@ -129,6 +129,7 @@ export type FilterOptions = {
   yearRange: [number, number]
   migrationReasons: string[] | string
   selectedMigrationNetworkId: any
+  forceIncludeNetworkIds: any
 }
 
 export interface Comment {

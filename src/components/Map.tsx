@@ -211,6 +211,10 @@ const Map: React.FC = () => {
   const [selectedMigrationNetworkId, setSelectedMigrationNetworkId] = useState<
     number | null
   >(null)
+  const [selectedEdgeId, setSelectedEdgeId] = useState<number | null>(null)
+  const [selectedNetworkId, setSelectedNetworkId] = useState<number | null>(
+    null,
+  )
 
   const toggle3DMode = () => {
     setIs3DMode(!is3DMode)
@@ -382,6 +386,29 @@ const Map: React.FC = () => {
     )
   }
 
+  const handleEdgeClick = (edgeId: number) => {
+    setSelectedEdgeId((prev) => (prev === edgeId ? null : edgeId)) // 엣지 토글
+
+    // 선택된 엣지의 타겟 네트워크를 강제로 포함
+    const targetNetwork = networks?.find((network) =>
+      network.edges.some((edge) => edge.targetId === edgeId),
+    )
+
+    if (targetNetwork) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        forceIncludeNetworkIds: [
+          ...(prevFilters.forceIncludeNetworkIds || []),
+          targetNetwork.id,
+        ],
+      }))
+    }
+  }
+
+  const handleNetworkEdgesToggle = (networkId: number) => {
+    setSelectedNetworkId((prev) => (prev === networkId ? null : networkId)) // 같은 네트워크를 클릭하면 토글
+  }
+
   // Update getEntityById function
   const getEntityById = (id: number) => {
     return networks?.find((n) => n.id === id) || null
@@ -409,15 +436,28 @@ const Map: React.FC = () => {
     const edges: any[] = []
 
     const addEdges = (network: Network) => {
-      console.log("111", network)
-      console.log("1112", networks)
-      console.log("1113", network.edges)
       ;(network.edges || []).forEach((edge) => {
-        if (
-          (filters.edgeType.includes("all") ||
-            filters.edgeType.includes(edge.edgeType)) &&
+        const isEdgeSelected = selectedEdgeId
+          ? edge.targetId === selectedEdgeId
+          : true
+
+        const isNetworkSelected = selectedNetworkId
+          ? network.id === selectedNetworkId
+          : true
+
+        const matchesEdgeType =
+          filters.edgeType.includes("all") ||
+          filters.edgeType.includes(edge.edgeType)
+
+        const matchesYearRange =
           Number(edge.year) >= Number(filters.yearRange[0]) &&
           Number(edge.year) <= Number(filters.yearRange[1])
+
+        if (
+          isEdgeSelected &&
+          isNetworkSelected &&
+          matchesEdgeType &&
+          matchesYearRange
         ) {
           const target = networks?.find((n) => n.id === edge.targetId)
 
@@ -437,6 +477,15 @@ const Map: React.FC = () => {
               edge.edgeType,
               edge.year,
             ])
+
+            // 타겟 네트워크를 강제로 포함
+            setFilters((prevFilters) => ({
+              ...prevFilters,
+              forceIncludeNetworkIds: [
+                ...(prevFilters.forceIncludeNetworkIds || []),
+                target.id,
+              ],
+            }))
           }
         }
       })
@@ -489,6 +538,21 @@ const Map: React.FC = () => {
 
   const filteredNetworks = networks
     ? networks.filter((network) => {
+        // 선택된 엣지와 관련된 네트워크만 포함
+        if (selectedEdgeId) {
+          const isEdgeTarget = network.edges.some(
+            (edge) => edge.targetId === selectedEdgeId,
+          )
+          if (isEdgeTarget) {
+            return true
+          }
+        }
+
+        // 강제로 포함된 네트워크는 항상 포함
+        const isForcedIncluded = filters.forceIncludeNetworkIds?.includes(
+          network.id,
+        )
+
         // 기존 필터 조건
         const matchesNationality =
           filters.nationality.includes("all") ||
@@ -513,11 +577,12 @@ const Map: React.FC = () => {
 
         // 모든 필터 조건을 종합적으로 확인
         return (
-          matchesNationality &&
-          matchesEthnicity &&
-          matchesYearRange &&
-          matchesUserNetwork &&
-          matchesEntityType
+          isForcedIncluded || // 강제로 포함된 네트워크는 항상 포함
+          (matchesNationality &&
+            matchesEthnicity &&
+            matchesYearRange &&
+            matchesUserNetwork &&
+            matchesEntityType)
         )
       })
     : []
@@ -1319,6 +1384,8 @@ const Map: React.FC = () => {
                 setFocusedNode={setFocusedNode}
                 handleEntityClick={handleEntityClick}
                 handleMigrationTraceClick={handleMigrationTraceClick} // 추가
+                handleEdgeClick={handleEdgeClick}
+                handleNetworkEdgesToggle={handleNetworkEdgesToggle}
               />
             </div>
           </div>
