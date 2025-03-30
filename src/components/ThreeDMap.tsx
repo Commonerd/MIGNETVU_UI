@@ -41,20 +41,17 @@ const ThreeDMap: React.FC<{
       end: THREE.Vector3,
       radius: number = 5,
     ) => {
-      // 시작점에서 더 높게 올린 점을 계산
       const elevatedStart = new THREE.Vector3()
         .copy(start)
         .normalize()
-        .multiplyScalar(radius * 1) // 시작점을 더 높게 설정 (1.3배)
+        .multiplyScalar(radius * 1)
 
-      // 중간점을 계산 (완만하게 설정)
       const midPoint = new THREE.Vector3()
         .addVectors(start, end)
         .multiplyScalar(0.5)
         .normalize()
-        .multiplyScalar(radius * 1.2) // 중간점을 완만하게 설정 (1.1배)
+        .multiplyScalar(radius * 1.05) // 곡선 높이를 낮춤
 
-      // 곡선을 생성
       return new THREE.CatmullRomCurve3([elevatedStart, midPoint, end])
     }
 
@@ -104,7 +101,9 @@ const ThreeDMap: React.FC<{
           5,
         )
         const geometry = new THREE.SphereGeometry(0.1, 16, 16)
-        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+        const material = new THREE.MeshBasicMaterial({
+          color: network.type === "Migrant" ? 0xff0000 : 0x0000ff, // 이민자면 빨간색, 단체면 파란색
+        })
         const marker = new THREE.Mesh(geometry, material)
         marker.position.copy(position)
         scene.add(marker)
@@ -115,12 +114,33 @@ const ThreeDMap: React.FC<{
         const start = latLongToVector3(edge.startLat, edge.startLon, 5)
         const end = latLongToVector3(edge.endLat, edge.endLon, 5)
 
-        // 곡선을 생성하여 지구본 표면을 따라 연결
         const curve = createCurveOnSurface(start, end)
         const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false)
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        const material = new THREE.MeshBasicMaterial({ color: 0xffa500 }) // 주황색
         const tube = new THREE.Mesh(tubeGeometry, material)
         scene.add(tube)
+      })
+
+      // 마이그레이션 트레이스 렌더링
+      filteredTraces.forEach((trace, index) => {
+        if (index < filteredTraces.length - 1) {
+          const start = latLongToVector3(trace.latitude, trace.longitude, 5)
+          const end = latLongToVector3(
+            filteredTraces[index + 1].latitude,
+            filteredTraces[index + 1].longitude,
+            5,
+          )
+
+          const curve = createCurveOnSurface(start, end)
+          const tubeGeometry = new THREE.TubeGeometry(curve, 64, 0.02, 8, false)
+          const material = new THREE.MeshBasicMaterial({
+            color: 0xffa500, // 주황색
+            opacity: 0.7,
+            transparent: true,
+          })
+          const tube = new THREE.Mesh(tubeGeometry, material)
+          scene.add(tube)
+        }
       })
 
       // 애니메이션 함수
@@ -136,7 +156,7 @@ const ThreeDMap: React.FC<{
       return () => {
         mountRef.current?.removeChild(renderer.domElement)
       }
-    }, [filteredNetworks, filteredEdges, filteredTraces]) // 의존성 배열 확인
+    }, [filteredNetworks, filteredEdges, filteredTraces])
 
     return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />
   },
