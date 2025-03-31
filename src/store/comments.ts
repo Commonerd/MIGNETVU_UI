@@ -9,41 +9,55 @@ import {
 } from "../api/comments"
 
 interface CommentState {
-  comments: Comment[]
+  comments: { [networkId: number]: Comment[] }
+  currentNetworkId: number | null
   fetchComments: (networkId: number) => Promise<void>
   createComment: (
+    networkId: number,
     comment: Omit<Comment, "id" | "createdAt" | "updatedAt">,
   ) => Promise<Comment>
-  updateComment: (comment: Comment) => Promise<void>
-  deleteComment: (id: number) => Promise<void>
+  updateComment: (networkId: number, comment: Comment) => Promise<void>
+  deleteComment: (networkId: number, id: number) => Promise<void>
 }
 
-const useCommentStore = create<CommentState>((set) => ({
-  comments: [],
+const useCommentStore = create<CommentState>((set, get) => ({
+  comments: {},
+  currentNetworkId: null,
   fetchComments: async (networkId: number) => {
-    set({ comments: [] }) // 네트워크 변경 시 초기화
     const comments = await fetchComments(networkId)
-    set({ comments })
+    set((state) => ({
+      comments: { ...state.comments, [networkId]: comments },
+      currentNetworkId: networkId,
+    }))
   },
-  createComment: async (comment) => {
+  createComment: async (networkId, comment) => {
     const newComment = await createComment(comment)
     set((state) => ({
-      comments: [...(state.comments || []), newComment],
+      comments: {
+        ...state.comments,
+        [networkId]: [...(state.comments[networkId] || []), newComment],
+      },
     }))
     return newComment
   },
-  updateComment: async (comment) => {
+  updateComment: async (networkId, comment) => {
     const updatedComment = await updateComment(comment)
     set((state) => ({
-      comments: state.comments.map((c) =>
-        c.id === updatedComment.id ? updatedComment : c,
-      ),
+      comments: {
+        ...state.comments,
+        [networkId]: state.comments[networkId].map((c) =>
+          c.id === updatedComment.id ? updatedComment : c,
+        ),
+      },
     }))
   },
-  deleteComment: async (id) => {
+  deleteComment: async (networkId, id) => {
     await deleteComment(id)
     set((state) => ({
-      comments: state.comments.filter((c) => c.id !== id),
+      comments: {
+        ...state.comments,
+        [networkId]: state.comments[networkId].filter((c) => c.id !== id),
+      },
     }))
   },
 }))

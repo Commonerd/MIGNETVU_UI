@@ -46,6 +46,7 @@ import "leaflet-polylinedecorator"
 import ThreeDMap from "./ThreeDMap"
 import MigrationTraceDecorator from "./MigrationTraceDecorator"
 import { calculateCentrality } from "../utils/centralityUtils"
+import { fetchComments } from "../api/comments"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -836,6 +837,8 @@ const Map: React.FC = () => {
   }
 
   const handleTooltipOpen = async (id: number) => {
+    fetchComments(id)
+
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,

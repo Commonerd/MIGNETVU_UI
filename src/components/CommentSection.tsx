@@ -1,4 +1,3 @@
-// components/CommentSection.tsx
 import React, { useState, useEffect } from "react"
 import useCommentStore from "../store/comments"
 import { Comment } from "../types"
@@ -6,7 +5,8 @@ import useStore from "../store"
 
 const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const {
-    comments = [], // 초기값을 빈 배열로 설정
+    comments,
+    currentNetworkId,
     fetchComments,
     createComment,
     updateComment,
@@ -14,12 +14,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   } = useCommentStore()
   const [newComment, setNewComment] = useState("")
   const [editingComment, setEditingComment] = useState<Comment | null>(null)
-  const { user } = useStore() // user 상태 가져오기
+  const { user } = useStore()
 
   useEffect(() => {
-    // 네트워크 ID가 변경될 때 comments를 초기화
-    fetchComments(networkId)
-  }, [networkId, fetchComments])
+    if (currentNetworkId !== networkId) {
+      fetchComments(networkId)
+    }
+  }, [networkId, currentNetworkId, fetchComments])
 
   const handleCreateComment = async () => {
     if (newComment.trim()) {
@@ -27,35 +28,31 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
         network_id: networkId,
         user_id: user.id,
         user_name: user.name,
-        user_role: user.role, // 유저 롤 추가
+        user_role: user.role,
         content: newComment,
       }
-      const createdComment = await createComment(commentData)
+      await createComment(networkId, commentData)
       setNewComment("")
-      // 새로 생성된 댓글을 comments 상태에 추가
-      fetchComments(networkId) // 상태를 다시 가져와 동기화
     }
   }
 
   const handleUpdateComment = async () => {
     if (editingComment && editingComment.content.trim()) {
-      await updateComment(editingComment)
+      await updateComment(networkId, editingComment)
       setEditingComment(null)
-      fetchComments(networkId) // 댓글 수정 후 상태 동기화
     }
   }
 
   const handleDeleteComment = async (id: number) => {
-    await deleteComment(id)
-    fetchComments(networkId) // 댓글 삭제 후 상태 동기화
+    await deleteComment(networkId, id)
   }
 
   return (
     <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
       <h3 className="text-sm font-semibold mb-2">comments</h3>
       <ul className="space-y-2">
-        {comments && comments.length > 0 ? (
-          comments.map((comment) => (
+        {comments[networkId] && comments[networkId].length > 0 ? (
+          comments[networkId].map((comment) => (
             <li
               key={comment.id}
               className="flex flex-col bg-white p-2 border border-gray-200 rounded overflow-y-auto"
