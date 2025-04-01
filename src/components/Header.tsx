@@ -1,30 +1,18 @@
 import React from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
-import {
-  Globe,
-  User,
-  UserPlus,
-  LogOut,
-  Edit,
-  Edit2Icon,
-  PlusCircle,
-  UserCheck,
-  LucideEdit2,
-  FileText,
-  Info,
-  LogIn,
-} from "lucide-react"
+import { Info, LogIn, PlusCircle, User, LogOut } from "lucide-react"
 import useStore from "../store"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { useQueryClient } from "@tanstack/react-query"
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation()
-  const { user, setUser } = useStore() // user 상태 가져오기
+  const { user, setUser } = useStore()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const { logoutMutation } = useMutateAuth()
+
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
   }
@@ -38,76 +26,85 @@ const Header: React.FC = () => {
       name: "",
       role: "",
       id: 0,
-    }) // 로그아웃 시 사용자 상태 초기화
+    })
     alert(t("logoutSuccess"))
-    navigate("/") // 로그아웃 후 홈으로 이동
+    navigate("/")
     window.location.reload()
   }
 
   return (
     <header className="bg-[#3E2723] text-white p-4">
-      <div className="container mx-auto flex items-center flex-nowrap">
-        <a
-          href="https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center text-xs md:text-base"
-        >
-          <Info className="mr-1" />
-        </a>
-        <Link to="/" className="flex items-center ml-[4px]">
-          {" "}
-          {/* 앱 명 왼쪽으로 이동 */}
-          <img
-            src="/hisnetvu2.png"
-            alt="Globe"
-            className="mr-2 w-4 h-4 md:w-6 md:h-6"
-          />
-          <span className="text-xs md:text-lg font-bold mr-3">HisNetVu </span>
-          <span className="text-xs md:text-sm font-bold">
-            {"   "}
-            {t("appSubName")}
-          </span>
-        </Link>
+      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between">
+        {/* 첫 번째 줄: 로고와 앱 이름 */}
+        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+          <a
+            href="https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs sm:text-sm"
+          >
+            <Info className="w-4 h-4 sm:w-5 sm:h-5" />
+          </a>
+          <Link to="/" className="flex items-center">
+            <img
+              src="/hisnetvu2.png"
+              alt="Globe"
+              className="w-4 h-4 sm:w-5 sm:h-5"
+            />
+            <span className="text-xs sm:text-sm font-bold ml-1">HisNetVu</span>
+            <span className="text-xs sm:text-sm font-bold ml-1 hidden sm:inline">
+              {"   "}
+              {t("appSubName")}
+            </span>
+          </Link>
+        </div>
 
-        {/* 네비게이션을 오른쪽으로 밀어넣음 */}
-        <nav className="ml-auto flex items-center gap-x-2 md:gap-x-3 justify-end">
+        {/* 두 번째 줄: 유저 정보 및 네비게이션 */}
+        <nav className="flex flex-wrap items-center gap-2 sm:gap-3">
           {user.isLoggedIn ? (
             <>
-              <span className="text-xs md:text-base truncate max-w-[500px]">
-                {user.name} ({t(user.role)}) {t("welcome")}
+              {/* 유저명과 환영 메시지 */}
+              <span className="text-xs sm:text-sm truncate max-w-[150px]">
+                <span className="text-xs md:text-base truncate max-w-[500px]">
+                  {user.name} ({t(user.role)})
+                </span>
+                {/* <span className="hidden sm:inline">{t("welcome")}</span> */}
               </span>
+
+              {/* 네비게이션 아이콘 */}
               <Link
                 to="/network"
-                className="flex items-center text-xs md:text-base"
+                className="text-xs sm:text-sm flex items-center"
               >
-                <PlusCircle className="mr-1" />
-                {/* {t("addNetwork")} */}
+                <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                {/* <span className="hidden sm:inline">{t("addNetwork")}</span> */}
               </Link>
               <Link
                 to="/editprofile"
-                className="flex items-center text-xs md:text-base"
+                className="text-xs sm:text-sm flex items-center"
               >
-                <User className="mr-1" />
-                {/* {t("editProfile")} */}
+                <User className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                {/* <span className="hidden sm:inline">{t("editProfile")}</span> */}
               </Link>
               <button
                 onClick={logout}
-                className="flex items-center text-xs md:text-base"
+                className="text-xs sm:text-sm flex items-center"
               >
-                <LogOut className="mr-1" />
-                {/* {t("logout")} */}
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                {/* <span className="hidden sm:inline">{t("logout")}</span> */}
               </button>
+
+              {/* 언어 선택 */}
               <select
                 value={i18n.language}
                 onChange={(e) => changeLanguage(e.target.value)}
-                className="bg-[#3E2723] text-white text-xs md:text-base border-none p-0"
+                className="bg-[#3E2723] text-white text-xs sm:text-sm border-none"
               >
                 <option value="en">English</option>
                 <option value="ko">한국어</option>
                 <option value="ja">日本語</option>
                 <option value="ru">Русский</option>
-                <option value="es">español</option>
+                <option value="es">Español</option>
                 <option value="zh">中文</option>
               </select>
             </>
@@ -115,21 +112,21 @@ const Header: React.FC = () => {
             <>
               <Link
                 to="/login"
-                className="flex items-center text-xs md:text-base"
+                className="text-xs sm:text-sm flex items-center"
               >
-                <LogIn className="mr-1" />
-                {/* {t("login")} */}
+                <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
+                <span className="hidden sm:inline">{t("login")}</span>
               </Link>
               <select
                 value={i18n.language}
                 onChange={(e) => changeLanguage(e.target.value)}
-                className="bg-[#3E2723] text-white text-xs md:text-base border-none p-0"
+                className="bg-[#3E2723] text-white text-xs sm:text-sm border-none"
               >
                 <option value="en">English</option>
                 <option value="ko">한국어</option>
                 <option value="ja">日本語</option>
                 <option value="ru">Русский</option>
-                <option value="es">español</option>
+                <option value="es">Español</option>
                 <option value="zh">中文</option>
               </select>
             </>
