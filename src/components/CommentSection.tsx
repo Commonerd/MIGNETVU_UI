@@ -33,6 +33,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
       }
       await createComment(networkId, commentData)
       setNewComment("")
+      fetchComments(networkId) // 상태를 다시 가져와 동기화
     }
   }
 
