@@ -1033,10 +1033,6 @@ const Map: React.FC = () => {
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
-        {/* 필터 숨기기/보이기 버튼 */}
-        <ToggleButton onClick={toggleFilters}>
-          {isFiltersVisible ? "▲" : "▼"}
-        </ToggleButton>
         {/* 스와이프 가능한 필터 영역 */}
         <SwipeableContainer isVisible={isFiltersVisible}>
           {/* 3D 모드 전환 버튼 추가 */}
@@ -1179,6 +1175,10 @@ const Map: React.FC = () => {
               ) : (
                 <></>
               )}
+              {/* 숨기기/보이기 버튼 */}
+              <ToggleButton onClick={toggleFilters}>
+                {isFiltersVisible ? "▼" : "▲"}
+              </ToggleButton>
             </FilterContainer>
           </div>
 

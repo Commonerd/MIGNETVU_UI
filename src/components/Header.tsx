@@ -33,10 +33,10 @@ const Header: React.FC = () => {
   }
 
   return (
-    <header className="bg-[#3E2723] text-white p-4">
-      <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between">
-        {/* 첫 번째 줄: 로고와 앱 이름 */}
-        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+    <header className="bg-[#3E2723] text-white p-2 sm:p-4">
+      <div className="container mx-auto flex items-center justify-between gap-2">
+        {/* 왼쪽: Info 아이콘 + 앱 로고 및 이름 */}
+        <div className="flex items-center gap-1">
           <a
             href="https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
             target="_blank"
@@ -45,93 +45,66 @@ const Header: React.FC = () => {
           >
             <Info className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-1">
             <img
               src="/hisnetvu2.png"
               alt="Globe"
-              className="w-4 h-4 sm:w-5 sm:h-5"
+              className="w-5 h-5 sm:w-6 sm:h-6"
             />
-            <span className="text-xs sm:text-sm font-bold ml-1">HisNetVu</span>
-            <span className="text-xs sm:text-sm font-bold ml-1 hidden sm:inline">
+            <span className="text-xs sm:text-base font-bold">HisNetVu</span>
+            <span className="hidden sm:block text-xs md:text-sm font-bold">
               {"   "}
               {t("appSubName")}
             </span>
           </Link>
         </div>
 
-        {/* 두 번째 줄: 유저 정보 및 네비게이션 */}
-        <nav className="flex flex-wrap items-center gap-2 sm:gap-3">
+        {/* 가운데 간격 추가 */}
+        <div className="flex-grow gap-2"></div>
+
+        {/* 오른쪽: 유저 정보 및 네비게이션 */}
+        <div className="flex items-center gap-1 sm:gap-1">
           {user.isLoggedIn ? (
             <>
-              {/* 유저명과 환영 메시지 */}
-              <span className="text-xs sm:text-sm truncate max-w-[150px]">
-                <span className="text-xs md:text-base truncate max-w-[500px]">
-                  {user.name} ({t(user.role)})
-                </span>
-                {/* <span className="hidden sm:inline">{t("welcome")}</span> */}
+              {/* 유저명 및 역할 */}
+              <span className="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-[150px]">
+                {user.name} ({t(user.role)})
               </span>
 
               {/* 네비게이션 아이콘 */}
-              <Link
-                to="/network"
-                className="text-xs sm:text-sm flex items-center"
-              >
-                <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                {/* <span className="hidden sm:inline">{t("addNetwork")}</span> */}
+              <Link to="/network" className="flex items-center">
+                <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
-              <Link
-                to="/editprofile"
-                className="text-xs sm:text-sm flex items-center"
-              >
-                <User className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                {/* <span className="hidden sm:inline">{t("editProfile")}</span> */}
+              <Link to="/editprofile" className="flex items-center">
+                <User className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
-              <button
-                onClick={logout}
-                className="text-xs sm:text-sm flex items-center"
-              >
-                <LogOut className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                {/* <span className="hidden sm:inline">{t("logout")}</span> */}
+              <button onClick={logout} className="flex items-center">
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-
-              {/* 언어 선택 */}
-              <select
-                value={i18n.language}
-                onChange={(e) => changeLanguage(e.target.value)}
-                className="bg-[#3E2723] text-white text-xs sm:text-sm border-none"
-              >
-                <option value="en">English</option>
-                <option value="ko">한국어</option>
-                <option value="ja">日本語</option>
-                <option value="ru">Русский</option>
-                <option value="es">Español</option>
-                <option value="zh">中文</option>
-              </select>
             </>
           ) : (
-            <>
-              <Link
-                to="/login"
-                className="text-xs sm:text-sm flex items-center"
-              >
-                <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                <span className="hidden sm:inline">{t("login")}</span>
-              </Link>
-              <select
-                value={i18n.language}
-                onChange={(e) => changeLanguage(e.target.value)}
-                className="bg-[#3E2723] text-white text-xs sm:text-sm border-none"
-              >
-                <option value="en">English</option>
-                <option value="ko">한국어</option>
-                <option value="ja">日本語</option>
-                <option value="ru">Русский</option>
-                <option value="es">Español</option>
-                <option value="zh">中文</option>
-              </select>
-            </>
+            <Link to="/login" className="flex items-center">
+              <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline text-xs sm:text-sm">
+                {t("login")}
+              </span>
+            </Link>
           )}
-        </nav>
+
+          {/* 언어 선택 */}
+          <select
+            value={i18n.language}
+            onChange={(e) => changeLanguage(e.target.value)}
+            className="hidden sm:block bg-[#3E2723] text-white text-xs sm:text-sm border-none"
+          >
+            <option value="en">English</option>
+            <option value="ko">한국어</option>
+            <option value="ja">日本語</option>
+            <option value="ru">Русский</option>
+            <option value="es">Español</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
       </div>
     </header>
   )
