@@ -2209,7 +2209,7 @@ const MobileCarousel = styled(Slider)`
     padding: 0 5px; /* 슬라이드 간격 */
 
     .slick-dots {
-      bottom: 5px; /* 둥근 원이 잘리지 않도록 위치 조정 */
+      bottom: -15px; /* 둥근 원이 잘리지 않도록 위치 조정 */
     }
 
     .slick-dots li button:before {
