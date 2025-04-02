@@ -216,6 +216,11 @@ const Map: React.FC = () => {
   const [selectedNetworkId, setSelectedNetworkId] = useState<number | null>(
     null,
   )
+  const [isFiltersVisible, setIsFiltersVisible] = useState(true) // 필터 표시 여부 상태
+
+  const toggleFilters = () => {
+    setIsFiltersVisible(!isFiltersVisible) // 필터 표시/숨기기 토글
+  }
 
   const toggle3DMode = () => {
     setIs3DMode(!is3DMode)
@@ -1028,117 +1033,153 @@ const Map: React.FC = () => {
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
-        <div className="flex flex-wrap gap-3 bg-[#d1c6b1]">
+        {/* 필터 숨기기/보이기 버튼 */}
+        <ToggleButton onClick={toggleFilters}>
+          {isFiltersVisible ? "▲" : "▼"}
+        </ToggleButton>
+        {/* 스와이프 가능한 필터 영역 */}
+        <SwipeableContainer isVisible={isFiltersVisible}>
           {/* 3D 모드 전환 버튼 추가 */}
-          <button
-            onClick={toggle3DMode}
-            className="hidden px-4 py-2 bg-[#3E2723] text-white rounded hover:bg-[#5D4037] focus:outline-none focus:ring-2 focus:ring-[#3E2723]"
-          >
+          <ThreeDButton onClick={toggle3DMode}>
             {is3DMode ? "2D" : "3D"}
-          </button>
+          </ThreeDButton>
           {/* Entity Filters */}
           <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
-            <Select
-              options={entityOptions}
-              onChange={(entityOptions) =>
-                handleFilterChange(
-                  "entityType",
-                  entityOptions
-                    ? entityOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allEntityTypes")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              className={`p-1 rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-42"
-              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            />
-            <Select
-              options={nationalityOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "nationality",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allNationalities")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              className={`p-1 rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-42"
-              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            />
-            <Select
-              options={ethnicityOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "ethnicity",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allEthnicities")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              className={`p-1 rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-42"
-              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            />
+            <FilterContainer>
+              <Select
+                options={entityOptions}
+                onChange={(entityOptions) =>
+                  handleFilterChange(
+                    "entityType",
+                    entityOptions
+                      ? entityOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allEntityTypes")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                className={`p-1 rounded text-sm ${
+                  user.isLoggedIn ? "w-30" : "w-42"
+                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              />
+              <Select
+                options={nationalityOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "nationality",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allNationalities")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                className={`p-1 rounded text-sm ${
+                  user.isLoggedIn ? "w-30" : "w-42"
+                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              />
+              <Select
+                options={ethnicityOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "ethnicity",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allEthnicities")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                className={`p-1 rounded text-sm ${
+                  user.isLoggedIn ? "w-30" : "w-42"
+                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              />
 
-            <Select
-              options={edgeTypeOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "edgeType",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              value={
-                Array.isArray(filters.edgeType)
-                  ? filters.edgeType
-                      .filter((value) => value !== "all")
-                      .map((value) => ({
-                        value,
-                        label: value,
-                      }))
-                  : []
-              }
-              placeholder={t("allConnectionTypes")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              className={`p-1 rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-42"
-              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            />
-            <Select
-              options={migrationReasonOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "migrationReasons",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allMigrationReasons")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              className={`p-1 rounded text-sm ${
-                user.isLoggedIn ? "w-30" : "w-42"
-              } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
-            />
+              <Select
+                options={edgeTypeOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "edgeType",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                value={
+                  Array.isArray(filters.edgeType)
+                    ? filters.edgeType
+                        .filter((value) => value !== "all")
+                        .map((value) => ({
+                          value,
+                          label: value,
+                        }))
+                    : []
+                }
+                placeholder={t("allConnectionTypes")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                className={`p-1 rounded text-sm ${
+                  user.isLoggedIn ? "w-30" : "w-42"
+                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              />
+              <Select
+                options={migrationReasonOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "migrationReasons",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allMigrationReasons")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                className={`p-1 rounded text-sm ${
+                  user.isLoggedIn ? "w-30" : "w-42"
+                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+              />
+              {/* Centrality */}
+              {user.isLoggedIn ? (
+                <Select
+                  options={[
+                    { value: "none", label: t("selectCentrality") },
+                    { value: "degree", label: t("degreeCentrality") },
+                    { value: "betweenness", label: t("betweenessCentrality") },
+                    { value: "closeness", label: t("closenessCentrality") },
+                    { value: "eigenvector", label: t("eigenvectorCentrality") },
+                  ]}
+                  onChange={(selectedOption) =>
+                    setCentralityType(
+                      selectedOption ? selectedOption.value : "none",
+                    )
+                  }
+                  value={{
+                    value: centralityType,
+                    label: t(
+                      centralityType === "none"
+                        ? "selectCentrality"
+                        : `${centralityType}Centrality`,
+                    ),
+                  }}
+                  placeholder={t("selectCentrality")}
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+              ) : (
+                <></>
+              )}
+            </FilterContainer>
           </div>
 
           {/* Year Range */}
@@ -1230,31 +1271,6 @@ const Map: React.FC = () => {
               }`}
             />
           </div>
-
-          {user.isLoggedIn ? (
-            <>
-              {/* Centrality */}
-              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
-                <select
-                  value={centralityType}
-                  onChange={(e) => setCentralityType(e.target.value)}
-                  className="p-1 border rounded text-sm w-26 h-8 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <option value="none">{t("selectCentrality")}</option>
-                  <option value="degree">{t("degreeCentrality")}</option>
-                  <option value="betweenness">
-                    {t("betweenessCentrality")}
-                  </option>
-                  <option value="closeness">{t("closenessCentrality")}</option>
-                  <option value="eigenvector">
-                    {t("eigenvectorCentrality")}
-                  </option>
-                </select>
-              </div>
-            </>
-          ) : (
-            <></>
-          )}
 
           {user.isLoggedIn ? (
             <>
@@ -1350,7 +1366,7 @@ const Map: React.FC = () => {
           ) : (
             <></>
           )}
-        </div>
+        </SwipeableContainer>
 
         {/* Render Search Results */}
         {triggerSearch && searchQuery && (
@@ -1779,20 +1795,105 @@ const customStyles = {
         ? "rgba(251, 191, 36, 1)"
         : provided.borderColor,
     },
-    borderRadius: "0.375rem", // 테두리 둥글게 설정 (연도 범위나 이주 추적 정도와 동일)
+    borderRadius: "0.375rem", // 둥근 테두리
+    minWidth: "120px", // 최소 너비 설정
+    maxWidth: "200px", // 최대 너비 설정
+    whiteSpace: "nowrap", // 텍스트 줄바꿈 방지
+    overflow: "hidden", // 텍스트가 넘칠 경우 숨김
+    textOverflow: "ellipsis", // 넘친 텍스트에 말줄임표 추가
   }),
   placeholder: (provided: any) => ({
     ...provided,
-    color: "black", // 플레이스홀더 글자 색깔을 검은색으로 설정
+    color: "black", // 플레이스홀더 글자 색깔
   }),
   singleValue: (provided: any) => ({
     ...provided,
-    color: "black", // 선택된 값의 글자 색깔을 검은색으로 설정
+    color: "black", // 선택된 값의 글자 색깔
   }),
   multiValueLabel: (provided: any) => ({
     ...provided,
-    color: "black", // 멀티 셀렉트 텍스트 색깔을 검은색으로 설정
+    color: "black", // 멀티 셀렉트 텍스트 색깔
   }),
 }
+
+// 추가: 필터 버튼 컨테이너 스타일
+const FilterContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); // 데스크톱에서는 3열 고정
+  gap: 0.5rem; // 버튼 간격
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr); // 모바일에서 2열로 변경
+  }
+`
+// 3D 버튼 스타일 정의
+const ThreeDButton = styled.button`
+  display: none; /* 기본적으로 숨김 */
+  @media (min-width: 768px) {
+    display: inline-block; /* 데스크톱에서는 표시 */
+  }
+  padding: 0.5rem 1rem;
+  background-color: #3e2723;
+  color: white;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #5d4037;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #3e2723;
+  }
+`
+
+// 스와이프 가능한 컨테이너 스타일 정의
+const SwipeableContainer = styled.div<{ isVisible: boolean }>`
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem;
+  background-color: #d1c6b1;
+  border-radius: 0.375rem;
+  transition: transform 0.3s ease-in-out; /* 애니메이션 효과 */
+  transform: ${({ isVisible }) =>
+    isVisible ? "translateY(0)" : "translateY(-100%)"}; /* 위로 숨기기 */
+  position: relative;
+
+  /* 스크롤바 스타일 */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: #9e9d89;
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: #f5f5f5;
+  }
+`
+
+// 숨기기/보이기 버튼 스타일 정의
+const ToggleButton = styled.button`
+  position: absolute;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #9e9d89;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+`
 
 export default Map

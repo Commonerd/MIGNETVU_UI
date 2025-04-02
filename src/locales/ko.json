@@ -49,7 +49,7 @@
   "mission": "미션",
   "services": "서비스",
   "contactInfo": "연락처 정보",
-  "selectCentrality": "중심성선택",
+  "selectCentrality": "중심 선택",
   "degreeCentrality": "차수중심성",
   "betweenessCentrality": "매개중심성",
   "closenessCentrality": "근접중심성",
