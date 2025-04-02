@@ -47,6 +47,7 @@ import ThreeDMap from "./ThreeDMap"
 import MigrationTraceDecorator from "./MigrationTraceDecorator"
 import { calculateCentrality } from "../utils/centralityUtils"
 import { fetchComments } from "../api/comments"
+import Slider from "react-slick"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -173,6 +174,8 @@ const Legend = ({
 }
 
 const Map: React.FC = () => {
+  const isMobile = window.innerWidth <= 768
+
   const { t } = useTranslation()
   const [networks, setNetworks] = useState<Network[] | undefined>()
   const [migrants, setMigrants] = useState<Migrant[]>([])
@@ -217,6 +220,14 @@ const Map: React.FC = () => {
     null,
   )
   const [isFiltersVisible, setIsFiltersVisible] = useState(true) // 필터 표시 여부 상태
+
+  const sliderSettings = {
+    dots: true,
+    infinite: false,
+    speed: 200,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+  }
 
   const toggleFilters = () => {
     setIsFiltersVisible(!isFiltersVisible) // 필터 표시/숨기기 토글
@@ -1033,15 +1044,10 @@ const Map: React.FC = () => {
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
-        {/* 스와이프 가능한 필터 영역 */}
-        <SwipeableContainer isVisible={isFiltersVisible}>
-          {/* 3D 모드 전환 버튼 추가 */}
-          <ThreeDButton onClick={toggle3DMode}>
-            {is3DMode ? "2D" : "3D"}
-          </ThreeDButton>
-          {/* Entity Filters */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
-            <FilterContainer>
+        {isMobile ? (
+          <MobileCarousel {...sliderSettings}>
+            {/* 개체 필터 */}
+            <div>
               <Select
                 options={entityOptions}
                 onChange={(entityOptions) =>
@@ -1056,10 +1062,12 @@ const Map: React.FC = () => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                className={`p-1 rounded text-sm ${
-                  user.isLoggedIn ? "w-30" : "w-42"
-                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
+
+            {/* 국적 필터 */}
+            <div>
               <Select
                 options={nationalityOptions}
                 onChange={(selectedOptions) =>
@@ -1074,10 +1082,12 @@ const Map: React.FC = () => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                className={`p-1 rounded text-sm ${
-                  user.isLoggedIn ? "w-30" : "w-42"
-                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
+
+            {/* 민족 필터 */}
+            <div>
               <Select
                 options={ethnicityOptions}
                 onChange={(selectedOptions) =>
@@ -1092,11 +1102,12 @@ const Map: React.FC = () => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                className={`p-1 rounded text-sm ${
-                  user.isLoggedIn ? "w-30" : "w-42"
-                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
 
+            {/* 관계 필터 */}
+            <div>
               <Select
                 options={edgeTypeOptions}
                 onChange={(selectedOptions) =>
@@ -1107,24 +1118,16 @@ const Map: React.FC = () => {
                       : ["all"],
                   )
                 }
-                value={
-                  Array.isArray(filters.edgeType)
-                    ? filters.edgeType
-                        .filter((value) => value !== "all")
-                        .map((value) => ({
-                          value,
-                          label: value,
-                        }))
-                    : []
-                }
                 placeholder={t("allConnectionTypes")}
                 isClearable
                 isMulti
                 styles={customStyles}
-                className={`p-1 rounded text-sm ${
-                  user.isLoggedIn ? "w-30" : "w-42"
-                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
+
+            {/* 이동 필터 */}
+            <div>
               <Select
                 options={migrationReasonOptions}
                 onChange={(selectedOptions) =>
@@ -1139,197 +1142,190 @@ const Map: React.FC = () => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                className={`p-1 rounded text-sm ${
-                  user.isLoggedIn ? "w-30" : "w-42"
-                } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
-              {/* Centrality */}
-              {user.isLoggedIn ? (
-                <Select
-                  options={[
-                    { value: "none", label: t("selectCentrality") },
-                    { value: "degree", label: t("degreeCentrality") },
-                    { value: "betweenness", label: t("betweenessCentrality") },
-                    { value: "closeness", label: t("closenessCentrality") },
-                    { value: "eigenvector", label: t("eigenvectorCentrality") },
-                  ]}
-                  onChange={(selectedOption) =>
-                    setCentralityType(
-                      selectedOption ? selectedOption.value : "none",
+            </div>
+
+            {/* 중심성 필터 */}
+            <div>
+              <Select
+                options={[
+                  { value: "none", label: t("selectCentrality") },
+                  { value: "degree", label: t("degreeCentrality") },
+                  { value: "betweenness", label: t("betweenessCentrality") },
+                  { value: "closeness", label: t("closenessCentrality") },
+                  { value: "eigenvector", label: t("eigenvectorCentrality") },
+                ]}
+                onChange={(selectedOption) =>
+                  setCentralityType(
+                    selectedOption ? selectedOption.value : "none",
+                  )
+                }
+                value={{
+                  value: centralityType,
+                  label: t(
+                    centralityType === "none"
+                      ? "selectCentrality"
+                      : `${centralityType}Centrality`,
+                  ),
+                }}
+                placeholder={t("selectCentrality")}
+                styles={customStyles}
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+
+            {/* 관계 연도 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("yearRange")}</label>
+                <input
+                  type="number"
+                  placeholder="1800"
+                  value={filters.yearRange[0]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      parseInt(e.target.value),
+                      filters.yearRange[1],
+                    ])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm">-</span>
+                <input
+                  type="number"
+                  placeholder="2024"
+                  value={filters.yearRange[1]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      filters.yearRange[0],
+                      parseInt(e.target.value),
+                    ])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+
+            {/* 이동 연도 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("migrationTraceability")}</label>
+                <input
+                  type="number"
+                  value={yearRange[0] === 0 ? "" : yearRange[0]}
+                  placeholder="1800"
+                  onFocus={() => {
+                    if (yearRange[0] === 0) {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([value, yearRange[1]])
+                  }}
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm">-</span>
+                <input
+                  type="number"
+                  placeholder="2024"
+                  value={yearRange[1] === 0 ? "" : yearRange[1]}
+                  onFocus={() => {
+                    if (yearRange[1] === 0) {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([yearRange[0], value])
+                  }}
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+
+            {/* 나의 노드 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                <input
+                  type="checkbox"
+                  id="userNetworkFilter"
+                  className="w-4 h-4"
+                  checked={filters.userNetworkFilter}
+                  onChange={(e) =>
+                    handleFilterChange("userNetworkFilter", e.target.checked)
+                  }
+                />
+                <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
+                  {t("filterByUserNetwork")}
+                </label>
+              </div>
+            </div>
+
+            {/* 나의 이동 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                <input
+                  type="checkbox"
+                  id="userNetworkTraceFilter"
+                  className="w-4 h-4"
+                  checked={filters.userNetworkTraceFilter}
+                  onChange={(e) =>
+                    handleFilterChange(
+                      "userNetworkTraceFilter",
+                      e.target.checked,
                     )
                   }
-                  value={{
-                    value: centralityType,
-                    label: t(
-                      centralityType === "none"
-                        ? "selectCentrality"
-                        : `${centralityType}Centrality`,
-                    ),
-                  }}
-                  placeholder={t("selectCentrality")}
-                  styles={customStyles}
-                  className={`p-1 rounded text-sm ${
-                    user.isLoggedIn ? "w-30" : "w-42"
-                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
                 />
-              ) : (
-                <></>
-              )}
-              {/* 숨기기/보이기 버튼 */}
-              <ToggleButton onClick={toggleFilters}>
-                {isFiltersVisible ? "▼" : "▲"}
-              </ToggleButton>
-            </FilterContainer>
-          </div>
+                <label
+                  htmlFor="userNetworkTraceFilter"
+                  className="ml-2 text-sm"
+                >
+                  {t("filterByUserNetworkTrace")}
+                </label>
+              </div>
+            </div>
 
-          {/* Year Range */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-            <label className="text-sm">{t("yearRange")}</label>
-            <input
-              type="number"
-              placeholder="1800"
-              value={filters.yearRange[0]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  parseInt(e.target.value),
-                  filters.yearRange[1],
-                ])
-              }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <span className="text-sm">-</span>
-            <input
-              type="number"
-              placeholder="2024"
-              value={filters.yearRange[1]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  filters.yearRange[0],
-                  parseInt(e.target.value),
-                ])
-              }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-          </div>
+            {/* 나의 관계망 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                <input
+                  type="checkbox"
+                  id="userNetworkConnectionFilter"
+                  className="w-4 h-4"
+                  checked={filters.userNetworkConnectionFilter}
+                  onChange={(e) =>
+                    handleFilterChange(
+                      "userNetworkConnectionFilter",
+                      e.target.checked,
+                    )
+                  }
+                />
+                <label
+                  htmlFor="userNetworkConnectionFilter"
+                  className="ml-2 text-sm"
+                >
+                  {t("filterByUserNetworkConnection")}
+                </label>
+              </div>
+            </div>
 
-          {/* Migration Traceability */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-            <label className="text-sm">{t("migrationTraceability")}</label>
-            <input
-              type="number"
-              value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
-              placeholder="1800"
-              onFocus={() => {
-                // 포커스 시 값이 0이면 빈 문자열로 변환
-                if (yearRange[0] === 0) {
-                  setYearRange([0, yearRange[1]])
-                }
-              }}
-              onBlur={(e) => {
-                // 블러 시 빈 문자열이면 0으로 변환
-                if (e.target.value === "") {
-                  setYearRange([0, yearRange[1]])
-                }
-              }}
-              onChange={(e) => {
-                const value =
-                  e.target.value === "" ? 0 : parseInt(e.target.value)
-                setYearRange([value, yearRange[1]])
-              }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <span className="text-sm">-</span>
-            <input
-              type="number"
-              placeholder="2024"
-              value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
-              onFocus={() => {
-                // 포커스 시 값이 0이면 빈 문자열로 변환
-                if (yearRange[1] === 0) {
-                  setYearRange([yearRange[0], 0])
-                }
-              }}
-              onBlur={(e) => {
-                // 블러 시 빈 문자열이면 0으로 변환
-                if (e.target.value === "") {
-                  setYearRange([yearRange[0], 0])
-                }
-              }}
-              onChange={(e) => {
-                const value =
-                  e.target.value === "" ? 0 : parseInt(e.target.value)
-                setYearRange([yearRange[0], value])
-              }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-          </div>
-
-          {user.isLoggedIn ? (
-            <>
-              {/* Search */}
-              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange("userNetworkFilter", e.target.checked)
-                    }
-                  />
-                  <label htmlFor="userNetworkFilter" className="text-xs">
-                    {t("filterByUserNetwork")}
-                  </label>
-                </div>
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkTraceFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkTraceFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "userNetworkTraceFilter",
-                        e.target.checked,
-                      )
-                    }
-                  />
-                  <label htmlFor="userNetworkTraceFilter" className="text-xs">
-                    {t("filterByUserNetworkTrace")}
-                  </label>
-                </div>
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkConnectionFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkConnectionFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "userNetworkConnectionFilter",
-                        e.target.checked,
-                      )
-                    }
-                  />
-                  <label
-                    htmlFor="userNetworkConnectionFilter"
-                    className="text-xs"
-                  >
-                    {t("filterByUserNetworkConnection")}
-                  </label>
-                </div>
+            {/* 검색란 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
                 <input
                   type="text"
                   placeholder={t("Search Networks")}
@@ -1340,34 +1336,361 @@ const Map: React.FC = () => {
                       handleSearchClick()
                     }
                   }}
-                  className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   onClick={handleSearchClick}
-                  className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                    />
-                  </svg>
+                  {t("search")}
                 </button>
               </div>
-            </>
-          ) : (
-            <></>
-          )}
-        </SwipeableContainer>
+            </div>
+          </MobileCarousel>
+        ) : (
+          <SwipeableContainer isVisible={isFiltersVisible}>
+            {/* 3D 모드 전환 버튼 추가 */}
+            <ThreeDButton onClick={toggle3DMode}>
+              {is3DMode ? "2D" : "3D"}
+            </ThreeDButton>
+            {/* Entity Filters */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
+              <FilterContainer>
+                <Select
+                  options={entityOptions}
+                  onChange={(entityOptions) =>
+                    handleFilterChange(
+                      "entityType",
+                      entityOptions
+                        ? entityOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allEntityTypes")}
+                  isClearable
+                  isMulti
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+                <Select
+                  options={nationalityOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "nationality",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allNationalities")}
+                  isClearable
+                  isMulti
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+                <Select
+                  options={ethnicityOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "ethnicity",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allEthnicities")}
+                  isClearable
+                  isMulti
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
 
+                <Select
+                  options={edgeTypeOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "edgeType",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  value={
+                    Array.isArray(filters.edgeType)
+                      ? filters.edgeType
+                          .filter((value) => value !== "all")
+                          .map((value) => ({
+                            value,
+                            label: value,
+                          }))
+                      : []
+                  }
+                  placeholder={t("allConnectionTypes")}
+                  isClearable
+                  isMulti
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+                <Select
+                  options={migrationReasonOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "migrationReasons",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allMigrationReasons")}
+                  isClearable
+                  isMulti
+                  styles={customStyles}
+                  className={`p-1 rounded text-sm ${
+                    user.isLoggedIn ? "w-30" : "w-42"
+                  } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                />
+                {/* Centrality */}
+                {user.isLoggedIn ? (
+                  <Select
+                    options={[
+                      { value: "none", label: t("selectCentrality") },
+                      { value: "degree", label: t("degreeCentrality") },
+                      {
+                        value: "betweenness",
+                        label: t("betweenessCentrality"),
+                      },
+                      { value: "closeness", label: t("closenessCentrality") },
+                      {
+                        value: "eigenvector",
+                        label: t("eigenvectorCentrality"),
+                      },
+                    ]}
+                    onChange={(selectedOption) =>
+                      setCentralityType(
+                        selectedOption ? selectedOption.value : "none",
+                      )
+                    }
+                    value={{
+                      value: centralityType,
+                      label: t(
+                        centralityType === "none"
+                          ? "selectCentrality"
+                          : `${centralityType}Centrality`,
+                      ),
+                    }}
+                    placeholder={t("selectCentrality")}
+                    styles={customStyles}
+                    className={`p-1 rounded text-sm ${
+                      user.isLoggedIn ? "w-30" : "w-42"
+                    } h-9 focus:outline-none focus:ring-2 focus:ring-amber-500`}
+                  />
+                ) : (
+                  <></>
+                )}
+                {/* 숨기기/보이기 버튼 */}
+                <ToggleButton onClick={toggleFilters}>
+                  {isFiltersVisible ? "▼" : "▲"}
+                </ToggleButton>
+              </FilterContainer>
+            </div>
+
+            {/* Year Range */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("yearRange")}</label>
+              <input
+                type="number"
+                placeholder="1800"
+                value={filters.yearRange[0]}
+                onChange={(e) =>
+                  handleFilterChange("yearRange", [
+                    parseInt(e.target.value),
+                    filters.yearRange[1],
+                  ])
+                }
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <span className="text-sm">-</span>
+              <input
+                type="number"
+                placeholder="2024"
+                value={filters.yearRange[1]}
+                onChange={(e) =>
+                  handleFilterChange("yearRange", [
+                    filters.yearRange[0],
+                    parseInt(e.target.value),
+                  ])
+                }
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+            </div>
+
+            {/* Migration Traceability */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("migrationTraceability")}</label>
+              <input
+                type="number"
+                value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+                placeholder="1800"
+                onFocus={() => {
+                  // 포커스 시 값이 0이면 빈 문자열로 변환
+                  if (yearRange[0] === 0) {
+                    setYearRange([0, yearRange[1]])
+                  }
+                }}
+                onBlur={(e) => {
+                  // 블러 시 빈 문자열이면 0으로 변환
+                  if (e.target.value === "") {
+                    setYearRange([0, yearRange[1]])
+                  }
+                }}
+                onChange={(e) => {
+                  const value =
+                    e.target.value === "" ? 0 : parseInt(e.target.value)
+                  setYearRange([value, yearRange[1]])
+                }}
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <span className="text-sm">-</span>
+              <input
+                type="number"
+                placeholder="2024"
+                value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
+                onFocus={() => {
+                  // 포커스 시 값이 0이면 빈 문자열로 변환
+                  if (yearRange[1] === 0) {
+                    setYearRange([yearRange[0], 0])
+                  }
+                }}
+                onBlur={(e) => {
+                  // 블러 시 빈 문자열이면 0으로 변환
+                  if (e.target.value === "") {
+                    setYearRange([yearRange[0], 0])
+                  }
+                }}
+                onChange={(e) => {
+                  const value =
+                    e.target.value === "" ? 0 : parseInt(e.target.value)
+                  setYearRange([yearRange[0], value])
+                }}
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+            </div>
+
+            {user.isLoggedIn ? (
+              <>
+                {/* Search */}
+                <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkFilter" className="text-xs">
+                      {t("filterByUserNetwork")}
+                    </label>
+                  </div>
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkTraceFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkTraceFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkTraceFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
+                      {t("filterByUserNetworkTrace")}
+                    </label>
+                  </div>
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkConnectionFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkConnectionFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkConnectionFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label
+                      htmlFor="userNetworkConnectionFilter"
+                      className="text-xs"
+                    >
+                      {t("filterByUserNetworkConnection")}
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder={t("Search Networks")}
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSearchClick()
+                      }
+                    }}
+                    className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  />
+                  <button
+                    onClick={handleSearchClick}
+                    className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </>
+            ) : (
+              <></>
+            )}
+          </SwipeableContainer>
+        )}
         {/* Render Search Results */}
         {triggerSearch && searchQuery && (
           <div
@@ -1874,6 +2197,24 @@ const SwipeableContainer = styled.div<{ isVisible: boolean }>`
   }
   &::-webkit-scrollbar-track {
     background-color: #f5f5f5;
+  }
+
+  @media (max-width: 768px) {
+    display: block; /* 모바일에서는 캐러셀로 변경 */
+  }
+`
+
+const MobileCarousel = styled(Slider)`
+  .slick-slide {
+    padding: 0 5px; /* 슬라이드 간격 */
+
+    .slick-dots {
+      bottom: 30px; /* 둥근 원이 잘리지 않도록 위치 조정 */
+    }
+
+    .slick-dots li button:before {
+      font-size: 30px; /* 둥근 원 크기 조정 */
+    }
   }
 `
 
