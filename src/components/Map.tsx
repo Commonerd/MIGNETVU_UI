@@ -1820,10 +1820,11 @@ const customStyles = {
 const FilterContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(6, 1fr); // 데스크톱에서는 3열 고정
-  gap: 0.5rem; // 버튼 간격
+  gap: 0.2rem; // 버튼 간격
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr); // 모바일에서 2열로 변경
+    gap: 0.1rem;
   }
 `
 // 3D 버튼 스타일 정의

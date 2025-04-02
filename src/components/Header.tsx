@@ -51,7 +51,7 @@ const Header: React.FC = () => {
               alt="Globe"
               className="w-5 h-5 sm:w-6 sm:h-6"
             />
-            <span className="text-xs sm:text-base font-bold">HisNetVu</span>
+            <span className="text-sm sm:text-base font-bold">HisNetVu</span>
             <span className="hidden sm:block text-xs md:text-sm font-bold">
               {"   "}
               {t("appSubName")}
