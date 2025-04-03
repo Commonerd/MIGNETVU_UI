@@ -2286,9 +2286,7 @@ const Map: React.FC = () => {
                 }}
               >
                 <Popup>
-                  <div className="p-4 max-w-xl max-h-[500px] overflow-y-auto">
-                    {" "}
-                    {/* 팝업 크기를 제한 */}
+                  <PopupContent>
                     <strong className="text-lg font-semibold block mb-2">
                       No.{network.id} : {network.title}
                     </strong>
@@ -2334,7 +2332,6 @@ const Map: React.FC = () => {
                             ? "Birth Year"
                             : "Established Year"}
                         </span>
-
                         <span className="font-medium">
                           : {network.migration_year}
                         </span>
@@ -2346,7 +2343,6 @@ const Map: React.FC = () => {
                             ? "Death Year"
                             : "Dissolved Year"}
                         </span>
-
                         <span className="font-medium">
                           : {network.end_year}
                         </span>
@@ -2362,12 +2358,19 @@ const Map: React.FC = () => {
                         {network.longitude.toFixed(5)}
                       </p>
                     </div>
-                  </div>
+                  </PopupContent>
 
                   {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
-
-                  <div className="max-h-32 max-w-full overflow-y-auto border-t pt-2">
-                    <CommentSection networkId={network.id} />
+                  <div
+                    className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
+                    style={{
+                      width: "100%", // 팝업 너비에 맞춤
+                      maxHeight: "150px", // 코멘트 섹션 최대 높이
+                    }}
+                  >
+                    <CommentSectionWrapper>
+                      <CommentSection networkId={network.id} />
+                    </CommentSectionWrapper>{" "}
                   </div>
                 </Popup>
               </Marker>
@@ -2480,13 +2483,23 @@ const Map: React.FC = () => {
                         .setContent(
                           `<div>
 
+
+
                   <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+
+
 
                   <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
 
+
+
                   <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
 
+
+
                   <strong>Reason:</strong> ${nextTrace.reason}
+
+
 
                 </div>`,
                         )
@@ -2754,6 +2767,43 @@ const MobileCarousel = styled(Slider)`
     .slick-dots li button:before {
       font-size: 30px; /* 둥근 원 크기 조정 */
     }
+  }
+`
+
+const PopupContent = styled.div`
+  width: 400px;
+  max-height: 500px;
+  overflow-y: auto;
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    width: 300px; /* 모바일에서 팝업 너비 조정 */
+    max-height: 400px; /* 모바일에서 팝업 높이 조정 */
+    font-size: 12px; /* 모바일에서 글자 크기 조정 */
+  }
+
+  @media (max-width: 480px) {
+    width: 250px; /* 더 작은 화면에서 팝업 너비 조정 */
+    max-height: 300px; /* 더 작은 화면에서 팝업 높이 조정 */
+    font-size: 10px; /* 더 작은 화면에서 글자 크기 조정 */
+  }
+`
+
+const CommentSectionWrapper = styled.div`
+  max-height: 150px; /* 기본 최대 높이 */
+  max-width: 100%; /* 기본 최대 너비 */
+  overflow-y: auto; /* 스크롤 가능 */
+  border-top: 1px solid #ccc; /* 상단 경계선 */
+  padding-top: 10px; /* 상단 여백 */
+
+  @media (max-width: 768px) {
+    max-height: 120px; /* 태블릿에서 최대 높이 조정 */
+    padding-top: 8px; /* 태블릿에서 상단 여백 조정 */
+  }
+
+  @media (max-width: 480px) {
+    max-height: 100px; /* 모바일에서 최대 높이 조정 */
+    padding-top: 5px; /* 모바일에서 상단 여백 조정 */
   }
 `
 

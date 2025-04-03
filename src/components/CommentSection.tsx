@@ -26,14 +26,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     if (newComment.trim()) {
       const commentData = {
         network_id: networkId,
-        user_id: user.id,
-        user_name: user.name,
-        user_role: user.role,
+        user_id: user?.id || null, // 로그인하지 않은 경우 user_id를 null로 설정
+        user_name: user?.name || "Guest", // 로그인하지 않은 경우 기본 이름 설정
+        user_role: user?.role || "Guest", // 로그인하지 않은 경우 기본 역할 설정
         content: newComment,
       }
       await createComment(networkId, commentData)
       setNewComment("")
-      fetchComments(networkId) // 상태를 다시 가져와 동기화
     }
   }
 
@@ -45,7 +44,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   }
 
   const handleDeleteComment = async (id: number) => {
-    await deleteComment(networkId, id)
+    if (user) {
+      await deleteComment(networkId, id)
+    }
   }
 
   return (
@@ -92,7 +93,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
                   <p className="mt-1 text-gray-700">{comment.content}</p>
                 </div>
               )}
-              {comment.user_id === user.id && (
+              {user && comment.user_id === user.id && (
                 <div className="flex justify-end space-x-1 mt-1">
                   {editingComment?.id === comment.id ? (
                     <button
@@ -123,21 +124,23 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
           <p className="text-xs text-gray-500">No comments yet.</p>
         )}
       </ul>
-      <div className="flex flex-col mt-3">
-        <input
-          type="text"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="add comments"
-          className="flex-1 p-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
-        />
-        <button
-          onClick={handleCreateComment}
-          className="px-3 py-1 mt-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
-        >
-          add
-        </button>
-      </div>
+      {user && (
+        <div className="flex flex-col mt-3">
+          <input
+            type="text"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="add comments"
+            className="flex-1 p-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
+          />
+          <button
+            onClick={handleCreateComment}
+            className="px-3 py-1 mt-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
+          >
+            add
+          </button>
+        </div>
+      )}
     </div>
   )
 }
