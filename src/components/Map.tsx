@@ -1495,10 +1495,6 @@ const Map: React.FC = () => {
                 ) : (
                   <></>
                 )}
-                {/* 숨기기/보이기 버튼 */}
-                <ToggleButton onClick={toggleFilters}>
-                  {isFiltersVisible ? "▼" : "▲"}
-                </ToggleButton>
               </FilterContainer>
             </div>
 
@@ -2142,26 +2138,28 @@ const customStyles = {
 // 추가: 필터 버튼 컨테이너 스타일
 const FilterContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(6, 1fr); // 데스크톱에서는 3열 고정
-  gap: 0.2rem; // 버튼 간격
+  grid-template-columns: repeat(6, 1fr); /* 데스크톱에서는 6열 고정 */
+  gap: 0.2rem; /* 버튼 간격을 줄임 */
 
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr); // 모바일에서 2열로 변경
-    gap: 0.1rem;
+    grid-template-columns: repeat(2, 1fr); /* 모바일에서 2열로 변경 */
+    gap: 0.1rem; /* 모바일에서 간격을 더 줄임 */
   }
 `
+
 // 3D 버튼 스타일 정의
 const ThreeDButton = styled.button`
   display: none; /* 기본적으로 숨김 */
   @media (min-width: 768px) {
     display: inline-block; /* 데스크톱에서는 표시 */
   }
-  padding: 0.5rem 1rem;
+  padding: 0.3rem 0.8rem; /* 버튼 패딩을 줄임 */
   background-color: #3e2723;
   color: white;
   border-radius: 0.375rem;
   border: none;
   cursor: pointer;
+  font-size: 0.8rem; /* 글자 크기를 줄임 */
   transition: background-color 0.3s ease;
 
   &:hover {
@@ -2177,9 +2175,9 @@ const ThreeDButton = styled.button`
 // 스와이프 가능한 컨테이너 스타일 정의
 const SwipeableContainer = styled.div<{ isVisible: boolean }>`
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem; /* 버튼 간격을 줄임 */
   overflow-x: auto;
-  padding: 0.5rem;
+  padding: 0.3rem; /* 상하 패딩을 줄임 */
   background-color: #d1c6b1;
   border-radius: 0.375rem;
   transition: transform 0.3s ease-in-out; /* 애니메이션 효과 */
@@ -2189,7 +2187,7 @@ const SwipeableContainer = styled.div<{ isVisible: boolean }>`
 
   /* 스크롤바 스타일 */
   &::-webkit-scrollbar {
-    height: 8px;
+    height: 6px; /* 스크롤바 높이를 줄임 */
   }
   &::-webkit-scrollbar-thumb {
     background-color: #9e9d89;
@@ -2216,26 +2214,6 @@ const MobileCarousel = styled(Slider)`
       font-size: 30px; /* 둥근 원 크기 조정 */
     }
   }
-`
-
-// 숨기기/보이기 버튼 스타일 정의
-const ToggleButton = styled.button`
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #9e9d89;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 `
 
 export default Map
