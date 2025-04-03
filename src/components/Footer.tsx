@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto flex flex-col sm:flex-row justify-center items-center text-center leading-tight sm:leading-normal">
         <div className="text-center leading-tight sm:leading-normal">
           {/* 모바일: 한 줄로 표시 / 데스크톱: 세로선 구분 */}
-          <p className="block sm:hidden">
+          <p className="block sm:hidden text-[16px] font-bold">
             &copy; {currentYear} Dr. Song Younghwa. {t("allRightsReserved")}{" "}
             <br />• {t("OperaionTime")}: 09:00-18:00 • {t("Inquiry")}:
             <a href="mailto:41m@naver.com" className="text-blue-400">
