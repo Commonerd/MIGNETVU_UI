@@ -268,11 +268,11 @@ const Map: React.FC = () => {
 
     yearRange: [1800, new Date().getFullYear()],
 
-    userNetworkFilter: true,
+    userNetworkFilter: false,
 
-    userNetworkTraceFilter: true,
+    userNetworkTraceFilter: false,
 
-    userNetworkConnectionFilter: true,
+    userNetworkConnectionFilter: false,
 
     migrationReasons: ["all"],
 
