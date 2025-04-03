@@ -2540,69 +2540,57 @@ const Map: React.FC = () => {
 }
 
 const LegendBox = styled.div`
-  position: relative;
-
-  top: 0.5rem;
-
-  left: 2rem;
-
-  width: 10rem;
-
-  background-color: rgba(255, 255, 255, 0.7);
-
-  padding: 10px;
-
+  position: absolute;
+  top: 0.3rem; /* 맵 상단에 더 가깝게 */
+  left: 0.3rem; /* 맵 왼쪽에 더 가깝게 */
+  width: 6rem; /* 박스 너비를 더 작게 */
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 5px; /* 패딩을 줄임 */
   border: 1px solid #ccc;
-
-  border-radius: 5px;
-
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-
-  z-index: 1000; /* 지도 위에 표시되도록 z-index 설정 */
-
-  font-size: 0.7rem;
+  border-radius: 3px; /* 둥근 모서리 크기 축소 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 크기 축소 */
+  z-index: 1000;
+  font-size: 0.8rem; /* 기본 글자 크기 축소 */
 
   h2 {
-    font-size: 0.8rem; /* h2 태그의 글자 크기 조정 */
+    font-size: 0.8rem; /* 제목 글자 크기 축소 */
+    margin-bottom: 0.3rem; /* 제목 아래 여백 축소 */
   }
 
   ul {
-    font-size: 0.7rem; /* ul 태그의 글자 크기 조정 */
+    font-size: 0.6rem; /* 리스트 글자 크기 축소 */
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    margin-bottom: 0.2rem; /* 리스트 항목 간격 축소 */
   }
 
   @media (max-width: 768px) {
-    position: relative;
-
-    left: 2.5rem;
-
-    width: 9rem; /* 모바일에서 가로 길이 조정 */
-
-    font-size: 0.7rem;
+    width: 6rem; /* 모바일에서 박스 너비 축소 */
+    font-size: 0.5rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.7rem; /* 모바일에서 h2 태그의 글자 크기 조정 */
+      font-size: 0.6rem; /* 제목 글자 크기 더 축소 */
     }
 
     ul {
-      font-size: 0.6rem; /* 모바일에서 ul 태그의 글자 크기 조정 */
+      font-size: 0.5rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 
   @media (max-width: 480px) {
-    position: relative;
-
-    left: 3rem;
-
-    width: 7rem; /* 더 작은 화면에서 가로 길이 조정 */
-
-    font-size: 0.6rem;
+    width: 5rem; /* 더 작은 화면에서 박스 너비 축소 */
+    font-size: 0.4rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.6rem; /* 더 작은 화면에서 h2 태그의 글자 크기 조정 */
+      font-size: 0.5rem; /* 제목 글자 크기 더 축소 */
     }
 
     ul {
-      font-size: 0.5rem; /* 더 작은 화면에서 ul 태그의 글자 크기 조정 */
+      font-size: 0.4rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 `
