@@ -26,6 +26,9 @@ export const Network = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isBirthComplete, setIsBirthComplete] = useState(false) // 상태로 Birth/Death 전환 관리
+  const [isLatitudeComplete, setIsLatitudeComplete] = useState(false) // 상태로 Birth/Death 전환 관리
+  const [isTargetIdComplete, setIsTargetIdComplete] = useState(false) // 상태로 Birth/Death 전환 관리
 
   const navigate = useNavigate()
 
@@ -442,7 +445,7 @@ export const Network = () => {
       <div className="w-full max-w-lg bg-[#f2f2f2] rounded-lg shadow-md p-6">
         <form onSubmit={submitNetworkHandler} className="space-y-4">
           <div>
-            <label className="block text-gray-700 font-semibold text-sm">
+            <label className="block text-gray-700 font-semibold text-xs">
               Name
             </label>
             <input
@@ -456,7 +459,7 @@ export const Network = () => {
             />
           </div>
           <div>
-            <label className="block text-gray-700 font-semibold text-sm">
+            <label className="block text-gray-700 font-semibold text-xs">
               Photo
             </label>
             <input
@@ -483,13 +486,13 @@ export const Network = () => {
             )}
           </div>
           {/* Type, Nationality, and Ethnicity in a single row */}
-          <div className="flex space-x-4">
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-1">
                 Type
               </label>
               <select
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                className="text-xs w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                 onChange={(e) =>
                   updateNetwork({ ...editedNetwork, type: e.target.value })
                 }
@@ -499,8 +502,8 @@ export const Network = () => {
                 <option value="Organization">Organization</option>
               </select>
             </div>
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-1">
                 Nationality
               </label>
               <input
@@ -516,8 +519,8 @@ export const Network = () => {
                 value={editedNetwork.nationality || ""}
               />
             </div>
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-1">
                 Ethnicity
               </label>
               <input
@@ -531,50 +534,58 @@ export const Network = () => {
               />
             </div>
           </div>
-          {/* Migration Year, Latitude, and Longitude in a single row */}
-          <div className="flex space-x-4">
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
-                {editedNetwork.type === "Migrant"
-                  ? "Birth Year"
-                  : "Established Year"}
-              </label>
-              <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder={
-                  editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
-                }
-                type="number"
-                onChange={(e) =>
-                  updateNetwork({
-                    ...editedNetwork,
-                    migration_year: Number(e.target.value),
-                  })
-                }
-                value={editedNetwork.migration_year || ""}
-              />
-              <label className="block text-gray-700 font-semibold text-sm">
-                {editedNetwork.type === "Migrant"
-                  ? "Death Year"
-                  : "Dissolved Year"}
-              </label>
-              <input
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                placeholder={
-                  editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
-                }
-                type="number"
-                onChange={(e) =>
-                  updateNetwork({
-                    ...editedNetwork,
-                    end_year: Number(e.target.value),
-                  })
-                }
-                value={editedNetwork.end_year || ""}
-              />
-            </div>
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
+
+          {/* Birth/Death, Latitude, and Longitude in a single row */}
+          <div className="grid grid-cols-3 gap-4 mt-4">
+            {/* Birth or Established */}
+            {!isBirthComplete && (
+              <div>
+                <label className="block text-gray-700 font-semibold text-xs mb-1">
+                  {editedNetwork.type === "Migrant" ? "Birth" : "Established"}
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  placeholder={
+                    editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                  }
+                  type="number"
+                  onChange={(e) =>
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_year: Number(e.target.value),
+                    })
+                  }
+                  value={editedNetwork.migration_year || ""}
+                  onBlur={() => setIsBirthComplete(true)} // 포커스 아웃 시 Death로 전환
+                />
+              </div>
+            )}
+
+            {/* Death or Dissolved */}
+            {isBirthComplete && (
+              <div>
+                <label className="block text-gray-700 font-semibold text-xs mb-1">
+                  {editedNetwork.type === "Migrant" ? "Death" : "Dissolved"}
+                </label>
+                <input
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  placeholder={
+                    editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                  }
+                  type="number"
+                  onChange={(e) =>
+                    updateNetwork({
+                      ...editedNetwork,
+                      end_year: Number(e.target.value),
+                    })
+                  }
+                  value={editedNetwork.end_year || ""}
+                  onBlur={() => setIsBirthComplete(false)} // 포커스 아웃 시 Death로 전환
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-1">
                 Latitude
               </label>
               <input
@@ -590,8 +601,8 @@ export const Network = () => {
                 value={editedNetwork.latitude || ""}
               />
             </div>
-            <div className="w-1/3">
-              <label className="block text-gray-700 font-semibold text-sm">
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-1">
                 Longitude
               </label>
               <input
@@ -608,154 +619,146 @@ export const Network = () => {
               />
             </div>
           </div>
-          {/* Migration Details section */}
+          {/* Migration Trace Section */}
           <div>
-            <label className="block text-gray-700 font-semibold text-sm mb-2">
+            <label className="block text-gray-700 font-semibold text-xs mb-2">
               Migration Trace
             </label>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {editedNetwork.migration_traces?.map((detail, idx) => (
-                <div key={idx}>
-                  {idx > 0 && <hr className="my-1 border-gray-300" />}
-                  <div className="flex justify-between space-x-2">
-                    {/* Location Name */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Location
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={detail.location_name || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            migration_traces:
-                              editedNetwork.migration_traces?.map((d, i) =>
-                                i === idx
-                                  ? { ...d, location_name: e.target.value }
-                                  : d,
-                              ),
-                          })
-                        }
-                        placeholder="Seoul"
-                      />
-                    </div>
+                <div key={idx} className="grid grid-cols-5 gap-1 items-center">
+                  {/* Location Name */}
+                  <input
+                    type="text"
+                    className="w-full px-2 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                    value={detail.location_name || ""}
+                    onChange={(e) =>
+                      updateNetwork({
+                        ...editedNetwork,
+                        migration_traces: editedNetwork.migration_traces?.map(
+                          (d, i) =>
+                            i === idx
+                              ? { ...d, location_name: e.target.value }
+                              : d,
+                        ),
+                      })
+                    }
+                    placeholder="Loc."
+                  />
 
-                    {/* Latitude */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Latitude
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={detail.latitude || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            migration_traces:
-                              editedNetwork.migration_traces?.map((d, i) =>
-                                i === idx
-                                  ? { ...d, latitude: Number(e.target.value) }
-                                  : d,
-                              ),
-                          })
-                        }
-                        placeholder="42.385"
-                      />
-                    </div>
+                  {/* Latitude */}
+                  {!isLatitudeComplete ? (
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                      value={detail.latitude || ""}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          migration_traces: editedNetwork.migration_traces?.map(
+                            (d, i) =>
+                              i === idx
+                                ? { ...d, latitude: Number(e.target.value) }
+                                : d,
+                          ),
+                        })
+                      }
+                      placeholder="Lat."
+                      onBlur={() => setIsLatitudeComplete(true)} // 포커스 아웃 시 Longitude로 전환
+                    />
+                  ) : (
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                      value={detail.longitude || ""}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          migration_traces: editedNetwork.migration_traces?.map(
+                            (d, i) =>
+                              i === idx
+                                ? { ...d, longitude: Number(e.target.value) }
+                                : d,
+                          ),
+                        })
+                      }
+                      placeholder="Long."
+                      onBlur={() => setIsLatitudeComplete(false)} // 포커스 아웃 시 Latitude로 전환
+                    />
+                  )}
 
-                    {/* Longitude */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Longitude
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={detail.longitude || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            migration_traces:
-                              editedNetwork.migration_traces?.map((d, i) =>
-                                i === idx
-                                  ? { ...d, longitude: Number(e.target.value) }
-                                  : d,
-                              ),
-                          })
-                        }
-                        placeholder="121.253"
-                      />
-                    </div>
+                  {/* Year */}
+                  <input
+                    type="number"
+                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                    value={detail.migration_year || ""}
+                    onChange={(e) =>
+                      updateNetwork({
+                        ...editedNetwork,
+                        migration_traces: editedNetwork.migration_traces?.map(
+                          (d, i) =>
+                            i === idx
+                              ? { ...d, migration_year: Number(e.target.value) }
+                              : d,
+                        ),
+                      })
+                    }
+                    placeholder="Year"
+                  />
 
-                    {/* Year */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Year
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={detail.migration_year || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            migration_traces:
-                              editedNetwork.migration_traces?.map((d, i) =>
-                                i === idx
-                                  ? {
-                                      ...d,
-                                      migration_year: Number(e.target.value),
-                                    }
-                                  : d,
-                              ),
-                          })
-                        }
-                        placeholder="2015"
-                      />
-                    </div>
+                  {/* Reason */}
+                  <input
+                    type="text"
+                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                    value={detail.reason || ""}
+                    onChange={(e) =>
+                      updateNetwork({
+                        ...editedNetwork,
+                        migration_traces: editedNetwork.migration_traces?.map(
+                          (d, i) =>
+                            i === idx ? { ...d, reason: e.target.value } : d,
+                        ),
+                      })
+                    }
+                    placeholder="Reason"
+                  />
 
-                    {/* Reason */}
-                    <div className="flex-1">
-                      <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                        Reason
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                        value={detail.reason || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            migration_traces:
-                              editedNetwork.migration_traces?.map((d, i) =>
-                                i === idx
-                                  ? { ...d, reason: e.target.value }
-                                  : d,
-                              ),
-                          })
-                        }
-                        placeholder="Job"
-                      />
-                    </div>
-                    {/* Delete Button */}
-                    <button
-                      type="button"
-                      className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
-                      onClick={() => deleteMigrationTrace(idx)}
+                  {/* Delete Button */}
+                  <button
+                    type="button"
+                    className="text-red-500 hover:text-red-700 flex justify-center items-center"
+                    onClick={() =>
+                      updateNetwork({
+                        ...editedNetwork,
+                        migration_traces:
+                          editedNetwork.migration_traces?.filter(
+                            (_, i) => i !== idx,
+                          ),
+                      })
+                    }
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                      stroke="currentColor"
+                      className="w-4 h-4"
                     >
-                      Delete
-                    </button>
-                  </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
               ))}
 
               {/* Add New Detail */}
               <button
                 type="button"
-                className="mt-3 w-full text-center bg-gray-300 text-gray-800 rounded hover:bg-gray-400 px-4 py-2 rounded"
+                className="mt-2 w-full text-center bg-gray-300 text-gray-800 rounded hover:bg-gray-400 px-2 py-1 text-xs"
                 onClick={() =>
                   updateNetwork({
                     ...editedNetwork,
@@ -767,8 +770,6 @@ export const Network = () => {
                         longitude: 0,
                         migration_year: 0,
                         reason: "",
-                        // id: 0,
-                        // network_id: 0,
                       },
                     ],
                   })
@@ -779,156 +780,143 @@ export const Network = () => {
             </div>
           </div>
           <div>
-            <div className="space-y-3">
-              <label className="block text-gray-700 font-semibold text-sm mb-2">
-                Edge section
+            {/* Edge Section */}
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-2">
+                Edge Section
               </label>
-              <div>
-                <div className="space-y-3">
-                  {editedNetwork.edge?.map((edge, idx) => (
-                    <div key={idx}>
-                      {idx > 0 && <hr className="my-1 border-gray-300" />}
-                      <div className="flex justify-between space-x-2">
-                        {/* Target ID */}
-                        <div className="flex-1">
-                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                            Target ID
-                          </label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                            value={edge.targetId}
-                            onChange={(e) =>
-                              updateNetwork({
-                                ...editedNetwork,
-                                edge: editedNetwork.edge?.map((c, i) =>
-                                  i === idx
-                                    ? { ...c, targetId: Number(e.target.value) }
-                                    : c,
-                                ),
-                              })
-                            }
-                            placeholder="ID"
-                          />
-                        </div>
+              <div className="space-y-2">
+                {editedNetwork.edge?.map((edge, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-5 gap-1 items-center"
+                  >
+                    {/* Target ID */}
+                    {!isTargetIdComplete ? (
+                      <input
+                        type="number"
+                        className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                        value={edge.targetId || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, targetId: Number(e.target.value) }
+                                : d,
+                            ),
+                          })
+                        }
+                        placeholder="ID"
+                        onBlur={() => setIsTargetIdComplete(true)} // 포커스 아웃 시 Target Type으로 전환
+                      />
+                    ) : (
+                      <select
+                        className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                        value={edge.targetType || "Migrant"}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, targetType: e.target.value }
+                                : d,
+                            ),
+                          })
+                        }
+                        onBlur={() => setIsTargetIdComplete(false)} // 포커스 아웃 시 Target ID로 전환
+                      >
+                        <option value="Migrant">Migrant</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                    )}
 
-                        {/* Target Type */}
-                        <div className="flex-1">
-                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                            Target Type
-                          </label>
-                          <select
-                            className="w-full h-10 px-3 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                            value={edge.targetType || "Migrant"}
-                            onChange={(e) =>
-                              updateNetwork({
-                                ...editedNetwork,
-                                edge: editedNetwork.edge?.map((c, i) =>
-                                  i === idx
-                                    ? { ...c, targetType: e.target.value }
-                                    : c,
-                                ),
-                              })
-                            }
-                          >
-                            <option value="Migrant" className="text-sm">
-                              Migrant
-                            </option>
-                            <option value="Organization" className="text-sm">
-                              Organization
-                            </option>
-                          </select>
-                        </div>
+                    {/* Strength */}
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                      value={edge.strength || ""}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          edge: editedNetwork.edge?.map((d, i) =>
+                            i === idx
+                              ? { ...d, strength: Number(e.target.value) }
+                              : d,
+                          ),
+                        })
+                      }
+                      placeholder="Str."
+                    />
 
-                        {/* Strength */}
-                        <div className="flex-1">
-                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                            Strength
-                          </label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                            value={edge.strength}
-                            onChange={(e) =>
-                              updateNetwork({
-                                ...editedNetwork,
-                                edge: editedNetwork.edge?.map((c, i) =>
-                                  i === idx
-                                    ? { ...c, strength: Number(e.target.value) }
-                                    : c,
-                                ),
-                              })
-                            }
-                            placeholder="1~5"
-                            min="1"
-                            max="5"
-                          />
-                        </div>
+                    {/* Edge Type */}
+                    <input
+                      type="text"
+                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                      value={edge.edgeType || ""}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          edge: editedNetwork.edge?.map((d, i) =>
+                            i === idx ? { ...d, edgeType: e.target.value } : d,
+                          ),
+                        })
+                      }
+                      placeholder="Type"
+                    />
 
-                        {/* Edge Type */}
-                        <div className="flex-1">
-                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                            Edge Type
-                          </label>
-                          <input
-                            type="text"
-                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                            value={edge.edgeType}
-                            onChange={(e) =>
-                              updateNetwork({
-                                ...editedNetwork,
-                                edge: editedNetwork.edge?.map((c, i) =>
-                                  i === idx
-                                    ? { ...c, edgeType: e.target.value }
-                                    : c,
-                                ),
-                              })
-                            }
-                            placeholder="family"
-                          />
-                        </div>
+                    {/* Year */}
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                      value={edge.year || ""}
+                      onChange={(e) =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          edge: editedNetwork.edge?.map((d, i) =>
+                            i === idx
+                              ? { ...d, year: Number(e.target.value) }
+                              : d,
+                          ),
+                        })
+                      }
+                      placeholder="Year"
+                    />
 
-                        {/* Year */}
-                        <div className="flex-1">
-                          <label className="flex items-center justify-center block text-gray-700 font-semibold text-xs mb-1">
-                            Year
-                          </label>
-                          <input
-                            type="number"
-                            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-xs"
-                            value={edge.year || ""}
-                            onChange={(e) =>
-                              updateNetwork({
-                                ...editedNetwork,
-                                edge: editedNetwork.edge?.map((c, i) =>
-                                  i === idx
-                                    ? { ...c, year: Number(e.target.value) }
-                                    : c,
-                                ),
-                              })
-                            }
-                            placeholder="1920"
-                          />
-                        </div>
+                    {/* Delete Button */}
+                    <button
+                      type="button"
+                      className="text-red-500 hover:text-red-700 flex justify-center items-center"
+                      onClick={() =>
+                        updateNetwork({
+                          ...editedNetwork,
+                          edge: editedNetwork.edge?.filter((_, i) => i !== idx),
+                        })
+                      }
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
 
-                        {/* Delete Button */}
-                        <button
-                          type="button"
-                          className="flex items-center justify-center px-1 py-1 text-red-500 text-xs font-bold"
-                          onClick={() => deleteEdge(idx)}
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-between mt-4">
+                {/* Add New Edge */}
                 <button
                   type="button"
-                  className="w-full py-2 px-4 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 rounded mt-3"
-                  onClick={() => {
+                  className="mt-2 w-full text-center bg-gray-300 text-gray-800 rounded hover:bg-gray-400 px-2 py-1 text-xs"
+                  onClick={() =>
                     updateNetwork({
                       ...editedNetwork,
                       edge: [
@@ -942,7 +930,7 @@ export const Network = () => {
                         },
                       ],
                     })
-                  }}
+                  }
                 >
                   Add Edge
                 </button>
@@ -979,6 +967,28 @@ export const Network = () => {
             </div>
           </div>
         </form>
+        <style>
+          {`
+          @media (max-width: 390px) {
+            .w-full {
+              max-width: 95%;
+              padding: 10px;
+            }
+            input, button {
+              font-size: 0.6rem;
+              padding: 6px;
+            }
+            input::placeholder {
+              font-size: 0.5rem; /* 플레이스홀더 글자 크기 조정 */
+              color: #9ca3af; /* 플레이스홀더 색상 (회색) */
+            }
+            label {
+              font-size: 0.7rem; /* 라벨 글자 크기 축소 */
+            }
+              
+          }
+        `}
+        </style>
       </div>
 
       <div className="flex justify-center gap-2 my-4">
