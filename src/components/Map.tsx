@@ -105,25 +105,53 @@ L.Icon.Default.mergeOptions({
 
 // Legend Component
 
-const LegendContainer = styled.div`
+const legendStyles = `
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 1rem;
+  padding: 7px;
+  top: 0;
+  right: 1rem;
   border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  font-size: 0.9rem;
-  max-width: 15rem; /* 데스크톱에서 최대 너비 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-size: 0.8rem;
+  max-width: 10rem;
   overflow-y: auto;
 
+  h2 {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  div {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+  }
+
   @media (max-width: 768px) {
-    font-size: 0.8rem; /* 모바일에서 글자 크기 축소 */
-    max-width: 10rem; /* 모바일에서 최대 너비 축소 */
-    padding: 0.8rem; /* 모바일에서 내부 여백 축소 */
+    font-size: 0.7rem;
+    max-width: 8rem;
+
+    h2 {
+      font-size: 0.9rem;
+    }
+
+    div {
+      font-size: 0.8rem;
+    }
   }
 
   @media (max-width: 480px) {
-    font-size: 0.7rem; /* 더 작은 화면에서 글자 크기 축소 */
-    max-width: 8rem; /* 더 작은 화면에서 최대 너비 축소 */
-    padding: 0.5rem; /* 더 작은 화면에서 내부 여백 축소 */
+    font-size: 0.4rem;
+    max-width: 7rem;
+
+    h2 {
+      font-size: 0.7rem;
+    }
+
+    div {
+      font-size: 0.7rem;
+    }
   }
 `
 
@@ -147,22 +175,15 @@ const Legend = ({
     const legend = new L.Control({ position: "topright" })
 
     legend.onAdd = () => {
-      const div = L.DomUtil.create("div", "info legend")
-      div.style.backgroundColor = "rgba(255, 255, 255, 0.9)"
-      div.style.padding = "0.4rem" // 내부 여백
-      div.style.borderRadius = "0.5rem" // 둥근 모서리
-      div.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.2)" // 그림자
-      div.style.fontSize = "0.7rem" // 글자 크기
-      div.style.maxWidth = "10rem" // 최대 너비
-      div.style.overflowY = "auto" // 스크롤 가능
-
-      // 스타일을 적용한 컨테이너
+      const div = L.DomUtil.create("div", "legend-container")
+      div.style.cssText = legendStyles // 스타일 적용
       div.innerHTML = `
-        <div class="legend-content">
+        <div>
           <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div> ${t(
             "migrant",
           )}
-          <br/>
+        </div>
+        <div>
           <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
             "organization",
           )}
@@ -173,9 +194,9 @@ const Legend = ({
         const topEntitiesHtml = topNetworks
           .map(
             (entity, index) =>
-              `<div style="cursor: pointer;" data-id="${entity.id}">${
-                index + 1
-              }. ${entity.name}: ${entity.centrality.toFixed(2)}</div>`,
+              `<div style="cursor: pointer;" data-id="${entity.id}">
+                ${index + 1}. ${entity.name}: ${entity.centrality.toFixed(2)}
+              </div>`,
           )
           .join("")
 
@@ -205,7 +226,7 @@ const Legend = ({
     }
   }, [map, t, topNetworks, centralityType, onEntityClick])
 
-  return <LegendContainer />
+  return null
 }
 
 const Map: React.FC = () => {
@@ -2553,8 +2574,8 @@ const Map: React.FC = () => {
 const LegendBox = styled.div`
   position: absolute;
   top: 0.5rem; /* 맵 상단에 더 가깝게 */
-  left: 0.7rem; /* 맵 왼쪽에 더 가깝게 */
-  width: 15rem; /* 박스 너비를 더 작게 */
+  left: 1.4rem; /* 맵 왼쪽에 더 가깝게 */
+  width: 10rem; /* 박스 너비를 더 작게 */
   background-color: rgba(255, 255, 255, 0.9);
   padding: 7px; /* 패딩을 줄임 */
   border: 1px solid #ccc;
@@ -2571,7 +2592,7 @@ const LegendBox = styled.div`
   }
 
   ul {
-    font-size: 0.8rem; /* 리스트 글자 크기 축소 */
+    font-size: 0.9rem; /* 리스트 글자 크기 축소 */
     margin: 0;
     padding: 0;
     list-style: none;
@@ -2582,7 +2603,7 @@ const LegendBox = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 7rem; /* 모바일에서 박스 너비 축소 */
+    width: 8rem; /* 모바일에서 박스 너비 축소 */
     font-size: 0.7rem; /* 글자 크기 더 축소 */
 
     h2 {
@@ -2591,12 +2612,12 @@ const LegendBox = styled.div`
     }
 
     ul {
-      font-size: 0.7rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.8rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 
   @media (max-width: 480px) {
-    width: 5rem; /* 더 작은 화면에서 박스 너비 축소 */
+    width: 7rem; /* 더 작은 화면에서 박스 너비 축소 */
     font-size: 0.4rem; /* 글자 크기 더 축소 */
 
     h2 {
@@ -2604,7 +2625,7 @@ const LegendBox = styled.div`
     }
 
     ul {
-      font-size: 0.5rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.7rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 `
