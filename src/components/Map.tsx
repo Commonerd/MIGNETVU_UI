@@ -105,31 +105,42 @@ L.Icon.Default.mergeOptions({
 
 // Legend Component
 
+const LegendContainer = styled.div`
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  font-size: 0.9rem;
+  max-width: 15rem; /* 데스크톱에서 최대 너비 */
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem; /* 모바일에서 글자 크기 축소 */
+    max-width: 10rem; /* 모바일에서 최대 너비 축소 */
+    padding: 0.8rem; /* 모바일에서 내부 여백 축소 */
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.7rem; /* 더 작은 화면에서 글자 크기 축소 */
+    max-width: 8rem; /* 더 작은 화면에서 최대 너비 축소 */
+    padding: 0.5rem; /* 더 작은 화면에서 내부 여백 축소 */
+  }
+`
+
 const Legend = ({
   topNetworks,
-
   onEntityClick,
-
   centralityType,
 }: {
   topNetworks: {
     id: number
-
     name: string
-
     centrality: number
-
-    // type: "migrant" | "organization"
   }[]
-
-  // onEntityClick: (id: number, type: "migrant" | "organization") => void
-
   onEntityClick: (id: number) => void
-
   centralityType: string
 }) => {
   const map = useMap()
-
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -137,72 +148,38 @@ const Legend = ({
 
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "info legend")
+      div.style.backgroundColor = "rgba(255, 255, 255, 0.9)"
+      div.style.padding = "0.4rem" // 내부 여백
+      div.style.borderRadius = "0.5rem" // 둥근 모서리
+      div.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.2)" // 그림자
+      div.style.fontSize = "0.7rem" // 글자 크기
+      div.style.maxWidth = "10rem" // 최대 너비
+      div.style.overflowY = "auto" // 스크롤 가능
 
-      div.style.backgroundColor = "rgba(255, 255, 255, 0.7)"
-
-      div.style.padding = "10px"
-
-      div.style.borderRadius = "5px"
-
-      div.style.boxShadow = "0 0 15px rgba(0, 0, 0, 0.2)"
-
-      const labels = [
-        `<div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div> ${t(
-          "migrant",
-        )}`,
-
-        `<div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
-          "organization",
-        )}`,
-
-        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: blue; margin-right: 5px;"></div> ${t(
-
-        //   "friend",
-
-        // )}`,
-
-        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: green; margin-right: 5px;"></div> ${t(
-
-        //   "colleague",
-
-        // )}`,
-
-        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: red; margin-right: 5px;"></div> ${t(
-
-        //   "family",
-
-        // )}`,
-
-        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: purple; margin-right: 5px;"></div> ${t(
-
-        //   "professional",
-
-        // )}`,
-
-        // `<div style="display: inline-block; width: 15px; height: 5px; background-color: orange; margin-right: 5px;"></div> ${t(
-
-        //   "cultural",
-
-        // )}`,
-      ]
-
-      div.innerHTML = labels.join("<br>")
+      // 스타일을 적용한 컨테이너
+      div.innerHTML = `
+        <div class="legend-content">
+          <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div> ${t(
+            "migrant",
+          )}
+          <br/>
+          <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
+            "organization",
+          )}
+        </div>
+      `
 
       if (centralityType !== "none") {
         const topEntitiesHtml = topNetworks
-
           .map(
             (entity, index) =>
-              //`<div style="cursor: pointer;" data-id="${entity.id}" data-type="${entity.type}">${index + 1}. ${
-
               `<div style="cursor: pointer;" data-id="${entity.id}">${
                 index + 1
               }. ${entity.name}: ${entity.centrality.toFixed(2)}</div>`,
           )
-
           .join("")
 
-        div.innerHTML += `<br><br><strong>${t(
+        div.innerHTML += `<br><strong>${t(
           "topEntities",
         )}</strong><br>${topEntitiesHtml}`
       }
@@ -214,21 +191,7 @@ const Legend = ({
 
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
-
       const id = target.getAttribute("data-id")
-
-      // const type = target.getAttribute("data-type") as
-
-      //   | "migrant"
-
-      //   | "organization"
-
-      // if (id && type) {
-
-      //   onEntityClick(Number(id), type)
-
-      // }
-
       if (id) {
         onEntityClick(Number(id))
       }
@@ -238,12 +201,11 @@ const Legend = ({
 
     return () => {
       map.getContainer().removeEventListener("click", handleClick)
-
       legend.remove()
     }
   }, [map, t, topNetworks, centralityType, onEntityClick])
 
-  return null
+  return <LegendContainer />
 }
 
 const Map: React.FC = () => {
@@ -330,6 +292,17 @@ const Map: React.FC = () => {
   )
 
   const [isFiltersVisible, setIsFiltersVisible] = useState(true) // 필터 표시 여부 상태
+
+  const [isLegendVisible, setIsLegendVisible] = useState(true) // 범례 표시 여부 상태
+  const [isTopContributorsVisible, setIsTopContributorsVisible] = useState(true) // 기여자 랭킹 표시 여부 상태
+
+  const toggleLegendVisibility = () => {
+    setIsLegendVisible(!isLegendVisible)
+  }
+
+  const toggleTopContributorsVisibility = () => {
+    setIsTopContributorsVisible(!isTopContributorsVisible)
+  }
 
   const sliderSettings = {
     dots: true,
@@ -2156,6 +2129,7 @@ const Map: React.FC = () => {
         <MapContainer
           center={[37.5665, 126.978]}
           zoom={2}
+          zoomControl={false} // 확대/축소 컨트롤 제거
           style={{
             height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
 
@@ -2222,27 +2196,64 @@ const Map: React.FC = () => {
           {focusedNode && (
             <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
           )}
-          <LegendBox>
-            <h2>{t("topRegistrants")}</h2>
-
-            <ul>
-              {topRegistrants.map((registrant) => (
-                <li key={registrant.registrantId}>
-                  {registrant.medal} {registrant.userName} : {registrant.count}{" "}
-                  {t("nodeCount")}
-                </li>
-              ))}
-            </ul>
-          </LegendBox>
-          <Legend
-            // topMigrants={topMigrants}
-
-            // topOrganizations={topOrganizations}
-
-            topNetworks={topNetworks}
-            onEntityClick={handleEntityClick}
-            centralityType={centralityType}
-          />
+          {/* 기여자 랭킹 토글 버튼 */}
+          <button
+            onClick={toggleTopContributorsVisibility}
+            style={{
+              position: "absolute",
+              top: "0rem",
+              left: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {isTopContributorsVisible ? "-" : "+"}
+          </button>
+          {/* 범례 토글 버튼 */}
+          <button
+            onClick={toggleLegendVisibility}
+            style={{
+              position: "absolute",
+              top: "0rem",
+              right: "0rem", // 화면 오른쪽 끝에 고정
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {isLegendVisible ? "-" : "+"}
+          </button>
+          {/* 기여자 랭킹 */}
+          {isTopContributorsVisible && (
+            <LegendBox>
+              <h2>{t("topRegistrants")}</h2>
+              <ul>
+                {topRegistrants.map((registrant) => (
+                  <li key={registrant.registrantId}>
+                    {registrant.medal} {registrant.userName} :{" "}
+                    {registrant.count} {t("nodeCount")}
+                  </li>
+                ))}
+              </ul>
+            </LegendBox>
+          )}
+          {/* 범례 */}
+          {isLegendVisible && (
+            <Legend
+              topNetworks={topNetworks}
+              onEntityClick={handleEntityClick}
+              centralityType={centralityType}
+            />
+          )}
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -2541,24 +2552,26 @@ const Map: React.FC = () => {
 
 const LegendBox = styled.div`
   position: absolute;
-  top: 0.3rem; /* 맵 상단에 더 가깝게 */
-  left: 0.3rem; /* 맵 왼쪽에 더 가깝게 */
-  width: 6rem; /* 박스 너비를 더 작게 */
+  top: 0.5rem; /* 맵 상단에 더 가깝게 */
+  left: 0.7rem; /* 맵 왼쪽에 더 가깝게 */
+  width: 15rem; /* 박스 너비를 더 작게 */
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 5px; /* 패딩을 줄임 */
+  padding: 7px; /* 패딩을 줄임 */
   border: 1px solid #ccc;
-  border-radius: 3px; /* 둥근 모서리 크기 축소 */
+  border-radius: 0.5rem; /* 둥근 모서리 크기 축소 */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 크기 축소 */
   z-index: 1000;
   font-size: 0.8rem; /* 기본 글자 크기 축소 */
 
   h2 {
-    font-size: 0.8rem; /* 제목 글자 크기 축소 */
+    font-size: 1rem; /* 제목 글자 크기 축소 */
     margin-bottom: 0.3rem; /* 제목 아래 여백 축소 */
+    text-align: center;
+    font-weight: bold;
   }
 
   ul {
-    font-size: 0.6rem; /* 리스트 글자 크기 축소 */
+    font-size: 0.8rem; /* 리스트 글자 크기 축소 */
     margin: 0;
     padding: 0;
     list-style: none;
@@ -2569,15 +2582,16 @@ const LegendBox = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 6rem; /* 모바일에서 박스 너비 축소 */
-    font-size: 0.5rem; /* 글자 크기 더 축소 */
+    width: 7rem; /* 모바일에서 박스 너비 축소 */
+    font-size: 0.7rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.6rem; /* 제목 글자 크기 더 축소 */
+      font-size: 0.9rem; /* 제목 글자 크기 더 축소 */
+      font-weight: bold;
     }
 
     ul {
-      font-size: 0.5rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.7rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 
@@ -2586,11 +2600,11 @@ const LegendBox = styled.div`
     font-size: 0.4rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.5rem; /* 제목 글자 크기 더 축소 */
+      font-size: 0.7rem; /* 제목 글자 크기 더 축소 */
     }
 
     ul {
-      font-size: 0.4rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.5rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 `
@@ -2761,37 +2775,145 @@ const MobileCarousel = styled(Slider)`
 const PopupContent = styled.div`
   width: 400px;
   max-height: 500px;
-  overflow-y: auto;
   font-size: 14px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  overflow-y: auto;
+  z-index: 2000; /* z-index를 높게 설정하여 항상 앞에 표시되도록 */
+
+  h2 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #3e2723;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 14px;
+    color: #5d4037;
+    margin-bottom: 8px;
+  }
+
+  .popup-image {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  }
 
   @media (max-width: 768px) {
-    width: 300px; /* 모바일에서 팝업 너비 조정 */
-    max-height: 400px; /* 모바일에서 팝업 높이 조정 */
-    font-size: 12px; /* 모바일에서 글자 크기 조정 */
+    width: 300px;
+    max-height: 400px;
+    font-size: 12px;
   }
 
   @media (max-width: 480px) {
-    width: 250px; /* 더 작은 화면에서 팝업 너비 조정 */
-    max-height: 300px; /* 더 작은 화면에서 팝업 높이 조정 */
-    font-size: 10px; /* 더 작은 화면에서 글자 크기 조정 */
+    width: 250px;
+    max-height: 300px;
+    font-size: 10px;
   }
 `
 
 const CommentSectionWrapper = styled.div`
-  max-height: 150px; /* 기본 최대 높이 */
-  max-width: 100%; /* 기본 최대 너비 */
-  overflow-y: auto; /* 스크롤 가능 */
-  border-top: 1px solid #ccc; /* 상단 경계선 */
-  padding-top: 10px; /* 상단 여백 */
+  max-height: 150px;
+  max-width: 100%;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 10px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 2000; /* z-index를 높게 설정하여 항상 앞에 표시되도록 */
+
+  .comment-input {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+
+    input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+
+      &:focus {
+        border-color: #3e2723;
+        box-shadow: 0 0 0 2px rgba(62, 39, 35, 0.2);
+      }
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #3e2723;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #5d4037;
+      }
+    }
+  }
+
+  .comment-list {
+    margin-top: 8px;
+    max-height: 100px;
+    overflow-y: auto;
+
+    li {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 8px;
+      margin-bottom: 8px;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #5d4037;
+        margin-bottom: 4px;
+
+        .comment-user {
+          font-weight: bold;
+        }
+
+        .comment-date {
+          font-size: 10px;
+          color: #9e9e9e;
+        }
+      }
+
+      .comment-content {
+        font-size: 14px;
+        color: #3e2723;
+      }
+    }
+  }
 
   @media (max-width: 768px) {
-    max-height: 120px; /* 태블릿에서 최대 높이 조정 */
-    padding-top: 8px; /* 태블릿에서 상단 여백 조정 */
+    max-height: 120px;
+    padding-top: 8px;
   }
 
   @media (max-width: 480px) {
-    max-height: 100px; /* 모바일에서 최대 높이 조정 */
-    padding-top: 5px; /* 모바일에서 상단 여백 조정 */
+    max-height: 100px;
+    padding-top: 5px;
   }
 `
 
