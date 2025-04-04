@@ -12,16 +12,22 @@ const Footer: React.FC = () => {
           {/* 모바일: 한 줄로 표시 / 데스크톱: 세로선 구분 */}
           <p className="block sm:hidden text-[14px] font-bold">
             &copy; {currentYear} Dr. Song Younghwa. {t("allRightsReserved")}{" "}
-            <br />• {t("OperaionTime")}: 09:00-18:00 • {t("Inquiry")}:
-            <a href="mailto:41m@naver.com" className="text-blue-400">
-              41m@naver.com
+            <br />• {t("OperaionTime")}: 09:00-18:00 •{" "}
+            <a
+              href="https://docs.google.com/spreadsheets/d/1w7UqUIv3rfTncO6qTiujo7W_BgFBNVQkOf2BH4Xgkjs/edit?gid=0#gid=0"
+              className="text-blue-400"
+            >
+              {t("Inquiry")}{" "}
             </a>
           </p>
           <p className="hidden sm:block">
             &copy; {currentYear} Dr. Song Younghwa. {t("allRightsReserved")} |{" "}
-            {t("OperaionTime")}: 09:00-18:00 | {t("Inquiry")}:
-            <a href="mailto:41m@naver.com" className="text-blue-400">
-              41m@naver.com
+            {t("OperaionTime")}: 09:00-18:00 |{" "}
+            <a
+              href="https://docs.google.com/spreadsheets/d/1w7UqUIv3rfTncO6qTiujo7W_BgFBNVQkOf2BH4Xgkjs/edit?gid=0#gid=0"
+              className="text-blue-400"
+            >
+              {t("Inquiry")}
             </a>
           </p>
         </div>
