@@ -124,3 +124,5 @@ const SearchResults: FC<SearchResultsProps> = ({
     </div>
   )
 }
+
+export default SearchResults
