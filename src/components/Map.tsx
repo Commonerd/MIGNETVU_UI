@@ -178,15 +178,32 @@ const Legend = ({
       const div = L.DomUtil.create("div", "legend-container")
       div.style.cssText = legendStyles // 스타일 적용
       div.innerHTML = `
-        <div>
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div> ${t(
-            "migrant",
-          )}
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+          <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div>
+          <div style="display: flex; align-items: center; margin-left: 5px;">
+            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
+              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+            </div>
+          </div>
+          ${t("migrant")}
         </div>
-        <div>
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div> ${t(
-            "organization",
-          )}
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+          <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div>
+          <div style="display: flex; align-items: center; margin-left: 5px;">
+            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
+              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+            </div>
+          </div>
+          ${t("organization")}
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 5px;">
+          <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
+          <div style="display: flex; align-items: center; margin-left: 5px;">
+            <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
+              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+            </div>
+          </div>
+          ${t("migrationTrace")}
         </div>
       `
 
