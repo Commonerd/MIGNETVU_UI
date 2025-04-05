@@ -2415,6 +2415,7 @@ const Map: React.FC = () => {
                     style={{
                       width: "100%", // 팝업 너비에 맞춤
                       maxHeight: "150px", // 코멘트 섹션 최대 높이
+                      marginTop: "16px", // 팝업 콘텐츠와 코멘트 섹션 사이 간격 추가
                     }}
                   >
                     <CommentSectionWrapper>
@@ -2811,33 +2812,34 @@ const MobileCarousel = styled(Slider)`
 `
 
 const PopupContent = styled.div`
-  width: 400px;
-  max-height: 500px;
+  width: 300px; /* 팝업 너비 */
+  max-height: 400px; /* 팝업 최대 높이 */
   font-size: 14px;
-  background: #ffffff;
+  background: #ffffff; /* 배경색 */
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   padding: 16px;
   overflow-y: auto;
-  z-index: 2000; /* z-index를 높게 설정하여 항상 앞에 표시되도록 */
+  z-index: 2000;
+  margin-bottom: 5px;
 
   h2 {
     font-size: 18px;
     font-weight: bold;
-    color: #3e2723;
+    color: #3e2723; /* 제목 색상 */
     margin-bottom: 8px;
   }
 
   p {
     font-size: 14px;
-    color: #5d4037;
+    color: #5d4037; /* 텍스트 색상 */
     margin-bottom: 8px;
   }
 
   .popup-image {
     display: flex;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
 
     img {
       width: 100px;
@@ -2850,32 +2852,28 @@ const PopupContent = styled.div`
 
   @media (max-width: 768px) {
     width: 300px;
-    max-height: 400px;
+    max-height: 350px;
     font-size: 12px;
   }
 
   @media (max-width: 480px) {
-    width: 250px;
-    max-height: 300px;
+    width: 280px;
+    max-height: 250px;
     font-size: 10px;
   }
 `
 
 const CommentSectionWrapper = styled.div`
-  max-height: 150px;
-  max-width: 100%;
-  border-top: 1px solid #e0e0e0;
-  padding-top: 10px;
-  background: #f5f5f5;
+  margin-top: 5px; /* 팝업 내용과 코멘트 섹션 간격 */
+  max-height: 150px; /* 코멘트 섹션 최대 높이 */
   border-radius: 8px;
-  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 2000; /* z-index를 높게 설정하여 항상 앞에 표시되도록 */
+  padding: 10px;
 
   .comment-input {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-top: 8px;
+    margin-bottom: 8px;
 
     input {
       padding: 8px;
@@ -2908,8 +2906,7 @@ const CommentSectionWrapper = styled.div`
   }
 
   .comment-list {
-    margin-top: 8px;
-    max-height: 100px;
+    max-height: 150px;
     overflow-y: auto;
 
     li {
@@ -2917,7 +2914,7 @@ const CommentSectionWrapper = styled.div`
       border-radius: 4px;
       padding: 8px;
       margin-bottom: 8px;
-      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 2px 4px rgba(62, 39, 35, 0.2);
 
       .comment-header {
         display: flex;
@@ -2932,13 +2929,13 @@ const CommentSectionWrapper = styled.div`
         }
 
         .comment-date {
-          font-size: 10px;
+          font-size: 11px;
           color: #9e9e9e;
         }
       }
 
       .comment-content {
-        font-size: 14px;
+        font-size: 12px;
         color: #3e2723;
       }
     }
@@ -2946,12 +2943,13 @@ const CommentSectionWrapper = styled.div`
 
   @media (max-width: 768px) {
     max-height: 120px;
-    padding-top: 8px;
+    padding: 8px;
   }
 
   @media (max-width: 480px) {
     max-height: 100px;
-    padding-top: 5px;
+    font-size: 10px;
+    padding: 5px;
   }
 `
 
