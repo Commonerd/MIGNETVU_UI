@@ -43,7 +43,7 @@ const NetworkItemMemo: FC<
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
       <div className="flex justify-between items-center w-full max-w-lg">
         <span
-          className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+          className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer w-full sm:w-auto"
           onClick={() =>
             location.pathname !== "/network"
               ? (setFocusedNode({ lat: latitude, lng: longitude }),
@@ -96,7 +96,7 @@ const NetworkItemMemo: FC<
         </div>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-2 overflow-x-auto">
         <table className="table-auto w-full mt-2 border-collapse text-xs">
           <thead>
             <tr>

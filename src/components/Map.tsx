@@ -2111,38 +2111,28 @@ const Map: React.FC = () => {
 
         {triggerSearch && searchQuery && (
           <div
-            className="flex justify-end absolute w-full border border-gray-300 w-full max-h-80 overflow-y-auto z-10"
+            className="flex justify-end absolute w-full z-10"
             style={{
               top: "4rem",
-
               right: "0",
-
               zIndex: 1,
-
-              opacity: 0.95, // 투명도 조정 (0은 완전 투명, 1은 완전 불투명)
+              opacity: 0.95, // 투명도 조정
             }}
           >
             <div
-              className="bg-white shadow rounded p-4 border border-gray-300 w-full mt-1 max-h-60 overflow-y-auto z-10"
+              className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
               style={{
-                maxWidth: "50%",
-
-                width: "fit-content",
-
-                zIndex: 1,
-
+                maxWidth: window.innerWidth <= 768 ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
+                marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
                 position: "relative",
-
-                opacity: 0.95, // 검색 결과의 투명도 설정
-
-                backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경에 투명도 적용 (배경 색상: 흰색, 투명도 0.8)
+                backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
               }}
             >
               <SearchResults
                 searchQuery={searchQuery}
                 setFocusedNode={setFocusedNode}
                 handleEntityClick={handleEntityClick}
-                handleMigrationTraceClick={handleMigrationTraceClick} // 추가
+                handleMigrationTraceClick={handleMigrationTraceClick}
                 handleEdgeClick={handleEdgeClick}
                 handleNetworkEdgesToggle={handleNetworkEdgesToggle}
               />
