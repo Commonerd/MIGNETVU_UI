@@ -53,39 +53,16 @@ const SearchResults: FC<SearchResultsProps> = ({
   const totalCount = data?.totalCount || 0
 
   return (
-    <div className="my-1 w-full max-w-lg">
+    <div className="my-1 w-full max-w-lg sm:max-w-full">
       {/* Search Results */}
-      <div className="flex justify-center items-center mb-4">
-        <h2 className="text-xl font-bold">Found {totalCount} Results</h2>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="ml-10 flex items-center justify-between mt-4">
-        {/* Pagination Centered */}
-        <div className="flex justify-center items-center flex-1 gap-4">
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300"
-          >
-            Prev
-          </button>
-          <span className="text-sm">
-            {currentPage} / {totalPages}
-          </span>
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage >= totalPages}
-            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300"
-          >
-            Next
-          </button>
-        </div>
-
+      <div className="flex justify-center items-center mb-4 sm:text-sm">
+        <h2 className="text-lg font-bold sm:text-xl text-sm">
+          Found {totalCount} Results
+        </h2>
         {/* Clear Cache Icon */}
         <button
           onClick={handleClearCache}
-          className="ml-4 text-red-500 hover:text-red-700"
+          className="ml-1 sm:ml-2 text-red-500 hover:text-red-700"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -102,6 +79,30 @@ const SearchResults: FC<SearchResultsProps> = ({
             />
           </svg>
         </button>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+        {/* Pagination Centered */}
+        <div className="flex justify-center items-center flex-1 gap-4">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300 sm:px-4 sm:py-2 sm:text-sm px-2 py-1 text-xs"
+          >
+            Prev
+          </button>
+          <span className="text-sm">
+            {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300 sm:px-4 sm:py-2 sm:text-sm px-2 py-1 text-xs"
+          >
+            Next
+          </button>
+        </div>
       </div>
       {!data || !data.networks || data.networks.length === 0 ? (
         <p className="text-center">No search results found.</p>
@@ -123,5 +124,3 @@ const SearchResults: FC<SearchResultsProps> = ({
     </div>
   )
 }
-
-export default SearchResults
