@@ -2684,7 +2684,6 @@ const Map: React.FC = () => {
           {filteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
-
               centralityType,
             )
 
@@ -2692,12 +2691,10 @@ const Map: React.FC = () => {
               highlightedNode && highlightedNode.id === network.id
 
             // Determine color: Organization is blue, highlighted is yellow, default is red
-
             let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
 
             if (isHighlighted) {
               // Highlighted nodes are yellow regardless of type
-
               color = "orange"
             }
 
@@ -2707,23 +2704,36 @@ const Map: React.FC = () => {
                 position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
                   className: "custom-marker",
-
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
-
                   iconSize: [size, size],
                 })}
                 eventHandlers={{
                   click: () => handleTooltipOpen(network.id),
-
-                  // mouseout: () => setHighlightedNode(null), // 마우스를 떼면 하이라이트 해제
                 }}
               >
+                {/* Always visible tooltip */}
+                <Tooltip
+                  permanent
+                  direction="top"
+                  offset={[0, -size / 2]} // Adjust tooltip position based on marker size
+                  className="custom-tooltip"
+                >
+                  <div
+                    style={{
+                      textAlign: "center",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      color: "#3E2723",
+                    }}
+                  >
+                    {network.title}
+                  </div>
+                </Tooltip>
                 <Popup>
                   <PopupContent>
                     <strong className="text-lg font-semibold block mb-2">
                       No.{network.id} : {network.title}
                     </strong>
-
                     <div className="text-gray-700 text-sm space-y-1">
                       {highlightedNode?.id === network.id &&
                         highlightedNode.photo && (
@@ -2735,82 +2745,66 @@ const Map: React.FC = () => {
                             />
                           </div>
                         )}
-
                       <p>
                         <span className="font-medium">Creator Name:</span>{" "}
                         {userNames[network.user_id]}
                       </p>
-
                       <p>
                         <span className="font-medium">Type:</span>{" "}
                         {network.type}
                       </p>
-
                       <p>
                         {t("centrality")}: {centralityValues[network.id] || 0}
                       </p>
-
                       <p>
                         <span className="font-medium">Nationality:</span>{" "}
                         {network.nationality}
                       </p>
-
                       <p>
                         <span className="font-medium">Ethnicity:</span>{" "}
                         {network.ethnicity}
                       </p>
-
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
                             ? "Birth Year"
                             : "Established Year"}
                         </span>
-
                         <span className="font-medium">
                           : {network.migration_year}
                         </span>
                       </p>
-
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
                             ? "Death Year"
                             : "Dissolved Year"}
                         </span>
-
                         <span className="font-medium">
                           : {network.end_year}
                         </span>
                       </p>
-
                       <p>
                         <span className="font-medium">Latitude:</span>{" "}
                         {network.latitude.toFixed(5)}
                       </p>
-
                       <p>
                         <span className="font-medium">Longitude:</span>{" "}
                         {network.longitude.toFixed(5)}
                       </p>
                     </div>
                   </PopupContent>
-
-                  {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
-
                   <div
                     className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
                     style={{
-                      width: "100%", // 팝업 너비에 맞춤
-
-                      maxHeight: "150px", // 코멘트 섹션 최대 높이
-
-                      marginTop: "16px", // 팝업 콘텐츠와 코멘트 섹션 사이 간격 추가
+                      width: "100%",
+                      maxHeight: "150px",
+                      marginTop: "16px",
                     }}
                   >
                     <CommentSectionWrapper>
                       <CommentSection networkId={network.id} />
-                    </CommentSectionWrapper>{" "}
+                    </CommentSectionWrapper>
                   </div>
                 </Popup>
               </Marker>
