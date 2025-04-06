@@ -107,7 +107,7 @@ const SearchResults: FC<SearchResultsProps> = ({
       {!data || !data.networks || data.networks.length === 0 ? (
         <p className="text-center">No search results found.</p>
       ) : (
-        <ul className="space-y-4">
+        <ul className="space-y-4 flex flex-col items-center">
           {data?.networks.map((network) => (
             <NetworkItem
               key={network.id}
