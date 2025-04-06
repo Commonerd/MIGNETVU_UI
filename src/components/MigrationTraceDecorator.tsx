@@ -13,6 +13,8 @@ const MigrationTraceDecorator = ({ traces }: { traces: any[] }) => {
     traces.slice(0, -1).forEach((trace, index) => {
       const nextTrace = traces[index + 1]
 
+      // 같은 네트워크 ID인지 확인
+      if (trace.network_id !== nextTrace.network_id) return
       // 데이터 검증
       if (
         !trace ||

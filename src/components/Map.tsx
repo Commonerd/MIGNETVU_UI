@@ -1442,7 +1442,6 @@ const Map: React.FC = () => {
 
     networks?.forEach((network) => {
       // 특정 네트워크가 선택된 경우, 해당 네트워크의 마이그레이션 트레이스만 추가
-
       if (
         !selectedMigrationNetworkId || // 선택된 네트워크가 없거나
         network.id === selectedMigrationNetworkId // 선택된 네트워크와 일치하는 경우
@@ -1451,21 +1450,23 @@ const Map: React.FC = () => {
           if (!tracesByNetwork[network.id]) {
             tracesByNetwork[network.id] = []
           }
-
           tracesByNetwork[network.id].push(trace)
         })
       }
     })
 
+    // 네트워크별로 정렬 및 번호 부여
     return Object.values(tracesByNetwork)
-
       .map((traces) =>
-        traces.sort((a, b) => a.migration_year - b.migration_year),
+        traces
+          .sort((a, b) => a.migration_year - b.migration_year) // 연도 기준 정렬
+          .map((trace, index) => ({
+            ...trace,
+            traceNumber: index + 1, // 네트워크별로 번호 부여
+          })),
       )
-
       .filter((traces) => {
         // 기존 필터 조건 적용
-
         const matchesYearRange = traces.some(
           (trace) =>
             trace.migration_year >= yearRange[0] &&
@@ -1492,17 +1493,6 @@ const Map: React.FC = () => {
           matchesYearRange && matchesUserNetworkTrace && matchesMigrationReasons
         )
       })
-
-      .map((traces) =>
-        traces.filter(
-          (trace) =>
-            trace.migration_year >= yearRange[0] &&
-            trace.migration_year <= yearRange[1] &&
-            (filters.migrationReasons.includes("all") ||
-              filters.migrationReasons.length === 0 ||
-              filters.migrationReasons.includes(trace.reason)),
-        ),
-      )
   }
 
   const migrationTraces = getMigrationTraces()
@@ -2884,12 +2874,16 @@ const Map: React.FC = () => {
             traces.slice(0, -1).map((trace, index) => {
               const nextTrace = traces[index + 1]
 
+              // 같은 네트워크 아이디인지 확인
+              if (trace.network_id !== nextTrace.network_id) {
+                return null // 네트워크 아이디가 다르면 선을 그리지 않음
+              }
+
               return (
                 <Polyline
                   key={`${trace.id}-${nextTrace.id}`}
                   positions={[
                     [trace.latitude, trace.longitude],
-
                     [nextTrace.latitude, nextTrace.longitude],
                   ]}
                   color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
@@ -2901,53 +2895,15 @@ const Map: React.FC = () => {
                   eventHandlers={{
                     click: (e) => {
                       L.popup()
-
                         .setLatLng(e.latlng)
-
                         .setContent(
                           `<div>
-
-
-
-
-
-
-
-                  <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
-
-
-
-
-
-
-
-                  <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
-
-
-
-
-
-
-
-                  <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
-
-
-
-
-
-
-
-                  <strong>Reason:</strong> ${nextTrace.reason}
-
-
-
-
-
-
-
-                </div>`,
+                      <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+                      <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
+                      <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
+                      <strong>Reason:</strong> ${nextTrace.reason}
+                    </div>`,
                         )
-
                         .openOn(e.target._map)
                     },
                   }}
@@ -2956,26 +2912,40 @@ const Map: React.FC = () => {
             }),
           )}
           {migrationTraces.map((traces) =>
-            traces.slice(0, -1).map((trace, index) => {
-              const nextTrace = traces[index + 1]
-
-              // 데이터 검증: trace와 nextTrace가 유효한지 확인
-
-              if (
-                !trace ||
-                !nextTrace ||
-                !trace.latitude ||
-                !trace.longitude ||
-                !nextTrace.latitude ||
-                !nextTrace.longitude
-              ) {
-                console.warn("Invalid trace data:", { trace, nextTrace })
-
-                return null
-              }
-
-              return <MigrationTraceDecorator traces={migrationTraces.flat()} />
-            }),
+            traces.map((trace) => (
+              <Marker
+                key={trace.id}
+                position={[trace.latitude, trace.longitude]}
+                icon={L.divIcon({
+                  className: "custom-trace-marker",
+                  html: `<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background-color: #FF5722; color: white; border-radius: 50%; font-size: 12px; font-weight: bold; border: 2px solid #BF360C;">${trace.traceNumber}</div>`,
+                })}
+              >
+                <Popup>
+                  <div
+                    style={{
+                      fontSize: "18px",
+                      lineHeight: "1.6",
+                      margin: "0",
+                      padding: "0",
+                    }}
+                  >
+                    <div>
+                      <strong>Network ID:</strong> {trace.network_id}
+                    </div>
+                    <div>
+                      <strong>Place:</strong> {trace.location_name}
+                    </div>
+                    <div>
+                      <strong>Migration Year:</strong> {trace.migration_year}
+                    </div>
+                    <div>
+                      <strong>Reason:</strong> {trace.reason}
+                    </div>
+                  </div>
+                </Popup>
+              </Marker>
+            )),
           )}
         </MapContainer>
       )}
