@@ -20,7 +20,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     if (currentNetworkId !== networkId) {
       fetchComments(networkId)
     }
-  }, [networkId, currentNetworkId, fetchComments])
+  }, [networkId, comments, currentNetworkId, fetchComments])
 
   const handleCreateComment = async () => {
     if (newComment.trim()) {
@@ -31,6 +31,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
         user_role: user?.role || "Guest", // 로그인하지 않은 경우 기본 역할 설정
         content: newComment,
       }
+      console.log("commentData", commentData)
       await createComment(networkId, commentData)
       setNewComment("")
     }
