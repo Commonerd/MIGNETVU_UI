@@ -20,7 +20,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     if (currentNetworkId !== networkId) {
       fetchComments(networkId)
     }
-  }, [networkId, comments, currentNetworkId, fetchComments])
+  }, [networkId, currentNetworkId, fetchComments])
 
   const handleCreateComment = async () => {
     if (newComment.trim()) {
