@@ -2947,6 +2947,28 @@ const Map: React.FC = () => {
               </Marker>
             )),
           )}
+          {migrationTraces.map((traces) =>
+            traces.slice(0, -1).map((trace, index) => {
+              const nextTrace = traces[index + 1]
+
+              // 데이터 검증: trace와 nextTrace가 유효한지 확인
+
+              if (
+                !trace ||
+                !nextTrace ||
+                !trace.latitude ||
+                !trace.longitude ||
+                !nextTrace.latitude ||
+                !nextTrace.longitude
+              ) {
+                console.warn("Invalid trace data:", { trace, nextTrace })
+
+                return null
+              }
+
+              return <MigrationTraceDecorator traces={migrationTraces.flat()} />
+            }),
+          )}
         </MapContainer>
       )}
     </div>
