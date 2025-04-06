@@ -106,69 +106,124 @@ L.Icon.Default.mergeOptions({
 // Legend Component
 
 const legendStyles = `
+
   background-color: rgba(255, 255, 255, 0.9);
+
   padding: 7px;
+
   top: 0;
+
   right: 1rem;
+
   border-radius: 0.5rem;
+
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
   font-size: 0.8rem;
+
   max-width: 10rem;
+
   overflow-y: auto;
 
+
+
   h2 {
+
     font-size: 1rem;
+
     margin-bottom: 0.3rem;
+
     text-align: center;
+
     font-weight: bold;
+
   }
+
+
 
   div {
+
     font-size: 0.9rem;
+
     margin-bottom: 0.2rem;
+
   }
+
+
 
   @media (max-width: 768px) {
+
     font-size: 0.7rem;
+
     max-width: 8rem;
 
+
+
     h2 {
+
       font-size: 0.9rem;
+
     }
 
+
+
     div {
+
       font-size: 0.8rem;
+
     }
+
   }
+
+
 
   @media (max-width: 480px) {
+
     font-size: 0.4rem;
+
     max-width: 7rem;
 
+
+
     h2 {
+
       font-size: 0.7rem;
+
     }
 
+
+
     div {
+
       font-size: 0.7rem;
+
     }
+
   }
+
 `
 
 const Legend = ({
   topNetworks,
+
   onEntityClick,
+
   centralityType,
 }: {
   topNetworks: {
     id: number
+
     name: string
+
     centrality: number
   }[]
+
   onEntityClick: (id: number) => void
+
   centralityType: string
 }) => {
   const map = useMap()
+
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -176,45 +231,79 @@ const Legend = ({
 
     legend.onAdd = () => {
       const div = L.DomUtil.create("div", "legend-container")
+
       div.style.cssText = legendStyles // 스타일 적용
+
       div.innerHTML = `
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
           <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div>
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
             <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
             </div>
+
           </div>
+
           ${t("migrant")}
+
         </div>
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
           <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div>
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
             <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
             </div>
+
           </div>
+
           ${t("organization")}
+
         </div>
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
           <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
             <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
             </div>
+
           </div>
+
           ${t("migrationTrace")}
+
         </div>
+
       `
 
       if (centralityType !== "none") {
         const topEntitiesHtml = topNetworks
+
           .map(
             (entity, index) =>
               `<div style="cursor: pointer;" data-id="${entity.id}">
+
                 ${index + 1}. ${entity.name}: ${entity.centrality.toFixed(2)}
+
               </div>`,
           )
+
           .join("")
 
         div.innerHTML += `<br><strong>${t(
@@ -229,7 +318,9 @@ const Legend = ({
 
     const handleClick = (event: MouseEvent) => {
       const target = event.target as HTMLElement
+
       const id = target.getAttribute("data-id")
+
       if (id) {
         onEntityClick(Number(id))
       }
@@ -239,6 +330,7 @@ const Legend = ({
 
     return () => {
       map.getContainer().removeEventListener("click", handleClick)
+
       legend.remove()
     }
   }, [map, t, topNetworks, centralityType, onEntityClick])
@@ -332,6 +424,7 @@ const Map: React.FC = () => {
   const [isFiltersVisible, setIsFiltersVisible] = useState(true) // 필터 표시 여부 상태
 
   const [isLegendVisible, setIsLegendVisible] = useState(true) // 범례 표시 여부 상태
+
   const [isTopContributorsVisible, setIsTopContributorsVisible] = useState(true) // 기여자 랭킹 표시 여부 상태
 
   const toggleLegendVisibility = () => {
@@ -352,6 +445,42 @@ const Map: React.FC = () => {
     slidesToShow: 1,
 
     slidesToScroll: 1,
+
+    initialSlide: 11, // 첫 번째 슬라이드를 검색(Search)으로 설정
+
+    appendDots: (dots: React.ReactNode) => (
+      <div
+        style={{
+          position: "absolute",
+
+          bottom: "-20px", // 도트 위치를 아래로 조정
+
+          display: "flex",
+
+          justifyContent: "center",
+
+          width: "100%",
+        }}
+      >
+        <ul style={{ margin: "0", padding: "0", display: "flex" }}>{dots}</ul>
+      </div>
+    ),
+
+    customPaging: () => (
+      <div
+        style={{
+          width: "10px",
+
+          height: "10px",
+
+          backgroundColor: "#9e9d89", // 도트 색상
+
+          borderRadius: "50%",
+
+          margin: "0 5px",
+        }}
+      />
+    ),
   }
 
   const toggleFilters = () => {
@@ -2114,8 +2243,11 @@ const Map: React.FC = () => {
             className="flex justify-end absolute w-full z-10"
             style={{
               top: "4rem",
+
               right: "0",
+
               zIndex: 1,
+
               opacity: 0.95, // 투명도 조정
             }}
           >
@@ -2123,8 +2255,11 @@ const Map: React.FC = () => {
               className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
               style={{
                 maxWidth: window.innerWidth <= 768 ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
+
                 marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
+
                 position: "relative",
+
                 backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
               }}
             >
@@ -2229,14 +2364,23 @@ const Map: React.FC = () => {
             onClick={toggleTopContributorsVisibility}
             style={{
               position: "absolute",
+
               top: "0rem",
+
               left: "0rem",
+
               zIndex: 2000,
+
               backgroundColor: "#3e2723",
+
               color: "#fff",
+
               border: "none",
+
               borderRadius: "8px",
+
               padding: "8px 12px",
+
               cursor: "pointer",
             }}
           >
@@ -2247,14 +2391,23 @@ const Map: React.FC = () => {
             onClick={toggleLegendVisibility}
             style={{
               position: "absolute",
+
               top: "0rem",
+
               right: "0rem", // 화면 오른쪽 끝에 고정
+
               zIndex: 2000,
+
               backgroundColor: "#3e2723",
+
               color: "#fff",
+
               border: "none",
+
               borderRadius: "8px",
+
               padding: "8px 12px",
+
               cursor: "pointer",
             }}
           >
@@ -2264,6 +2417,7 @@ const Map: React.FC = () => {
           {isTopContributorsVisible && (
             <LegendBox>
               <h2>{t("topRegistrants")}</h2>
+
               <ul>
                 {topRegistrants.map((registrant) => (
                   <li key={registrant.registrantId}>
@@ -2329,6 +2483,7 @@ const Map: React.FC = () => {
                     <strong className="text-lg font-semibold block mb-2">
                       No.{network.id} : {network.title}
                     </strong>
+
                     <div className="text-gray-700 text-sm space-y-1">
                       {highlightedNode?.id === network.id &&
                         highlightedNode.photo && (
@@ -2371,6 +2526,7 @@ const Map: React.FC = () => {
                             ? "Birth Year"
                             : "Established Year"}
                         </span>
+
                         <span className="font-medium">
                           : {network.migration_year}
                         </span>
@@ -2382,6 +2538,7 @@ const Map: React.FC = () => {
                             ? "Death Year"
                             : "Dissolved Year"}
                         </span>
+
                         <span className="font-medium">
                           : {network.end_year}
                         </span>
@@ -2400,11 +2557,14 @@ const Map: React.FC = () => {
                   </PopupContent>
 
                   {/* 코멘트 섹션을 스크롤 가능한 영역으로 제한 */}
+
                   <div
                     className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
                     style={{
                       width: "100%", // 팝업 너비에 맞춤
+
                       maxHeight: "150px", // 코멘트 섹션 최대 높이
+
                       marginTop: "16px", // 팝업 콘텐츠와 코멘트 섹션 사이 간격 추가
                     }}
                   >
@@ -2525,7 +2685,15 @@ const Map: React.FC = () => {
 
 
 
+
+
+
+
                   <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+
+
+
+
 
 
 
@@ -2533,11 +2701,23 @@ const Map: React.FC = () => {
 
 
 
+
+
+
+
                   <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
 
 
 
+
+
+
+
                   <strong>Reason:</strong> ${nextTrace.reason}
+
+
+
+
 
 
 
@@ -2581,28 +2761,44 @@ const Map: React.FC = () => {
 
 const LegendBox = styled.div`
   position: absolute;
+
   top: 0.5rem; /* 맵 상단에 더 가깝게 */
+
   left: 1.4rem; /* 맵 왼쪽에 더 가깝게 */
+
   width: 10rem; /* 박스 너비를 더 작게 */
+
   background-color: rgba(255, 255, 255, 0.9);
+
   padding: 7px; /* 패딩을 줄임 */
+
   border: 1px solid #ccc;
+
   border-radius: 0.5rem; /* 둥근 모서리 크기 축소 */
+
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 그림자 크기 축소 */
+
   z-index: 1000;
+
   font-size: 0.8rem; /* 기본 글자 크기 축소 */
 
   h2 {
     font-size: 1rem; /* 제목 글자 크기 축소 */
+
     margin-bottom: 0.3rem; /* 제목 아래 여백 축소 */
+
     text-align: center;
+
     font-weight: bold;
   }
 
   ul {
     font-size: 0.9rem; /* 리스트 글자 크기 축소 */
+
     margin: 0;
+
     padding: 0;
+
     list-style: none;
   }
 
@@ -2612,10 +2808,12 @@ const LegendBox = styled.div`
 
   @media (max-width: 768px) {
     width: 8rem; /* 모바일에서 박스 너비 축소 */
+
     font-size: 0.7rem; /* 글자 크기 더 축소 */
 
     h2 {
       font-size: 0.9rem; /* 제목 글자 크기 더 축소 */
+
       font-weight: bold;
     }
 
@@ -2626,6 +2824,7 @@ const LegendBox = styled.div`
 
   @media (max-width: 480px) {
     width: 7rem; /* 더 작은 화면에서 박스 너비 축소 */
+
     font-size: 0.4rem; /* 글자 크기 더 축소 */
 
     h2 {
@@ -2788,105 +2987,150 @@ const SwipeableContainer = styled.div<{ isVisible: boolean }>`
 `
 
 const MobileCarousel = styled(Slider)`
-  .slick-slide {
-    padding: 0 5px; /* 슬라이드 간격 */
+  .slick-dots {
+    bottom: -20px; /* 도트 위치를 아래로 조정 */
+  }
 
-    .slick-dots {
-      bottom: -15px; /* 둥근 원이 잘리지 않도록 위치 조정 */
-    }
+  .slick-dots li button:before {
+    font-size: 10px; /* 도트 크기 조정 */
 
-    .slick-dots li button:before {
-      font-size: 30px; /* 둥근 원 크기 조정 */
-    }
+    color: #9e9d89; /* 도트 색상 */
+  }
+
+  .slick-dots li.slick-active button:before {
+    color: #3e2723; /* 활성화된 도트 색상 */
   }
 `
 
 const PopupContent = styled.div`
   width: 300px; /* 팝업 너비 */
+
   max-height: 400px; /* 팝업 최대 높이 */
+
   font-size: 14px;
+
   background: #ffffff; /* 배경색 */
+
   border-radius: 8px;
+
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+
   padding: 16px;
+
   overflow-y: auto;
+
   z-index: 2000;
+
   margin-bottom: 5px;
 
   h2 {
     font-size: 18px;
+
     font-weight: bold;
+
     color: #3e2723; /* 제목 색상 */
+
     margin-bottom: 8px;
   }
 
   p {
     font-size: 14px;
+
     color: #5d4037; /* 텍스트 색상 */
+
     margin-bottom: 8px;
   }
 
   .popup-image {
     display: flex;
+
     justify-content: center;
+
     margin-bottom: 10px;
 
     img {
       width: 100px;
+
       height: 100px;
+
       object-fit: cover;
+
       border-radius: 50%;
+
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     }
   }
 
   @media (max-width: 768px) {
     width: 300px;
+
     max-height: 350px;
+
     font-size: 12px;
   }
 
   @media (max-width: 480px) {
     width: 280px;
+
     max-height: 250px;
+
     font-size: 10px;
   }
 `
 
 const CommentSectionWrapper = styled.div`
   margin-top: 5px; /* 팝업 내용과 코멘트 섹션 간격 */
+
   max-height: 150px; /* 코멘트 섹션 최대 높이 */
+
   border-radius: 8px;
+
   padding: 10px;
 
   .comment-input {
     display: flex;
+
     flex-direction: column;
+
     gap: 8px;
+
     margin-bottom: 8px;
 
     input {
       padding: 8px;
+
       border: 1px solid #ccc;
+
       border-radius: 4px;
+
       font-size: 14px;
+
       outline: none;
+
       transition: border-color 0.3s;
 
       &:focus {
         border-color: #3e2723;
+
         box-shadow: 0 0 0 2px rgba(62, 39, 35, 0.2);
       }
     }
 
     button {
       padding: 8px 16px;
+
       background-color: #3e2723;
+
       color: #ffffff;
+
       border: none;
+
       border-radius: 4px;
+
       font-size: 14px;
+
       cursor: pointer;
+
       transition: background-color 0.3s;
 
       &:hover {
@@ -2897,21 +3141,31 @@ const CommentSectionWrapper = styled.div`
 
   .comment-list {
     max-height: 150px;
+
     overflow-y: auto;
 
     li {
       background: #ffffff;
+
       border-radius: 4px;
+
       padding: 8px;
+
       margin-bottom: 8px;
+
       box-shadow: 0px 2px 4px rgba(62, 39, 35, 0.2);
 
       .comment-header {
         display: flex;
+
         justify-content: space-between;
+
         align-items: center;
+
         font-size: 12px;
+
         color: #5d4037;
+
         margin-bottom: 4px;
 
         .comment-user {
@@ -2920,12 +3174,14 @@ const CommentSectionWrapper = styled.div`
 
         .comment-date {
           font-size: 11px;
+
           color: #9e9e9e;
         }
       }
 
       .comment-content {
         font-size: 12px;
+
         color: #3e2723;
       }
     }
@@ -2933,12 +3189,15 @@ const CommentSectionWrapper = styled.div`
 
   @media (max-width: 768px) {
     max-height: 120px;
+
     padding: 8px;
   }
 
   @media (max-width: 480px) {
     max-height: 100px;
+
     font-size: 10px;
+
     padding: 5px;
   }
 `
