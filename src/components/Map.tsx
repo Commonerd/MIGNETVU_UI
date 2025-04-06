@@ -2812,82 +2812,72 @@ const Map: React.FC = () => {
           })}
           <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
           {filteredTraces.map(
-            (trace: {
-              reason: string
-
-              id: React.Key | null | undefined
-
-              network_id: number
-
-              latitude: number
-
-              longitude: number
-
-              location_name:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined
-
-              migration_year:
-                | string
-                | number
-                | boolean
-                | React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >
-                | Iterable<React.ReactNode>
-                | React.ReactPortal
-                | null
-                | undefined
-            }) => (
-              <CircleMarker
+            (
+              trace: {
+                reason: string
+                id: React.Key | null | undefined
+                network_id: number
+                latitude: number
+                longitude: number
+                location_name:
+                  | string
+                  | number
+                  | boolean
+                  | React.ReactElement<
+                      any,
+                      string | React.JSXElementConstructor<any>
+                    >
+                  | Iterable<React.ReactNode>
+                  | React.ReactPortal
+                  | null
+                  | undefined
+                migration_year:
+                  | string
+                  | number
+                  | boolean
+                  | React.ReactElement<
+                      any,
+                      string | React.JSXElementConstructor<any>
+                    >
+                  | Iterable<React.ReactNode>
+                  | React.ReactPortal
+                  | null
+                  | undefined
+              },
+              index: number,
+            ) => (
+              <Marker
                 key={trace.id}
-                center={[trace.latitude, trace.longitude]}
-                radius={6}
-                color="#BF360C" // 테두리 색상
-                fillColor="#FF5722" // 채우기 색상
-                fillOpacity={0.7} // 투명도
+                position={[trace.latitude, trace.longitude]}
+                icon={L.divIcon({
+                  className: "custom-trace-marker",
+                  html: `<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background-color: #FF5722; color: white; border-radius: 50%; font-size: 12px; font-weight: bold; border: 2px solid #BF360C;">${index + 1}</div>`,
+                })}
               >
-                {" "}
                 <Popup>
                   <div
                     style={{
                       fontSize: "18px",
-
                       lineHeight: "1.6",
-
                       margin: "0",
-
                       padding: "0",
                     }}
                   >
                     <div>
                       <strong>Network ID:</strong> {trace.network_id}
                     </div>
-
                     <div>
                       <strong>Place:</strong> {trace.location_name}
                     </div>
-
                     <div>
                       <strong>Migration Year:</strong> {trace.migration_year}
                     </div>
-
                     <div>
                       <strong>Reason:</strong> {trace.reason}
                     </div>
                   </div>
                 </Popup>
-              </CircleMarker>
+              </Marker>
             ),
           )}
           {migrationTraces.map((traces) =>
