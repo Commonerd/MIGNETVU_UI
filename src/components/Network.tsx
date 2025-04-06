@@ -630,7 +630,7 @@ export const Network = () => {
                   {/* Location Name */}
                   <input
                     type="text"
-                    className="w-full px-2 py-2 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
+                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
                     value={detail.location_name || ""}
                     onChange={(e) =>
                       updateNetwork({
