@@ -32,7 +32,6 @@ const useCommentStore = create<CommentState>((set, get) => ({
   },
   createComment: async (networkId, comment) => {
     const newComment = await createComment(comment)
-    console.log("newComment", newComment)
     set((state) => ({
       comments: {
         ...state.comments,
