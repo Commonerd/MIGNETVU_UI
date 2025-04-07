@@ -7746,6 +7746,7 @@ const Map: React.FC = () => {
 
                   iconSize: [size, size],
                 })}
+                zIndexOffset={1000} // 네트워크 노드의 zIndex를 높게 설정
                 eventHandlers={{
                   click: () => handleTooltipOpen(network.id),
                 }}
