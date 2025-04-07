@@ -8162,7 +8162,7 @@ const Map: React.FC = () => {
 
               const baseSize = 20 // Base size for the marker
 
-              const sizeIncrement = 2 // Smaller increment size for each trace number
+              const sizeIncrement = 2.5 // Smaller increment size for each trace number
 
               const size = baseSize + trace.traceNumber * sizeIncrement
 
@@ -8206,7 +8206,7 @@ const Map: React.FC = () => {
 
             border-radius: 50%;
 
-            font-size: ${size / 3}px; /* Adjust font size dynamically */
+            font-size: ${size / 1.2}px; /* Adjust font size dynamically */
 
             font-weight: bold;
 
