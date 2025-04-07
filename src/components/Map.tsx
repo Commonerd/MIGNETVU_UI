@@ -107,99 +107,195 @@ L.Icon.Default.mergeOptions({
 
 const legendStyles = `
 
+
+
   background-color: rgba(255, 255, 255, 0.9);
+
+
 
   padding: 7px;
 
+
+
   top: 0;
+
+
 
   right: 1rem;
 
+
+
   border-radius: 0.5rem;
+
+
 
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
+
+
   font-size: 0.8rem;
 
+
+
   max-width: 10rem;
+
+
 
   overflow-y: auto;
 
 
 
+
+
+
+
   h2 {
+
+
 
     font-size: 1rem;
 
+
+
     margin-bottom: 0.3rem;
+
+
 
     text-align: center;
 
+
+
     font-weight: bold;
 
+
+
   }
+
+
+
+
 
 
 
   div {
 
+
+
     font-size: 0.9rem;
+
+
 
     margin-bottom: 0.2rem;
 
+
+
   }
+
+
+
+
 
 
 
   @media (max-width: 768px) {
 
+
+
     font-size: 0.7rem;
+
+
 
     max-width: 8rem;
 
 
 
+
+
+
+
     h2 {
+
+
 
       font-size: 0.9rem;
 
+
+
     }
+
+
+
+
 
 
 
     div {
 
+
+
       font-size: 0.8rem;
+
+
 
     }
 
+
+
   }
+
+
+
+
 
 
 
   @media (max-width: 480px) {
 
+
+
     font-size: 0.4rem;
+
+
 
     max-width: 7rem;
 
 
 
+
+
+
+
     h2 {
+
+
 
       font-size: 0.7rem;
 
+
+
     }
+
+
+
+
 
 
 
     div {
 
+
+
       font-size: 0.7rem;
+
+
 
     }
 
+
+
   }
+
+
 
 `
 
@@ -236,59 +332,115 @@ const Legend = ({
 
       div.innerHTML = `
 
+
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
+
 
           <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div>
 
+
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
+
 
             <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
 
+
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           ${t("migrant")}
 
+
+
         </div>
 
+
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
+
 
           <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div>
 
+
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
+
 
             <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
 
+
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
+
 
             </div>
 
+
+
           </div>
+
+
 
           ${t("organization")}
 
+
+
         </div>
+
+
 
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
 
+
+
           <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
+
+
 
           <div style="display: flex; align-items: center; margin-left: 5px;">
 
+
+
             <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
+
+
 
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
 
+
+
             </div>
+
+
 
           </div>
 
+
+
           ${t("migrationTrace")}
 
+
+
         </div>
+
+
 
       `
 
@@ -299,7 +451,11 @@ const Legend = ({
             (entity, index) =>
               `<div style="cursor: pointer;" data-id="${entity.id}">
 
+
+
                 ${index + 1}. ${entity.name}: ${entity.centrality.toFixed(2)}
+
+
 
               </div>`,
           )
@@ -344,6 +500,8 @@ const Map: React.FC = () => {
   const { t } = useTranslation()
 
   const [networks, setNetworks] = useState<Network[] | undefined>()
+
+  const [showNetworkNames, setShowNetworkNames] = useState<boolean>(true) // 네트워크 이름 표시 여부 상태 추가
 
   const [migrants, setMigrants] = useState<Migrant[]>([])
 
@@ -427,6 +585,10 @@ const Map: React.FC = () => {
 
   const [isTopContributorsVisible, setIsTopContributorsVisible] = useState(true) // 기여자 랭킹 표시 여부 상태
 
+  const toggleNetworkNames = () => {
+    setShowNetworkNames((prev) => !prev) // 토글 함수
+  }
+
   const toggleLegendVisibility = () => {
     setIsLegendVisible(!isLegendVisible)
   }
@@ -437,38 +599,60 @@ const Map: React.FC = () => {
 
   const sliderSettings = {
     dots: true,
+
     infinite: false,
+
     speed: 200,
+
     slidesToShow: 1,
+
     slidesToScroll: 1,
+
     initialSlide: 0, // 첫 번째 슬라이드로 시작
+
     appendDots: (dots: React.ReactNode) => (
       <div
         style={{
           position: "absolute",
+
           bottom: "-1.5rem", // 도트 위치를 아래로 조정
+
           display: "flex",
+
           justifyContent: "center",
+
           width: "100%",
+
           padding: "0.7rem 0", // 상하 여백 추가
         }}
       >
         <ul style={{ margin: "0", padding: "0", display: "flex" }}>{dots}</ul>
       </div>
     ),
+
     customPaging: (i) => (
       <div
         style={{
           width: "12px",
+
           height: "12px",
+
           display: "flex",
+
           alignItems: "center",
+
           justifyContent: "center",
+
           backgroundColor: "rgba(158, 157, 137, 0.8)", // 기본 도트 색상
+
           borderRadius: "50%",
+
           color: "#fff", // 텍스트 색상
+
           fontSize: "10px",
+
           fontWeight: "bold",
+
           transition: "background-color 0.3s ease",
         }}
         className={`slick-dot-${i}`} // 각 도트에 고유 클래스 추가
@@ -476,9 +660,12 @@ const Map: React.FC = () => {
         {i + 1} {/* 현재 슬라이드 번호 표시 */}
       </div>
     ),
+
     afterChange: (current) => {
       // 현재 슬라이드 변경 시 도트 색상 업데이트
+
       const dots = document.querySelectorAll(".slick-dots li div")
+
       dots.forEach((dot, index) => {
         if (index === current) {
           dot.style.backgroundColor = "#3e2723" // 활성화된 도트 색상
@@ -1442,6 +1629,7 @@ const Map: React.FC = () => {
 
     networks?.forEach((network) => {
       // 특정 네트워크가 선택된 경우, 해당 네트워크의 마이그레이션 트레이스만 추가
+
       if (
         !selectedMigrationNetworkId || // 선택된 네트워크가 없거나
         network.id === selectedMigrationNetworkId // 선택된 네트워크와 일치하는 경우
@@ -1450,23 +1638,31 @@ const Map: React.FC = () => {
           if (!tracesByNetwork[network.id]) {
             tracesByNetwork[network.id] = []
           }
+
           tracesByNetwork[network.id].push(trace)
         })
       }
     })
 
     // 네트워크별로 정렬 및 번호 부여
+
     return Object.values(tracesByNetwork)
+
       .map((traces) =>
         traces
+
           .sort((a, b) => a.migration_year - b.migration_year) // 연도 기준 정렬
+
           .map((trace, index) => ({
             ...trace,
+
             traceNumber: index + 1, // 네트워크별로 번호 부여
           })),
       )
+
       .filter((traces) => {
         // 기존 필터 조건 적용
+
         const matchesYearRange = traces.some(
           (trace) =>
             trace.migration_year >= yearRange[0] &&
@@ -1510,6 +1706,7 @@ const Map: React.FC = () => {
                 onChange={(entityOptions) =>
                   handleFilterChange(
                     "entityType",
+
                     entityOptions
                       ? entityOptions.map((option) => option.value)
                       : ["all"],
@@ -1520,21 +1717,31 @@ const Map: React.FC = () => {
                 isMulti
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1563,21 +1770,31 @@ const Map: React.FC = () => {
                 isMulti
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1606,21 +1823,31 @@ const Map: React.FC = () => {
                 isMulti
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1649,21 +1876,31 @@ const Map: React.FC = () => {
                 isMulti
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1692,21 +1929,31 @@ const Map: React.FC = () => {
                 isMulti
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1722,9 +1969,13 @@ const Map: React.FC = () => {
               <Select
                 options={[
                   { value: "none", label: t("selectCentrality") },
+
                   { value: "degree", label: t("degreeCentrality") },
+
                   { value: "betweenness", label: t("betweenessCentrality") },
+
                   { value: "closeness", label: t("closenessCentrality") },
+
                   { value: "eigenvector", label: t("eigenvectorCentrality") },
                 ]}
                 onChange={(selectedOption) =>
@@ -1734,6 +1985,7 @@ const Map: React.FC = () => {
                 }
                 value={{
                   value: centralityType,
+
                   label: t(
                     centralityType === "none"
                       ? "selectCentrality"
@@ -1743,21 +1995,31 @@ const Map: React.FC = () => {
                 placeholder={t("selectCentrality")}
                 styles={{
                   ...customStyles,
+
                   multiValue: (provided) => ({
                     ...provided,
+
                     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                     alignItems: "center",
+
                     margin: "0 4px", // 항목 간격 조정
                   }),
+
                   multiValueLabel: (provided) => ({
                     ...provided,
+
                     whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                     overflow: "visible", // 텍스트가 생략되지 않도록 설정
                   }),
+
                   multiValueRemove: (provided) => ({
                     ...provided,
+
                     cursor: "pointer",
                   }),
+
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
                 menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -1862,6 +2124,7 @@ const Map: React.FC = () => {
             </div>
 
             {/* 나의 노드 */}
+
             {user.isLoggedIn && (
               <div>
                 <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
@@ -1874,6 +2137,7 @@ const Map: React.FC = () => {
                       handleFilterChange("userNetworkFilter", e.target.checked)
                     }
                   />
+
                   <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
                     {t("filterByUserNetwork")}
                   </label>
@@ -1882,6 +2146,7 @@ const Map: React.FC = () => {
             )}
 
             {/* 나의 이동 */}
+
             {user.isLoggedIn && (
               <div>
                 <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
@@ -1893,10 +2158,12 @@ const Map: React.FC = () => {
                     onChange={(e) =>
                       handleFilterChange(
                         "userNetworkTraceFilter",
+
                         e.target.checked,
                       )
                     }
                   />
+
                   <label
                     htmlFor="userNetworkTraceFilter"
                     className="ml-2 text-sm"
@@ -1908,6 +2175,7 @@ const Map: React.FC = () => {
             )}
 
             {/* 나의 관계망 */}
+
             {user.isLoggedIn && (
               <div>
                 <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
@@ -1919,10 +2187,12 @@ const Map: React.FC = () => {
                     onChange={(e) =>
                       handleFilterChange(
                         "userNetworkConnectionFilter",
+
                         e.target.checked,
                       )
                     }
                   />
+
                   <label
                     htmlFor="userNetworkConnectionFilter"
                     className="ml-2 text-sm"
@@ -1934,6 +2204,7 @@ const Map: React.FC = () => {
             )}
 
             {/* 검색창 */}
+
             {user.isLoggedIn && (
               <div>
                 <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
@@ -1949,6 +2220,7 @@ const Map: React.FC = () => {
                     }}
                     className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
+
                   <button
                     onClick={handleSearchClick}
                     className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1987,21 +2259,31 @@ const Map: React.FC = () => {
                   isMulti
                   styles={{
                     ...customStyles,
+
                     multiValue: (provided) => ({
                       ...provided,
+
                       display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                       alignItems: "center",
+
                       margin: "0 4px", // 항목 간격 조정
                     }),
+
                     multiValueLabel: (provided) => ({
                       ...provided,
+
                       whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                       overflow: "visible", // 텍스트가 생략되지 않도록 설정
                     }),
+
                     multiValueRemove: (provided) => ({
                       ...provided,
+
                       cursor: "pointer",
                     }),
+
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
                   menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2026,21 +2308,31 @@ const Map: React.FC = () => {
                   isMulti
                   styles={{
                     ...customStyles,
+
                     multiValue: (provided) => ({
                       ...provided,
+
                       display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                       alignItems: "center",
+
                       margin: "0 4px", // 항목 간격 조정
                     }),
+
                     multiValueLabel: (provided) => ({
                       ...provided,
+
                       whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                       overflow: "visible", // 텍스트가 생략되지 않도록 설정
                     }),
+
                     multiValueRemove: (provided) => ({
                       ...provided,
+
                       cursor: "pointer",
                     }),
+
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
                   menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2065,21 +2357,31 @@ const Map: React.FC = () => {
                   isMulti
                   styles={{
                     ...customStyles,
+
                     multiValue: (provided) => ({
                       ...provided,
+
                       display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                       alignItems: "center",
+
                       margin: "0 4px", // 항목 간격 조정
                     }),
+
                     multiValueLabel: (provided) => ({
                       ...provided,
+
                       whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                       overflow: "visible", // 텍스트가 생략되지 않도록 설정
                     }),
+
                     multiValueRemove: (provided) => ({
                       ...provided,
+
                       cursor: "pointer",
                     }),
+
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
                   menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2117,21 +2419,31 @@ const Map: React.FC = () => {
                   isMulti
                   styles={{
                     ...customStyles,
+
                     multiValue: (provided) => ({
                       ...provided,
+
                       display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                       alignItems: "center",
+
                       margin: "0 4px", // 항목 간격 조정
                     }),
+
                     multiValueLabel: (provided) => ({
                       ...provided,
+
                       whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                       overflow: "visible", // 텍스트가 생략되지 않도록 설정
                     }),
+
                     multiValueRemove: (provided) => ({
                       ...provided,
+
                       cursor: "pointer",
                     }),
+
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
                   menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2156,21 +2468,31 @@ const Map: React.FC = () => {
                   isMulti
                   styles={{
                     ...customStyles,
+
                     multiValue: (provided) => ({
                       ...provided,
+
                       display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                       alignItems: "center",
+
                       margin: "0 4px", // 항목 간격 조정
                     }),
+
                     multiValueLabel: (provided) => ({
                       ...provided,
+
                       whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                       overflow: "visible", // 텍스트가 생략되지 않도록 설정
                     }),
+
                     multiValueRemove: (provided) => ({
                       ...provided,
+
                       cursor: "pointer",
                     }),
+
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
                   menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2219,21 +2541,31 @@ const Map: React.FC = () => {
                     placeholder={t("selectCentrality")}
                     styles={{
                       ...customStyles,
+
                       multiValue: (provided) => ({
                         ...provided,
+
                         display: "inline-flex", // 선택된 항목을 가로로 정렬
+
                         alignItems: "center",
+
                         margin: "0 4px", // 항목 간격 조정
                       }),
+
                       multiValueLabel: (provided) => ({
                         ...provided,
+
                         whiteSpace: "normal", // 텍스트 줄바꿈 허용
+
                         overflow: "visible", // 텍스트가 생략되지 않도록 설정
                       }),
+
                       multiValueRemove: (provided) => ({
                         ...provided,
+
                         cursor: "pointer",
                       }),
+
                       menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                     }}
                     menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
@@ -2664,6 +2996,24 @@ const Map: React.FC = () => {
               centralityType={centralityType}
             />
           )}
+          {/* 네트워크 이름 표시/비표시 토글 버튼 */}
+          <button
+            onClick={toggleNetworkNames}
+            style={{
+              position: "absolute",
+              top: "2rem", // 범례 토글 버튼 바로 아래
+              right: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {showNetworkNames ? "-" : "+"}
+          </button>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -2672,6 +3022,7 @@ const Map: React.FC = () => {
           {filteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
+
               centralityType,
             )
 
@@ -2679,10 +3030,12 @@ const Map: React.FC = () => {
               highlightedNode && highlightedNode.id === network.id
 
             // Determine color: Organization is blue, highlighted is yellow, default is red
+
             let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
 
             if (isHighlighted) {
               // Highlighted nodes are yellow regardless of type
+
               color = "orange"
             }
 
@@ -2692,36 +3045,46 @@ const Map: React.FC = () => {
                 position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
                   className: "custom-marker",
+
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
+
                   iconSize: [size, size],
                 })}
                 eventHandlers={{
                   click: () => handleTooltipOpen(network.id),
                 }}
               >
-                {/* Always visible tooltip */}
-                <Tooltip
-                  permanent
-                  direction="top"
-                  offset={[0, -size / 2]} // Adjust tooltip position based on marker size
-                  className="custom-tooltip"
-                >
-                  <div
-                    style={{
-                      textAlign: "center",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      color: "#3E2723",
-                    }}
+                {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
+
+                {showNetworkNames && (
+                  <Tooltip
+                    permanent
+                    direction="top"
+                    offset={[0, -size / 2]} // Adjust tooltip position based on marker size
+                    className="custom-tooltip"
                   >
-                    {network.title}
-                  </div>
-                </Tooltip>
+                    <div
+                      style={{
+                        textAlign: "center",
+
+                        fontSize: "12px",
+
+                        fontWeight: "bold",
+
+                        color: "#3E2723",
+                      }}
+                    >
+                      {network.title}
+                    </div>
+                  </Tooltip>
+                )}
+
                 <Popup>
                   <PopupContent>
                     <strong className="text-lg font-semibold block mb-2">
                       No.{network.id} : {network.title}
                     </strong>
+
                     <div className="text-gray-700 text-sm space-y-1">
                       {highlightedNode?.id === network.id &&
                         highlightedNode.photo && (
@@ -2733,60 +3096,74 @@ const Map: React.FC = () => {
                             />
                           </div>
                         )}
+
                       <p>
                         <span className="font-medium">Creator Name:</span>{" "}
                         {userNames[network.user_id]}
                       </p>
+
                       <p>
                         <span className="font-medium">Type:</span>{" "}
                         {network.type}
                       </p>
+
                       <p>
                         {t("centrality")}: {centralityValues[network.id] || 0}
                       </p>
+
                       <p>
                         <span className="font-medium">Nationality:</span>{" "}
                         {network.nationality}
                       </p>
+
                       <p>
                         <span className="font-medium">Ethnicity:</span>{" "}
                         {network.ethnicity}
                       </p>
+
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
                             ? "Birth Year"
                             : "Established Year"}
                         </span>
+
                         <span className="font-medium">
                           : {network.migration_year}
                         </span>
                       </p>
+
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
                             ? "Death Year"
                             : "Dissolved Year"}
                         </span>
+
                         <span className="font-medium">
                           : {network.end_year}
                         </span>
                       </p>
+
                       <p>
                         <span className="font-medium">Latitude:</span>{" "}
                         {network.latitude.toFixed(5)}
                       </p>
+
                       <p>
                         <span className="font-medium">Longitude:</span>{" "}
                         {network.longitude.toFixed(5)}
                       </p>
                     </div>
                   </PopupContent>
+
                   <div
                     className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
                     style={{
                       width: "100%",
+
                       maxHeight: "150px",
+
                       marginTop: "16px",
                     }}
                   >
@@ -2803,10 +3180,15 @@ const Map: React.FC = () => {
             (
               trace: {
                 reason: string
+
                 id: React.Key | null | undefined
+
                 network_id: number
+
                 latitude: number
+
                 longitude: number
+
                 location_name:
                   | string
                   | number
@@ -2819,6 +3201,7 @@ const Map: React.FC = () => {
                   | React.ReactPortal
                   | null
                   | undefined
+
                 migration_year:
                   | string
                   | number
@@ -2832,6 +3215,7 @@ const Map: React.FC = () => {
                   | null
                   | undefined
               },
+
               index: number,
             ) => (
               <Marker
@@ -2839,6 +3223,7 @@ const Map: React.FC = () => {
                 position={[trace.latitude, trace.longitude]}
                 icon={L.divIcon({
                   className: "custom-trace-marker",
+
                   html: `<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background-color: #FF5722; color: white; border-radius: 50%; font-size: 12px; font-weight: bold; border: 2px solid #BF360C;">${index + 1}</div>`,
                 })}
               >
@@ -2846,20 +3231,26 @@ const Map: React.FC = () => {
                   <div
                     style={{
                       fontSize: "18px",
+
                       lineHeight: "1.6",
+
                       margin: "0",
+
                       padding: "0",
                     }}
                   >
                     <div>
                       <strong>Network ID:</strong> {trace.network_id}
                     </div>
+
                     <div>
                       <strong>Place:</strong> {trace.location_name}
                     </div>
+
                     <div>
                       <strong>Migration Year:</strong> {trace.migration_year}
                     </div>
+
                     <div>
                       <strong>Reason:</strong> {trace.reason}
                     </div>
@@ -2873,6 +3264,7 @@ const Map: React.FC = () => {
               const nextTrace = traces[index + 1]
 
               // 같은 네트워크 아이디인지 확인
+
               if (trace.network_id !== nextTrace.network_id) {
                 return null // 네트워크 아이디가 다르면 선을 그리지 않음
               }
@@ -2882,6 +3274,7 @@ const Map: React.FC = () => {
                   key={`${trace.id}-${nextTrace.id}`}
                   positions={[
                     [trace.latitude, trace.longitude],
+
                     [nextTrace.latitude, nextTrace.longitude],
                   ]}
                   color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
@@ -2893,15 +3286,23 @@ const Map: React.FC = () => {
                   eventHandlers={{
                     click: (e) => {
                       L.popup()
+
                         .setLatLng(e.latlng)
+
                         .setContent(
                           `<div>
+
                       <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+
                       <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
+
                       <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
+
                       <strong>Reason:</strong> ${nextTrace.reason}
+
                     </div>`,
                         )
+
                         .openOn(e.target._map)
                     },
                   }}
@@ -2916,6 +3317,7 @@ const Map: React.FC = () => {
                 position={[trace.latitude, trace.longitude]}
                 icon={L.divIcon({
                   className: "custom-trace-marker",
+
                   html: `<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background-color: #FF5722; color: white; border-radius: 50%; font-size: 12px; font-weight: bold; border: 2px solid #BF360C;">${trace.traceNumber}</div>`,
                 })}
               >
@@ -2923,20 +3325,26 @@ const Map: React.FC = () => {
                   <div
                     style={{
                       fontSize: "18px",
+
                       lineHeight: "1.6",
+
                       margin: "0",
+
                       padding: "0",
                     }}
                   >
                     <div>
                       <strong>Network ID:</strong> {trace.network_id}
                     </div>
+
                     <div>
                       <strong>Place:</strong> {trace.location_name}
                     </div>
+
                     <div>
                       <strong>Migration Year:</strong> {trace.migration_year}
                     </div>
+
                     <div>
                       <strong>Reason:</strong> {trace.reason}
                     </div>
@@ -3054,40 +3462,60 @@ const LegendBox = styled.div`
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
+
     display: "flex",
+
     flexWrap: "nowrap", // 줄바꿈 방지
+
     overflowX: "auto", // 가로 스크롤 활성화
+
     boxShadow: state.isFocused
       ? "0 0 0 2px rgba(251, 191, 36, 1)"
       : provided.boxShadow,
+
     borderColor: state.isFocused
       ? "rgba(251, 191, 36, 1)"
       : provided.borderColor,
+
     "&:hover": {
       borderColor: state.isFocused
         ? "rgba(251, 191, 36, 1)"
         : provided.borderColor,
     },
+
     borderRadius: "0.375rem", // 둥근 테두리
+
     minWidth: "120px", // 최소 너비 설정
+
     maxWidth: "100%", // 최대 너비 설정
   }),
+
   multiValue: (provided) => ({
     ...provided,
+
     display: "inline-flex", // 선택된 항목을 가로로 정렬
+
     alignItems: "center",
+
     margin: "0 4px", // 항목 간격 조정
   }),
+
   multiValueLabel: (provided) => ({
     ...provided,
+
     whiteSpace: "nowrap", // 텍스트 줄바꿈 방지
+
     overflow: "hidden", // 텍스트가 넘칠 경우 숨김
+
     textOverflow: "ellipsis", // 넘친 텍스트에 말줄임표 추가
   }),
+
   multiValueRemove: (provided) => ({
     ...provided,
+
     cursor: "pointer",
   }),
+
   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
 }
 
@@ -3147,12 +3575,15 @@ const ThreeDButton = styled.button`
 
 const SwipeableContainer = styled.div<{ isVisible: boolean }>`
   display: flex;
+
   max-height: 5rem; /* 최대 높이 설정 */
 
   gap: 0.3rem; /* 버튼 간격을 줄임 */
 
   overflow-x: auto;
+
   overflow-y: auto;
+
   padding: 0.3rem; /* 상하 패딩을 줄임 */
 
   background-color: #d1c6b1;
