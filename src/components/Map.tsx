@@ -109,7 +109,15 @@ const legendStyles = `
 
 
 
+
+
+
+
   background-color: rgba(255, 255, 255, 0.9);
+
+
+
+
 
 
 
@@ -117,7 +125,15 @@ const legendStyles = `
 
 
 
+
+
+
+
   top: 0;
+
+
+
+
 
 
 
@@ -125,7 +141,15 @@ const legendStyles = `
 
 
 
+
+
+
+
   border-radius: 0.5rem;
+
+
+
+
 
 
 
@@ -133,11 +157,23 @@ const legendStyles = `
 
 
 
+
+
+
+
   font-size: 0.8rem;
 
 
 
+
+
+
+
   max-width: 10rem;
+
+
+
+
 
 
 
@@ -149,7 +185,19 @@ const legendStyles = `
 
 
 
+
+
+
+
+
+
+
+
   h2 {
+
+
+
+
 
 
 
@@ -157,7 +205,15 @@ const legendStyles = `
 
 
 
+
+
+
+
     margin-bottom: 0.3rem;
+
+
+
+
 
 
 
@@ -165,11 +221,27 @@ const legendStyles = `
 
 
 
+
+
+
+
     font-weight: bold;
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -181,7 +253,15 @@ const legendStyles = `
 
 
 
+
+
+
+
     font-size: 0.9rem;
+
+
+
+
 
 
 
@@ -189,7 +269,19 @@ const legendStyles = `
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -201,7 +293,15 @@ const legendStyles = `
 
 
 
+
+
+
+
     font-size: 0.7rem;
+
+
+
+
 
 
 
@@ -213,7 +313,19 @@ const legendStyles = `
 
 
 
+
+
+
+
+
+
+
+
     h2 {
+
+
+
+
 
 
 
@@ -221,7 +333,19 @@ const legendStyles = `
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -233,7 +357,15 @@ const legendStyles = `
 
 
 
+
+
+
+
       font-size: 0.8rem;
+
+
+
+
 
 
 
@@ -241,7 +373,19 @@ const legendStyles = `
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -253,7 +397,15 @@ const legendStyles = `
 
 
 
+
+
+
+
     font-size: 0.4rem;
+
+
+
+
 
 
 
@@ -265,7 +417,19 @@ const legendStyles = `
 
 
 
+
+
+
+
+
+
+
+
     h2 {
+
+
+
+
 
 
 
@@ -273,7 +437,19 @@ const legendStyles = `
 
 
 
+
+
+
+
     }
+
+
+
+
+
+
+
+
 
 
 
@@ -285,7 +461,15 @@ const legendStyles = `
 
 
 
+
+
+
+
       font-size: 0.7rem;
+
+
+
+
 
 
 
@@ -293,7 +477,15 @@ const legendStyles = `
 
 
 
+
+
+
+
   }
+
+
+
+
 
 
 
@@ -334,7 +526,15 @@ const Legend = ({
 
 
 
+
+
+
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
+
+
+
 
 
 
@@ -342,7 +542,15 @@ const Legend = ({
 
 
 
+
+
+
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
+
+
+
 
 
 
@@ -350,7 +558,15 @@ const Legend = ({
 
 
 
+
+
+
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
+
+
+
 
 
 
@@ -358,7 +574,15 @@ const Legend = ({
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -366,11 +590,23 @@ const Legend = ({
 
 
 
+
+
+
+
         </div>
 
 
 
+
+
+
+
         <div style="display: flex; align-items: center; margin-bottom: 5px;">
+
+
+
+
 
 
 
@@ -378,7 +614,15 @@ const Legend = ({
 
 
 
+
+
+
+
           <div style="display: flex; align-items: center; margin-left: 5px;">
+
+
+
+
 
 
 
@@ -386,7 +630,15 @@ const Legend = ({
 
 
 
+
+
+
+
               <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+
+
+
+
 
 
 
@@ -394,7 +646,15 @@ const Legend = ({
 
 
 
+
+
+
+
           </div>
+
+
+
+
 
 
 
@@ -402,7 +662,15 @@ const Legend = ({
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -410,7 +678,15 @@ const Legend = ({
 
 
 
+
+
+
+
           <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
+
+
+
+
 
 
 
@@ -418,7 +694,15 @@ const Legend = ({
 
 
 
+
+
+
+
             <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
+
+
+
+
 
 
 
@@ -426,7 +710,15 @@ const Legend = ({
 
 
 
+
+
+
+
             </div>
+
+
+
+
 
 
 
@@ -434,11 +726,23 @@ const Legend = ({
 
 
 
+
+
+
+
           ${t("migrationTrace")}
 
 
 
+
+
+
+
         </div>
+
+
+
+
 
 
 
@@ -453,7 +757,15 @@ const Legend = ({
 
 
 
+
+
+
+
                 ${index + 1}. ${entity.name}: ${entity.centrality.toFixed(2)}
+
+
+
+
 
 
 
@@ -1639,7 +1951,14 @@ const Map: React.FC = () => {
             tracesByNetwork[network.id] = []
           }
 
-          tracesByNetwork[network.id].push(trace)
+          // 연도 필터링 적용
+
+          if (
+            trace.migration_year >= yearRange[0] &&
+            trace.migration_year <= yearRange[1]
+          ) {
+            tracesByNetwork[network.id].push(trace)
+          }
         })
       }
     })
@@ -3001,14 +3320,23 @@ const Map: React.FC = () => {
             onClick={toggleNetworkNames}
             style={{
               position: "absolute",
+
               top: "2rem", // 범례 토글 버튼 바로 아래
+
               right: "0rem",
+
               zIndex: 2000,
+
               backgroundColor: "#3e2723",
+
               color: "#fff",
+
               border: "none",
+
               borderRadius: "8px",
+
               padding: "8px 12px",
+
               cursor: "pointer",
             }}
           >
@@ -3292,13 +3620,23 @@ const Map: React.FC = () => {
                         .setContent(
                           `<div>
 
+
+
                       <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+
+
 
                       <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
 
+
+
                       <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
 
+
+
                       <strong>Reason:</strong> ${nextTrace.reason}
+
+
 
                     </div>`,
                         )
