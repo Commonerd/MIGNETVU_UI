@@ -1861,105 +1861,112 @@ const Map: React.FC = () => {
               </div>
             </div>
 
-            {/* 나의 노드 */}
+            {user.isLoggedIn ? (
+              <>
+                {/* 나의 노드 */}
 
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkFilter}
-                  onChange={(e) =>
-                    handleFilterChange("userNetworkFilter", e.target.checked)
-                  }
-                />
+                <div>
+                  <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                    <input
+                      type="checkbox"
+                      id="userNetworkFilter"
+                      className="w-4 h-4"
+                      checked={filters.userNetworkFilter}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
 
-                <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
-                  {t("filterByUserNetwork")}
-                </label>
-              </div>
-            </div>
+                    <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
+                      {t("filterByUserNetwork")}
+                    </label>
+                  </div>
+                </div>
 
-            {/* 나의 이동 */}
+                {/* 나의 이동 */}
 
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkTraceFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkTraceFilter}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "userNetworkTraceFilter",
+                <div>
+                  <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                    <input
+                      type="checkbox"
+                      id="userNetworkTraceFilter"
+                      className="w-4 h-4"
+                      checked={filters.userNetworkTraceFilter}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkTraceFilter",
 
-                      e.target.checked,
-                    )
-                  }
-                />
+                          e.target.checked,
+                        )
+                      }
+                    />
 
-                <label
-                  htmlFor="userNetworkTraceFilter"
-                  className="ml-2 text-sm"
-                >
-                  {t("filterByUserNetworkTrace")}
-                </label>
-              </div>
-            </div>
+                    <label
+                      htmlFor="userNetworkTraceFilter"
+                      className="ml-2 text-sm"
+                    >
+                      {t("filterByUserNetworkTrace")}
+                    </label>
+                  </div>
+                </div>
 
-            {/* 나의 관계망 */}
+                {/* 나의 관계망 */}
 
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkConnectionFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkConnectionFilter}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "userNetworkConnectionFilter",
+                <div>
+                  <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                    <input
+                      type="checkbox"
+                      id="userNetworkConnectionFilter"
+                      className="w-4 h-4"
+                      checked={filters.userNetworkConnectionFilter}
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkConnectionFilter",
 
-                      e.target.checked,
-                    )
-                  }
-                />
+                          e.target.checked,
+                        )
+                      }
+                    />
 
-                <label
-                  htmlFor="userNetworkConnectionFilter"
-                  className="ml-2 text-sm"
-                >
-                  {t("filterByUserNetworkConnection")}
-                </label>
-              </div>
-            </div>
+                    <label
+                      htmlFor="userNetworkConnectionFilter"
+                      className="ml-2 text-sm"
+                    >
+                      {t("filterByUserNetworkConnection")}
+                    </label>
+                  </div>
+                </div>
 
-            {/* 검색란 */}
+                {/* 검색란 */}
 
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="text"
-                  placeholder={t("Search Networks")}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearchClick()
-                    }
-                  }}
-                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
+                <div>
+                  <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                    <input
+                      type="text"
+                      placeholder={t("Search Networks")}
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSearchClick()
+                        }
+                      }}
+                      className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    />
 
-                <button
-                  onClick={handleSearchClick}
-                  className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  {t("search")}
-                </button>
-              </div>
-            </div>
+                    <button
+                      onClick={handleSearchClick}
+                      className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    >
+                      {t("search")}
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : null}
           </MobileCarousel>
         ) : (
           <SwipeableContainer isVisible={isFiltersVisible}>

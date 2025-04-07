@@ -124,7 +124,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
           <p className="text-xs text-gray-500">No comments yet.</p>
         )}
       </ul>
-      {user && (
+      {user.isLoggedIn && (
         <div className="flex flex-col mt-3">
           <input
             type="text"
