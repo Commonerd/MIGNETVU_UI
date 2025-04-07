@@ -828,7 +828,7 @@ const Map: React.FC = () => {
 
     entityType: "all",
 
-    yearRange: [1800, new Date().getFullYear()],
+    yearRange: [1400, 1600],
 
     userNetworkFilter: false,
 
@@ -870,9 +870,9 @@ const Map: React.FC = () => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
 
   const [yearRange, setYearRange] = useState<[number, number]>([
-    1800,
+    1400,
 
-    new Date().getFullYear(),
+    1600,
   ])
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -3169,7 +3169,7 @@ const Map: React.FC = () => {
         />
       ) : (
         <MapContainer
-          center={[37.5665, 126.978]}
+          center={[30, -30]} // 스페인과 아메리카 대륙 중간 대서양 좌표
           zoom={2}
           zoomControl={false} // 확대/축소 컨트롤 제거
           style={{

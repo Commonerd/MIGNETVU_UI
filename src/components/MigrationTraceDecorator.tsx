@@ -92,7 +92,7 @@ const MigrationTraceDecorator = ({ traces }: { traces: any[] }) => {
     // 애니메이션 함수
     let offset = 0
     const animate = () => {
-      offset = (offset + 1) % 100 // offset 값을 증가시키며 반복
+      offset = (offset + 0.5) % 100 // 애니메이션 속도를 천천히 (기존 1에서 0.2로 변경)
       animatedPolylines.forEach(({ dashDecorator }) => {
         dashDecorator.setPatterns([
           {
