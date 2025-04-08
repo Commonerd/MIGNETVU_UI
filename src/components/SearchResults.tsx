@@ -3,6 +3,7 @@ import { useQuerySearchNetworks } from "../hooks/useQueryNetworks"
 import { NetworkItem } from "./NetworkItem"
 import { useQueryClient } from "@tanstack/react-query"
 import { useMap } from "react-leaflet"
+import { useTranslation } from "react-i18next"
 
 interface SearchResultsProps {
   searchQuery: string
@@ -24,6 +25,7 @@ const SearchResults: FC<SearchResultsProps> = ({
   handleNetworkEdgesToggle, // 추가
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const { t } = useTranslation()
 
   const { data, isLoading, error } = useQuerySearchNetworks(
     searchQuery,
@@ -57,7 +59,7 @@ const SearchResults: FC<SearchResultsProps> = ({
       {/* Search Results */}
       <div className="flex justify-center items-center mb-4 sm:text-sm">
         <h2 className="text-lg font-bold sm:text-xl text-sm">
-          Found {totalCount} Results
+          {t("Found")} {totalCount} {t("Results")}
         </h2>
         {/* Clear Cache Icon */}
         <button
@@ -90,7 +92,7 @@ const SearchResults: FC<SearchResultsProps> = ({
             disabled={currentPage === 1}
             className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300 sm:px-4 sm:py-2 sm:text-sm px-2 py-1 text-xs"
           >
-            Prev
+            {t("Prev")}
           </button>
           <span className="text-sm">
             {currentPage} / {totalPages}
@@ -100,12 +102,12 @@ const SearchResults: FC<SearchResultsProps> = ({
             disabled={currentPage >= totalPages}
             className="px-4 py-2 bg-blue-500 text-sm text-white rounded disabled:bg-gray-300 sm:px-4 sm:py-2 sm:text-sm px-2 py-1 text-xs"
           >
-            Next
+            {t("Next")}
           </button>
         </div>
       </div>
       {!data || !data.networks || data.networks.length === 0 ? (
-        <p className="text-center">No search results found.</p>
+        <p className="text-center">{t("No search results found.")}</p>
       ) : (
         <ul className="space-y-4 flex flex-col items-center">
           {data?.networks.map((network) => (

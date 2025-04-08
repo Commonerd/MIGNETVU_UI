@@ -396,7 +396,7 @@ export const Network = () => {
       <div className="flex items-center my-5">
         <GlobeIcon className="h-7 w-7 mr-3 text-amber-900" />
         <span className="text-center text-xl font-extrabold">
-          Network Manager
+          {t("Network Manager")}
         </span>
       </div>
 
@@ -446,11 +446,11 @@ export const Network = () => {
         <form onSubmit={submitNetworkHandler} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-semibold text-xs">
-              Name
+              {t("Name")}
             </label>
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-              placeholder="Enter name"
+              placeholder={t("Enter Name")}
               type="text"
               onChange={(e) =>
                 updateNetwork({ ...editedNetwork, title: e.target.value })
@@ -460,7 +460,7 @@ export const Network = () => {
           </div>
           <div>
             <label className="block text-gray-700 font-semibold text-xs">
-              Photo
+              {t("Photo")}
             </label>
             <input
               type="file"
@@ -480,7 +480,7 @@ export const Network = () => {
                   onClick={handlePhotoRemove}
                   className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
                 >
-                  Remove Photo
+                  X
                 </button>
               </div>
             )}
@@ -489,7 +489,7 @@ export const Network = () => {
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-1">
-                Type
+                {t("Type")}
               </label>
               <select
                 className="text-xs w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -504,7 +504,7 @@ export const Network = () => {
             </div>
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-1">
-                Nationality
+                {t("Nationality")}
               </label>
               <input
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -521,7 +521,7 @@ export const Network = () => {
             </div>
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-1">
-                Ethnicity
+                {t("Ethnicity")}
               </label>
               <input
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -541,7 +541,9 @@ export const Network = () => {
             {!isBirthComplete && (
               <div>
                 <label className="block text-gray-700 font-semibold text-xs mb-1">
-                  {editedNetwork.type === "Migrant" ? "Birth" : "Established"}
+                  {editedNetwork.type === "Migrant"
+                    ? t("Birth")
+                    : t("Established")}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -565,7 +567,9 @@ export const Network = () => {
             {isBirthComplete && (
               <div>
                 <label className="block text-gray-700 font-semibold text-xs mb-1">
-                  {editedNetwork.type === "Migrant" ? "Death" : "Dissolved"}
+                  {editedNetwork.type === "Migrant"
+                    ? t("Death")
+                    : t("Dissolved")}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -586,7 +590,7 @@ export const Network = () => {
             )}
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-1">
-                Latitude
+                {t("Latitude")}
               </label>
               <input
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -603,7 +607,7 @@ export const Network = () => {
             </div>
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-1">
-                Longitude
+                {t("Longitude")}
               </label>
               <input
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -622,7 +626,7 @@ export const Network = () => {
           {/* Migration Trace Section */}
           <div>
             <label className="block text-gray-700 font-semibold text-xs mb-2">
-              Migration Trace
+              {t("Migration Trace")}
             </label>
             <div className="space-y-2">
               {editedNetwork.migration_traces?.map((detail, idx) => (
@@ -643,7 +647,7 @@ export const Network = () => {
                         ),
                       })
                     }
-                    placeholder="Loc."
+                    placeholder={t("Loc.")}
                   />
 
                   {/* Latitude */}
@@ -663,7 +667,7 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Lat."
+                      placeholder={t("Lat.")}
                       onBlur={() => setIsLatitudeComplete(true)} // 포커스 아웃 시 Longitude로 전환
                     />
                   ) : (
@@ -682,7 +686,7 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Long."
+                      placeholder={t("Long.")}
                       onBlur={() => setIsLatitudeComplete(false)} // 포커스 아웃 시 Latitude로 전환
                     />
                   )}
@@ -703,7 +707,7 @@ export const Network = () => {
                         ),
                       })
                     }
-                    placeholder="Year"
+                    placeholder={t("Year")}
                   />
 
                   {/* Reason */}
@@ -720,7 +724,7 @@ export const Network = () => {
                         ),
                       })
                     }
-                    placeholder="Reason"
+                    placeholder={t("Reason")}
                   />
 
                   {/* Delete Button */}
@@ -775,7 +779,7 @@ export const Network = () => {
                   })
                 }
               >
-                Add Migration Trace
+                {t("Add")}
               </button>
             </div>
           </div>
@@ -783,7 +787,7 @@ export const Network = () => {
             {/* Edge Section */}
             <div>
               <label className="block text-gray-700 font-semibold text-xs mb-2">
-                Edge Section
+                {t("Edge Section")}
               </label>
               <div className="space-y-2">
                 {editedNetwork.edge?.map((edge, idx) => (
@@ -846,7 +850,7 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Str."
+                      placeholder={t("Str.")}
                     />
 
                     {/* Edge Type */}
@@ -862,7 +866,7 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Type"
+                      placeholder={t("Type")}
                     />
 
                     {/* Year */}
@@ -880,7 +884,7 @@ export const Network = () => {
                           ),
                         })
                       }
-                      placeholder="Year"
+                      placeholder={t("Year")}
                     />
 
                     {/* Delete Button */}
@@ -932,7 +936,7 @@ export const Network = () => {
                     })
                   }
                 >
-                  Add Edge
+                  {t("Add")}
                 </button>
               </div>
             </div>
@@ -942,7 +946,7 @@ export const Network = () => {
                 onClick={clearFormHandler}
                 className="w-full py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 focus:outline-none mr-3"
               >
-                Clear
+                {t("Clear")}
               </button>
               <button
                 className="w-full py-2 bg-gray-400 text-gray-800 rounded hover:bg-gray-600 rounded disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -959,9 +963,9 @@ export const Network = () => {
                 {isSubmitting ? (
                   <ClipLoader size={50} color={"#fff"} />
                 ) : editedNetwork.id === 0 ? (
-                  "Create"
+                  t("Create")
                 ) : (
-                  "Update"
+                  t("Update")
                 )}
               </button>
             </div>
@@ -996,7 +1000,7 @@ export const Network = () => {
           onClick={handleImportCSV}
           className="px-4 py-2 bg-[#6E7F7A] text-white rounded hover:bg-[#36454F]"
         >
-          Import
+          {t("Import")}
         </button>
         <input
           type="file"
@@ -1012,7 +1016,7 @@ export const Network = () => {
           onClick={handleExportXLSX}
           className="px-4 py-2 bg-[#6E7F7A] text-white rounded hover:bg-[#36454F]"
         >
-          Export
+          {t("Export")}
         </button>
       </div>
     </div>

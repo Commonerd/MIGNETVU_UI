@@ -7795,12 +7795,14 @@ const Map: React.FC = () => {
                         )}
 
                       <p>
-                        <span className="font-medium">Creator Name:</span>{" "}
+                        <span className="font-medium">
+                          {t("Creator Name")}:
+                        </span>{" "}
                         {userNames[network.user_id]}
                       </p>
 
                       <p>
-                        <span className="font-medium">Type:</span>{" "}
+                        <span className="font-medium">{t("Type")}:</span>{" "}
                         {network.type}
                       </p>
 
@@ -7809,12 +7811,12 @@ const Map: React.FC = () => {
                       </p>
 
                       <p>
-                        <span className="font-medium">Nationality:</span>{" "}
+                        <span className="font-medium">{t(Nationality)}</span>{" "}
                         {network.nationality}
                       </p>
 
                       <p>
-                        <span className="font-medium">Ethnicity:</span>{" "}
+                        <span className="font-medium">{t("Ethnicity")}:</span>{" "}
                         {network.ethnicity}
                       </p>
 
@@ -7843,12 +7845,12 @@ const Map: React.FC = () => {
                       </p>
 
                       <p>
-                        <span className="font-medium">Latitude:</span>{" "}
+                        <span className="font-medium">{t("Latitude")}:</span>{" "}
                         {network.latitude.toFixed(5)}
                       </p>
 
                       <p>
-                        <span className="font-medium">Longitude:</span>{" "}
+                        <span className="font-medium">{t("Longitude")}:</span>{" "}
                         {network.longitude.toFixed(5)}
                       </p>
                     </div>
@@ -7937,19 +7939,20 @@ const Map: React.FC = () => {
                     }}
                   >
                     <div>
-                      <strong>Network ID:</strong> {trace.network_id}
+                      <strong>{t("Network ID")}:</strong> {trace.network_id}
                     </div>
 
                     <div>
-                      <strong>Place:</strong> {trace.location_name}
+                      <strong>{t("Place")}:</strong> {trace.location_name}
                     </div>
 
                     <div>
-                      <strong>Migration Year:</strong> {trace.migration_year}
+                      <strong>{t("Migration Year")}:</strong>{" "}
+                      {trace.migration_year}
                     </div>
 
                     <div>
-                      <strong>Reason:</strong> {trace.reason}
+                      <strong>{t("Reason")}:</strong> {trace.reason}
                     </div>
                   </div>
                 </Popup>
@@ -8019,7 +8022,7 @@ const Map: React.FC = () => {
 
 
 
-                      <strong>Network ID:</strong> ${nextTrace.network_id}<br/>
+                      <strong>{t("Network ID")}:</strong> ${nextTrace.network_id}<br/>
 
 
 
@@ -8051,7 +8054,7 @@ const Map: React.FC = () => {
 
 
 
-                      <strong>Migration Year:</strong> ${nextTrace.migration_year}<br/>
+                      <strong>{t("Migration Year")}:</strong> ${nextTrace.migration_year}<br/>
 
 
 
@@ -8083,7 +8086,7 @@ const Map: React.FC = () => {
 
 
 
-                      <strong>Location Name:</strong> ${nextTrace.location_name}<br/>
+                      <strong>{t("Location")}:</strong> ${nextTrace.location_name}<br/>
 
 
 
@@ -8115,7 +8118,7 @@ const Map: React.FC = () => {
 
 
 
-                      <strong>Reason:</strong> ${nextTrace.reason}
+                      <strong>{t("Reason")}:</strong> ${nextTrace.reason}
 
 
 
@@ -8231,19 +8234,20 @@ const Map: React.FC = () => {
                       }}
                     >
                       <div>
-                        <strong>Network ID:</strong> {trace.network_id}
+                        <strong>{t("Network ID")}:</strong> {trace.network_id}
                       </div>
 
                       <div>
-                        <strong>Place:</strong> {trace.location_name}
+                        <strong>{t("Place")}:</strong> {trace.location_name}
                       </div>
 
                       <div>
-                        <strong>Migration Year:</strong> {trace.migration_year}
+                        <strong>{t("Migration Year")}:</strong>{" "}
+                        {trace.migration_year}
                       </div>
 
                       <div>
-                        <strong>Reason:</strong> {trace.reason}
+                        <strong>{t("Reason")}:</strong> {trace.reason}
                       </div>
                     </div>
                   </Popup>

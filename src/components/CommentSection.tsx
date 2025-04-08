@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import useCommentStore from "../store/comments"
 import { Comment } from "../types"
 import useStore from "../store"
+import { useTranslation } from "react-i18next"
 
 const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const {
@@ -15,6 +16,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const [newComment, setNewComment] = useState("")
   const [editingComment, setEditingComment] = useState<Comment | null>(null)
   const { user } = useStore()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (currentNetworkId !== networkId) {
@@ -51,7 +53,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
 
   return (
     <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
-      <h3 className="text-sm font-semibold mb-2">comments</h3>
+      <h3 className="text-sm font-semibold mb-2">{t("Comments")}</h3>
       <ul className="space-y-2">
         {comments[networkId] && comments[networkId].length > 0 ? (
           comments[networkId].map((comment) => (
@@ -100,28 +102,28 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
                       onClick={handleUpdateComment}
                       className="px-2 py-0.5 bg-green-500 text-white text-xs rounded hover:bg-green-600"
                     >
-                      Save
+                      {t("Save")}
                     </button>
                   ) : (
                     <button
                       onClick={() => setEditingComment(comment)}
                       className="px-2 py-0.5 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
                     >
-                      Edit
+                      {t("Edit")}
                     </button>
                   )}
                   <button
                     onClick={() => handleDeleteComment(comment.id)}
                     className="px-2 py-0.5 bg-red-500 text-white text-xs rounded hover:bg-red-600"
                   >
-                    Delete
+                    {t("Delete")}
                   </button>
                 </div>
               )}
             </li>
           ))
         ) : (
-          <p className="text-xs text-gray-500">No comments yet.</p>
+          <p className="text-xs text-gray-500">{t("No comments yet.")}</p>
         )}
       </ul>
       {user.isLoggedIn && (
@@ -137,7 +139,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
             onClick={handleCreateComment}
             className="px-3 py-1 mt-2 bg-blue-500 text-white text-xs rounded hover:bg-blue-600"
           >
-            add
+            {t("Add")}
           </button>
         </div>
       )}

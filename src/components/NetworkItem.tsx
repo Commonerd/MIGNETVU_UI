@@ -4,6 +4,7 @@ import useStore from "../store"
 import { Network } from "../types"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
 import { useLocation, useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const NetworkItemMemo: FC<
   Omit<Network, "created_at" | "updated_at"> & {
@@ -38,6 +39,7 @@ const NetworkItemMemo: FC<
   const { deleteNetworkMutation } = useMutateNetwork()
   const navigate = useNavigate()
   const location = useLocation()
+  const { t } = useTranslation()
 
   return (
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
@@ -54,7 +56,7 @@ const NetworkItemMemo: FC<
           No.{id} : {title}
         </span>
         <span className="font-bold text-xs flex justify-between items-center">
-          Creator Name : {user_name}
+          {t("Creator Name")} : {user_name}
         </span>
         <div className="flex ml-4">
           <PencilIcon
@@ -101,25 +103,25 @@ const NetworkItemMemo: FC<
           <thead>
             <tr>
               <th className="px-1 py-1 border font-semibold text-center">
-                Type
+                {t("Type")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Nationality
+                {t("Nationality")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Ethnicity
+                {t("Ethnicity")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                {type === "Migrant" ? "Birth Year" : "Established Year"}
+                {type === "Migrant" ? t("Birth") : t("Established")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                {type === "Migrant" ? "Death Year" : "Dissolved Year"}
+                {type === "Migrant" ? t("Death") : t("Dissolved")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Lat
+                {t("Lat.")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                Lng
+                {t("Long.")}
               </th>
             </tr>
           </thead>
@@ -149,7 +151,7 @@ const NetworkItemMemo: FC<
             className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
             onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
           >
-            <strong>Migration Trace</strong>
+            <strong>{t("Migration Trace")}</strong>
           </div>
           {migration_traces && migration_traces.length > 0 ? (
             <div className="mt-2">
@@ -157,19 +159,19 @@ const NetworkItemMemo: FC<
                 <thead>
                   <tr>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Location
+                      {t("Location")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Longitude
+                      {t("Longitude")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Latitude
+                      {t("Latitude")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Year
+                      {t("Year")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Reason
+                      {t("Reason")}
                     </th>
                   </tr>
                 </thead>
@@ -202,7 +204,7 @@ const NetworkItemMemo: FC<
             </div>
           ) : (
             <div className="mt-4">
-              <p className="text-xs">No migration traces available.</p>
+              <p className="text-xs">{t("No migration traces available.")}</p>
             </div>
           )}
         </div>
@@ -213,7 +215,7 @@ const NetworkItemMemo: FC<
             className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
             onClick={() => handleNetworkEdgesToggle(id)} // 엣지 표제어 클릭 이벤트 추가
           >
-            <strong>Edges</strong>
+            <strong>{t("Edges")}</strong>
           </div>
           {edges?.length > 0 ? (
             <div className="mt-2">
@@ -224,19 +226,19 @@ const NetworkItemMemo: FC<
                 >
                   <tr>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Target ID
+                      {t("Target ID")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Target Type
+                      {t("Target Type")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Strength
+                      {t("Strength")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Connection Type
+                      {t("Connection Type")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
-                      Year
+                      {t("Year")}
                     </th>
                   </tr>
                 </thead>
@@ -268,7 +270,7 @@ const NetworkItemMemo: FC<
               </table>
             </div>
           ) : (
-            <p className="text-xs">No edges available.</p>
+            <p className="text-xs">{t("No edges available.")}</p>
           )}
         </div>
       </div>
