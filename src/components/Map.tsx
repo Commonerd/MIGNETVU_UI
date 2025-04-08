@@ -11358,11 +11358,14 @@ const Map: React.FC = () => {
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
           !user.name ||
-          networks?.some(
-            (network) =>
-              network.id === traces[0].network_id &&
-              network.user_name === user.name,
-          )
+          (networks &&
+            traces &&
+            traces[0] &&
+            networks.some(
+              (network) =>
+                network.id === traces[0].network_id &&
+                network.user_name === user.name,
+            ))
 
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
