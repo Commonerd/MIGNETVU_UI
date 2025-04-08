@@ -22776,7 +22776,7 @@ const Map: React.FC = () => {
                       style={{
                         textAlign: "center",
 
-                        fontSize: "12px",
+                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
 
                         fontWeight: "bold",
 
@@ -22951,7 +22951,7 @@ const Map: React.FC = () => {
                       style={{
                         textAlign: "center",
 
-                        fontSize: "12px",
+                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
 
                         fontWeight: "bold",
 
