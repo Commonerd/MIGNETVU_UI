@@ -140,5 +140,6 @@
   "No migration traces available.": "이동 경로가 없습니다.",
   "No edges available.": "관계가 없습니다.",
   "Strength": "강도",
-  "migrationTrace": "이동"
+  "migrationTrace": "이동",
+  "add comments": "댓글을 입력해주세요."
 }

@@ -132,7 +132,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
             type="text"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="add comments"
+            placeholder={t("add comments")}
             className="flex-1 p-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-400"
           />
           <button
