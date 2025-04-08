@@ -10662,10 +10662,16 @@ const Map: React.FC = () => {
         const matchesEdgeType =
           filters.edgeType.includes("all") ||
           filters.edgeType.includes(edge.edgeType)
-
+        console.log("edge.year:", edge.year, typeof edge.year)
+        console.log(
+          "filters.yearRange:",
+          filters.yearRange,
+          typeof filters.yearRange[0],
+          typeof filters.yearRange[1],
+        )
         const matchesYearRange =
           Number(edge.year) >= Number(filters.yearRange[0]) &&
-          Number(edge.year) <= Number(filters.yearRange[1])
+          Number(edge.year) < Number(filters.yearRange[1])
 
         if (
           isEdgeSelected &&
@@ -10676,7 +10682,6 @@ const Map: React.FC = () => {
           const target = networks?.find((n) => n.id === edge.targetId)
 
           // 유저 네트워크 커넥션 필터 조건
-
           const matchesUserNetworkConnection =
             !filters.userNetworkConnectionFilter ||
             !user.name ||
@@ -10703,8 +10708,8 @@ const Map: React.FC = () => {
     }
 
     networks?.forEach((network) => {
-      const migration_year = new Date(network.migration_year)
-
+      // migration_year를 숫자로 변환 후, 연도로 처리
+      const migration_year = new Date(`${network.migration_year}-01-01`)
       if (
         (filters.entityType.includes("all") ||
           filters.entityType.includes(network.type)) &&
