@@ -139,5 +139,6 @@
   "No networks found.": "검색결과가 없습니다.",
   "No migration traces available.": "이동 경로가 없습니다.",
   "No edges available.": "관계가 없습니다.",
-  "Strength": "강도"
+  "Strength": "강도",
+  "migrationTrace": "이동"
 }

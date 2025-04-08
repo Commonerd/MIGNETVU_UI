@@ -7811,7 +7811,7 @@ const Map: React.FC = () => {
                       </p>
 
                       <p>
-                        <span className="font-medium">{t(Nationality)}</span>{" "}
+                        <span className="font-medium">{t("Nationality")}</span>{" "}
                         {network.nationality}
                       </p>
 
