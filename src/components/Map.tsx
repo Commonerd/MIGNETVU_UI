@@ -22900,114 +22900,208 @@ const Map: React.FC = () => {
             )
           })}
           <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
-          {filteredTraces.map(
-            (
-              trace: {
-                reason: string
+          {migrationTraces.map((traces) =>
+            traces.map((trace) => {
+              // Calculate size dynamically based on trace number
 
-                id: React.Key | null | undefined
+              const baseSize = 20 // Base size for the marker
 
-                network_id: number
+              const sizeIncrement = 2.5 // Smaller increment size for each trace number
 
-                latitude: number
+              const size = baseSize + trace.traceNumber * sizeIncrement
 
-                longitude: number
+              // Filter out duplicate markers at the same position
 
-                location_name:
-                  | string
-                  | number
-                  | boolean
-                  | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
+              const isDuplicate = traces.some(
+                (t) =>
+                  t.id !== trace.id &&
+                  t.latitude === trace.latitude &&
+                  t.longitude === trace.longitude,
+              )
+
+              if (isDuplicate) {
+                return null // Skip rendering duplicate markers
+              }
+
+              return (
+                <Marker
+                  key={trace.id}
+                  position={[trace.latitude, trace.longitude]}
+                  icon={L.divIcon({
+                    className: "custom-trace-marker",
+
+                    html: `<div style="
+
+
+
+
+
+
+
+            position: relative;
+
+
+
+
+
+
+
+            display: flex;
+
+
+
+
+
+
+
+            align-items: center;
+
+
+
+
+
+
+
+            justify-content: center;
+
+
+
+
+
+
+
+            width: ${size}px;
+
+
+
+
+
+
+
+            height: ${size}px;
+
+
+
+
+
+
+
+            background-color: #FF5722;
+
+
+
+
+
+
+
+            color: white;
+
+
+
+
+
+
+
+            border-radius: 50%;
+
+
+
+
+
+
+
+            font-size: ${size / 1.2}px; /* Adjust font size dynamically */
+
+
+
+
+
+
+
+            font-weight: bold;
+
+
+
+
+
+
+
+            border: 2px solid #BF360C;">
+
+
+
+
+
+
+
+            ${trace.traceNumber}
+
+
+
+
+
+
+
+          </div>`,
+                  })}
+                >
+                  {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
+
+                  {showMigrationReasons && (
+                    <Tooltip
+                      permanent
+                      direction="top"
+                      offset={[0, -12]} // Adjust tooltip position
+                      className="custom-tooltip"
                     >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | null
-                  | undefined
+                      <div
+                        style={{
+                          textAlign: "center",
 
-                migration_year:
-                  | string
-                  | number
-                  | boolean
-                  | React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                    >
-                  | Iterable<React.ReactNode>
-                  | React.ReactPortal
-                  | null
-                  | undefined
-              },
+                          fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
 
-              index: number,
-            ) => (
-              <Marker
-                key={trace.id}
-                position={[trace.latitude, trace.longitude]}
-                icon={L.divIcon({
-                  className: "custom-trace-marker",
+                          fontWeight: "bold",
 
-                  html: `<div style="position: relative; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; background-color: #FF5722; color: white; border-radius: 50%; font-size: 12px; font-weight: bold; border: 2px solid #BF360C;">${index + 1}</div>`,
-                })}
-              >
-                {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
-
-                {showMigrationReasons && (
-                  <Tooltip
-                    permanent
-                    direction="top"
-                    offset={[0, -12]} // Adjust tooltip position
-                    className="custom-tooltip"
-                  >
+                          color: "#3E2723",
+                        }}
+                      >
+                        {trace.reason} ({trace.migration_year})
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Popup>
                     <div
                       style={{
-                        textAlign: "center",
+                        fontSize: "14px",
 
-                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                        lineHeight: "1.6",
 
-                        fontWeight: "bold",
+                        margin: "0",
 
-                        color: "#3E2723",
+                        padding: "0",
                       }}
                     >
-                      {trace.reason} ({trace.migration_year})
+                      <div>
+                        <strong>{t("Network ID")}:</strong> {trace.network_id}
+                      </div>
+
+                      <div>
+                        <strong>{t("Place")}:</strong> {trace.location_name}
+                      </div>
+
+                      <div>
+                        <strong>{t("Migration Year")}:</strong>{" "}
+                        {trace.migration_year}
+                      </div>
+
+                      <div>
+                        <strong>{t("Reason")}:</strong> {trace.reason}
+                      </div>
                     </div>
-                  </Tooltip>
-                )}
-
-                <Popup>
-                  <div
-                    style={{
-                      fontSize: "18px",
-
-                      lineHeight: "1.6",
-
-                      margin: "0",
-
-                      padding: "0",
-                    }}
-                  >
-                    <div>
-                      <strong>{t("Network ID")}:</strong> {trace.network_id}
-                    </div>
-
-                    <div>
-                      <strong>{t("Place")}:</strong> {trace.location_name}
-                    </div>
-
-                    <div>
-                      <strong>{t("Migration Year")}:</strong>{" "}
-                      {trace.migration_year}
-                    </div>
-
-                    <div>
-                      <strong>{t("Reason")}:</strong> {trace.reason}
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ),
+                  </Popup>
+                </Marker>
+              )
+            }),
           )}
           {migrationTraces.map((traces) =>
             traces.slice(0, -1).map((trace, index) => {
@@ -23687,185 +23781,6 @@ const Map: React.FC = () => {
                     },
                   }}
                 />
-              )
-            }),
-          )}
-          {migrationTraces.map((traces) =>
-            traces.map((trace) => {
-              // Calculate size dynamically based on trace number
-
-              const baseSize = 20 // Base size for the marker
-
-              const sizeIncrement = 2.5 // Smaller increment size for each trace number
-
-              const size = baseSize + trace.traceNumber * sizeIncrement
-
-              // Filter out duplicate markers at the same position
-
-              const isDuplicate = traces.some(
-                (t) =>
-                  t.id !== trace.id &&
-                  t.latitude === trace.latitude &&
-                  t.longitude === trace.longitude,
-              )
-
-              if (isDuplicate) {
-                return null // Skip rendering duplicate markers
-              }
-
-              return (
-                <Marker
-                  key={trace.id}
-                  position={[trace.latitude, trace.longitude]}
-                  icon={L.divIcon({
-                    className: "custom-trace-marker",
-
-                    html: `<div style="
-
-
-
-
-
-
-
-            position: relative;
-
-
-
-
-
-
-
-            display: flex;
-
-
-
-
-
-
-
-            align-items: center;
-
-
-
-
-
-
-
-            justify-content: center;
-
-
-
-
-
-
-
-            width: ${size}px;
-
-
-
-
-
-
-
-            height: ${size}px;
-
-
-
-
-
-
-
-            background-color: #FF5722;
-
-
-
-
-
-
-
-            color: white;
-
-
-
-
-
-
-
-            border-radius: 50%;
-
-
-
-
-
-
-
-            font-size: ${size / 1.2}px; /* Adjust font size dynamically */
-
-
-
-
-
-
-
-            font-weight: bold;
-
-
-
-
-
-
-
-            border: 2px solid #BF360C;">
-
-
-
-
-
-
-
-            ${trace.traceNumber}
-
-
-
-
-
-
-
-          </div>`,
-                  })}
-                >
-                  <Popup>
-                    <div
-                      style={{
-                        fontSize: "14px",
-
-                        lineHeight: "1.6",
-
-                        margin: "0",
-
-                        padding: "0",
-                      }}
-                    >
-                      <div>
-                        <strong>{t("Network ID")}:</strong> {trace.network_id}
-                      </div>
-
-                      <div>
-                        <strong>{t("Place")}:</strong> {trace.location_name}
-                      </div>
-
-                      <div>
-                        <strong>{t("Migration Year")}:</strong>{" "}
-                        {trace.migration_year}
-                      </div>
-
-                      <div>
-                        <strong>{t("Reason")}:</strong> {trace.reason}
-                      </div>
-                    </div>
-                  </Popup>
-                </Marker>
               )
             }),
           )}
