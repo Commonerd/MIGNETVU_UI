@@ -22682,32 +22682,6 @@ const Map: React.FC = () => {
           >
             {showNetworkNames ? "-" : "+"}
           </button>
-          <button
-            onClick={toggleMigrationReasons}
-            style={{
-              position: "absolute",
-
-              top: "4rem", // 네트워크 이름 토글 버튼 바로 아래
-
-              right: "0rem",
-
-              zIndex: 2000,
-
-              backgroundColor: "#3e2723",
-
-              color: "#fff",
-
-              border: "none",
-
-              borderRadius: "8px",
-
-              padding: "8px 12px",
-
-              cursor: "pointer",
-            }}
-          >
-            {showMigrationReasons ? "-" : "+"}
-          </button>
           {/* 엣지 세부정보 표시/비표시 토글 버튼 */}
           <button
             onClick={toggleEdgeDetails}
@@ -22734,6 +22708,32 @@ const Map: React.FC = () => {
             }}
           >
             {showEdgeDetails ? "-" : "+"}
+          </button>
+          <button
+            onClick={toggleMigrationReasons}
+            style={{
+              position: "absolute",
+
+              top: "4rem", // 네트워크 이름 토글 버튼 바로 아래
+
+              right: "0rem",
+
+              zIndex: 2000,
+
+              backgroundColor: "#3e2723",
+
+              color: "#fff",
+
+              border: "none",
+
+              borderRadius: "8px",
+
+              padding: "8px 12px",
+
+              cursor: "pointer",
+            }}
+          >
+            {showMigrationReasons ? "-" : "+"}
           </button>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
