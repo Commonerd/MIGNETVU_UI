@@ -762,7 +762,7 @@ export const Network = () => {
               {/* Add New Detail */}
               <button
                 type="button"
-                className="mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-md hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
+                className="block mx-auto mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-lg hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
                 onClick={() =>
                   updateNetwork({
                     ...editedNetwork,
@@ -919,7 +919,7 @@ export const Network = () => {
                 {/* Add New Edge */}
                 <button
                   type="button"
-                  className="mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-md hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
+                  className="block mx-auto mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-lg hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
                   onClick={() =>
                     updateNetwork({
                       ...editedNetwork,
@@ -944,12 +944,12 @@ export const Network = () => {
               <button
                 type="button"
                 onClick={clearFormHandler}
-                className="w-full py-2 bg-[#800020] text-gray-100 rounded-md hover:bg-[#455a64] focus:outline-none mr-3"
+                className="w-full py-2 bg-[#800020] text-gray-100 rounded-lg hover:bg-[#455a64] focus:outline-none mr-3"
               >
                 {t("Clear")}
               </button>
               <button
-                className="w-full py-2 bg-[#800020] text-gray-100 rounded-md hover:bg-[#455a64] disabled:opacity-40 focus:outline-none mr-3"
+                className="w-full py-2 bg-[#800020] text-gray-100 rounded-lg hover:bg-[#455a64] disabled:opacity-40 focus:outline-none mr-3"
                 disabled={
                   !editedNetwork.title ||
                   !editedNetwork.nationality ||
@@ -998,7 +998,7 @@ export const Network = () => {
       <div className="flex justify-center gap-2 my-4">
         <button
           onClick={handleImportCSV}
-          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="px-4 py-2 bg-amber-600 text-white rounded-xl hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
         >
           {t("Import")}
         </button>
@@ -1014,7 +1014,7 @@ export const Network = () => {
         />
         <button
           onClick={handleExportXLSX}
-          className="px-4 py-2 bg-amber-600 text-white rounded-md hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="px-4 py-2 bg-amber-600 text-white rounded-xl hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500"
         >
           {t("Export")}
         </button>
