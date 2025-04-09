@@ -22688,7 +22688,7 @@ const Map: React.FC = () => {
             style={{
               position: "absolute",
 
-              top: "6rem", // 이동경로 토글 버튼 바로 아래
+              top: "4rem", // 네트워크 토글 버튼 바로 아래
 
               right: "0rem",
 
@@ -22714,7 +22714,7 @@ const Map: React.FC = () => {
             style={{
               position: "absolute",
 
-              top: "4rem", // 네트워크 이름 토글 버튼 바로 아래
+              top: "6rem", // 관계 토글 버튼 바로 아래
 
               right: "0rem",
 
