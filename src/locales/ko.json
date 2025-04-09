@@ -121,8 +121,8 @@
   "Prev": "이전",
   "Next": "다음",
   "Creator Name": "생성자",
-  "Birth Year": "출생 연도",
-  "Death Year": "사망 연도",
+  "Birth Year": "출생",
+  "Death Year": "사망",
   "Lat": "위도",
   "Long": "경도",
   "Edges": "관계",
@@ -141,5 +141,7 @@
   "No edges available.": "관계가 없습니다.",
   "Strength": "강도",
   "migrationTrace": "이동",
-  "add comments": "댓글을 입력해주세요."
+  "add comments": "댓글을 입력해주세요.",
+  "Centrality":"중심성"
+
 }

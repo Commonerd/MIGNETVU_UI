@@ -79,7 +79,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
                     <span className="font-semibold text-gray-900">
                       {comment.user_name}
                     </span>
-                    <span className="text-gray-500">({comment.user_role})</span>
+                    <span className="text-gray-500">({t(comment.user_role)})</span>
                     <span className="text-gray-400 text-[11px]">
                       {comment.created_at instanceof Date
                         ? comment.created_at

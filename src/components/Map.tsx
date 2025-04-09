@@ -22832,7 +22832,7 @@ const Map: React.FC = () => {
                       </p>
 
                       <p>
-                        {t("centrality")}: {centralityValues[network.id] || 0}
+                        {t("Centrality")}: {centralityValues[network.id] || 0}
                       </p>
 
                       <p>
@@ -22848,8 +22848,8 @@ const Map: React.FC = () => {
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
-                            ? "Birth Year"
-                            : "Established Year"}
+            ? t("Birth Year")
+            : t("Established Year")}
                         </span>
 
                         <span className="font-medium">
@@ -22860,8 +22860,8 @@ const Map: React.FC = () => {
                       <p>
                         <span className="font-medium">
                           {network.type === "Migrant"
-                            ? "Death Year"
-                            : "Dissolved Year"}
+            ? t("Death Year")
+            : t("Dissolved Year")}
                         </span>
 
                         <span className="font-medium">
