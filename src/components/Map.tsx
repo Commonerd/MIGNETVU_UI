@@ -21791,35 +21791,6 @@ const Map: React.FC = () => {
               </div>
             )}
 
-            {/* 나의 이동 */}
-
-            {user.isLoggedIn && (
-              <div>
-                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                  <input
-                    type="checkbox"
-                    id="userNetworkTraceFilter"
-                    className="w-4 h-4"
-                    checked={filters.userNetworkTraceFilter}
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "userNetworkTraceFilter",
-
-                        e.target.checked,
-                      )
-                    }
-                  />
-
-                  <label
-                    htmlFor="userNetworkTraceFilter"
-                    className="ml-2 text-sm"
-                  >
-                    {t("filterByUserNetworkTrace")}
-                  </label>
-                </div>
-              </div>
-            )}
-
             {/* 나의 관계망 */}
 
             {user.isLoggedIn && (
@@ -21844,6 +21815,35 @@ const Map: React.FC = () => {
                     className="ml-2 text-sm"
                   >
                     {t("filterByUserNetworkConnection")}
+                  </label>
+                </div>
+              </div>
+            )}
+
+            {/* 나의 이동 */}
+
+            {user.isLoggedIn && (
+              <div>
+                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                  <input
+                    type="checkbox"
+                    id="userNetworkTraceFilter"
+                    className="w-4 h-4"
+                    checked={filters.userNetworkTraceFilter}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "userNetworkTraceFilter",
+
+                        e.target.checked,
+                      )
+                    }
+                  />
+
+                  <label
+                    htmlFor="userNetworkTraceFilter"
+                    className="ml-2 text-sm"
+                  >
+                    {t("filterByUserNetworkTrace")}
                   </label>
                 </div>
               </div>
@@ -22373,27 +22373,6 @@ const Map: React.FC = () => {
                   <div className="ml-1 flex items-center gap-0.5">
                     <input
                       type="checkbox"
-                      id="userNetworkTraceFilter"
-                      className="w-2 h-2"
-                      checked={filters.userNetworkTraceFilter}
-                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                      onChange={(e) =>
-                        handleFilterChange(
-                          "userNetworkTraceFilter",
-
-                          e.target.checked,
-                        )
-                      }
-                    />
-
-                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
-                      {t("filterByUserNetworkTrace")}
-                    </label>
-                  </div>
-
-                  <div className="ml-1 flex items-center gap-0.5">
-                    <input
-                      type="checkbox"
                       id="userNetworkConnectionFilter"
                       className="w-2 h-2"
                       checked={filters.userNetworkConnectionFilter}
@@ -22412,6 +22391,27 @@ const Map: React.FC = () => {
                       className="text-xs"
                     >
                       {t("filterByUserNetworkConnection")}
+                    </label>
+                  </div>
+
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkTraceFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkTraceFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkTraceFilter",
+
+                          e.target.checked,
+                        )
+                      }
+                    />
+
+                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
+                      {t("filterByUserNetworkTrace")}
                     </label>
                   </div>
 
