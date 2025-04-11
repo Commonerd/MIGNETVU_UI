@@ -1129,7 +1129,7 @@ const legendStyles = `
 
 
 
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.7);
 
 
 
@@ -7273,7 +7273,7 @@ const legendStyles = `
 
 
 
-  font-size: 0.8rem;
+  font-size: 0.7rem;
 
 
 
@@ -19561,7 +19561,7 @@ const legendStyles = `
 
 
 
-    font-size: 0.9rem;
+    font-size: 0.8rem;
 
 
 
@@ -72842,7 +72842,7 @@ const Legend = ({
 
 
 
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
+              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid red; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
 
 
 
@@ -81162,7 +81162,7 @@ const Map: React.FC = () => {
 
           direction: "center",
 
-          opacity: 0.9,
+          opacity: 0.7,
         })
 
         // 클릭 이벤트 핸들러 추가
@@ -82407,7 +82407,7 @@ const Map: React.FC = () => {
 
               zIndex: 1,
 
-              opacity: 0.95, // 투명도 조정
+              opacity: 0.8, // 투명도 조정
             }}
           >
             <div
@@ -82724,6 +82724,7 @@ const Map: React.FC = () => {
                     direction="top"
                     offset={[0, -size / 2]} // Adjust tooltip position based on marker size
                     className="custom-tooltip"
+                    opacity={0.7} //
                   >
                     <div
                       style={{
@@ -82844,9 +82845,9 @@ const Map: React.FC = () => {
             traces.map((trace) => {
               // Calculate size dynamically based on trace number
 
-              const baseSize = 20 // Base size for the marker
+              const baseSize = 17 // Base size for the marker
 
-              const sizeIncrement = 2.5 // Smaller increment size for each trace number
+              const sizeIncrement = 2.2 // Smaller increment size for each trace number
 
               const size = baseSize + trace.traceNumber * sizeIncrement
 
@@ -83329,6 +83330,7 @@ const Map: React.FC = () => {
                       direction="top"
                       offset={[0, -12]} // Adjust tooltip position
                       className="custom-tooltip"
+                      opacity={0.7} // 투명도를 1로 설정하여 완전히 불투명하게 만듦
                     >
                       <div
                         style={{
@@ -86018,7 +86020,7 @@ const LegendBox = styled.div`
 
   width: 10rem; /* 박스 너비를 더 작게 */
 
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.7);
 
   padding: 7px; /* 패딩을 줄임 */
 
@@ -86030,12 +86032,12 @@ const LegendBox = styled.div`
 
   z-index: 1000;
 
-  font-size: 0.8rem; /* 기본 글자 크기 축소 */
+  font-size: 0.7rem; /* 기본 글자 크기 축소 */
 
   h2 {
-    font-size: 1rem; /* 제목 글자 크기 축소 */
+    font-size: 0.9rem; /* 제목 글자 크기 축소 */
 
-    margin-bottom: 0.3rem; /* 제목 아래 여백 축소 */
+    margin-bottom: 0.2rem; /* 제목 아래 여백 축소 */
 
     text-align: center;
 
@@ -86043,7 +86045,7 @@ const LegendBox = styled.div`
   }
 
   ul {
-    font-size: 0.9rem; /* 리스트 글자 크기 축소 */
+    font-size: 0.8rem; /* 리스트 글자 크기 축소 */
 
     margin: 0;
 
@@ -86059,30 +86061,30 @@ const LegendBox = styled.div`
   @media (max-width: 768px) {
     width: 8rem; /* 모바일에서 박스 너비 축소 */
 
-    font-size: 0.7rem; /* 글자 크기 더 축소 */
+    font-size: 0.6rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.9rem; /* 제목 글자 크기 더 축소 */
+      font-size: 0.8rem; /* 제목 글자 크기 더 축소 */
 
       font-weight: bold;
     }
 
     ul {
-      font-size: 0.8rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.7rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 
   @media (max-width: 480px) {
     width: 7rem; /* 더 작은 화면에서 박스 너비 축소 */
 
-    font-size: 0.4rem; /* 글자 크기 더 축소 */
+    font-size: 0.35rem; /* 글자 크기 더 축소 */
 
     h2 {
-      font-size: 0.7rem; /* 제목 글자 크기 더 축소 */
+      font-size: 0.65rem; /* 제목 글자 크기 더 축소 */
     }
 
     ul {
-      font-size: 0.7rem; /* 리스트 글자 크기 더 축소 */
+      font-size: 0.6rem; /* 리스트 글자 크기 더 축소 */
     }
   }
 `
@@ -86096,6 +86098,7 @@ const customStyles = {
     flexWrap: "nowrap", // 줄바꿈 방지
 
     overflowX: "auto", // 가로 스크롤 활성화
+    overflowY: "auto",
 
     boxShadow: state.isFocused
       ? "0 0 0 2px rgba(251, 191, 36, 1)"
