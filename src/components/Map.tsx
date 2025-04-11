@@ -80696,8 +80696,6 @@ const Map: React.FC = () => {
         updatedFilters.entityType = ["all"]
       }
 
-      // 필터링 조건이 초기화되었을 때 다시 계산
-
       if (
         key === "migrationReasons" &&
         Array.isArray(value) &&
