@@ -16,6 +16,8 @@ const Footer: React.FC = () => {
             <a
               href="https://docs.google.com/spreadsheets/d/1w7UqUIv3rfTncO6qTiujo7W_BgFBNVQkOf2BH4Xgkjs/edit?gid=0#gid=0"
               className="text-blue-400"
+              target="_blank" // 새 창으로 열기
+              rel="noopener noreferrer" // 보안 강화
             >
               {t("Inquiry")}{" "}
             </a>
@@ -26,6 +28,8 @@ const Footer: React.FC = () => {
             <a
               href="https://docs.google.com/spreadsheets/d/1w7UqUIv3rfTncO6qTiujo7W_BgFBNVQkOf2BH4Xgkjs/edit?gid=0#gid=0"
               className="text-blue-400"
+              target="_blank" // 새 창으로 열기
+              rel="noopener noreferrer" // 보안 강화
             >
               {t("Inquiry")}
             </a>
