@@ -1,9 +1,9 @@
-import { FC, useState, useEffect } from "react"
+import { FC, useState } from "react"
 import { useQuerySearchNetworks } from "../hooks/useQueryNetworks"
 import { NetworkItem } from "./NetworkItem"
 import { useQueryClient } from "@tanstack/react-query"
-import { useMap } from "react-leaflet"
 import { useTranslation } from "react-i18next"
+import { FiSearch, FiX } from "react-icons/fi" // 아이콘 추가
 
 interface SearchResultsProps {
   searchQuery: string
@@ -11,9 +11,9 @@ interface SearchResultsProps {
     React.SetStateAction<{ lat: number; lng: number } | null>
   >
   handleEntityClick: (id: number) => void
-  handleMigrationTraceClick: (networkId: number) => void // 추가
-  handleEdgeClick: (edgeId: number) => void // 추가
-  handleNetworkEdgesToggle: (networkId: number) => void // 추가
+  handleMigrationTraceClick: (networkId: number) => void
+  handleEdgeClick: (edgeId: number) => void
+  handleNetworkEdgesToggle: (networkId: number) => void
 }
 
 const SearchResults: FC<SearchResultsProps> = ({
@@ -21,10 +21,11 @@ const SearchResults: FC<SearchResultsProps> = ({
   setFocusedNode,
   handleEntityClick,
   handleMigrationTraceClick,
-  handleEdgeClick, // 추가
-  handleNetworkEdgesToggle, // 추가
+  handleEdgeClick,
+  handleNetworkEdgesToggle,
 }) => {
   const [currentPage, setCurrentPage] = useState(1)
+  const [isVisible, setIsVisible] = useState(true) // 검색창 표시 여부 상태 추가
   const { t } = useTranslation()
 
   const { data, isLoading, error } = useQuerySearchNetworks(
@@ -32,15 +33,26 @@ const SearchResults: FC<SearchResultsProps> = ({
     currentPage,
   )
 
-  const queryClient = useQueryClient() // React Query Client 접근
+  const queryClient = useQueryClient()
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage)
   }
+
   const handleClearCache = () => {
-    // 특정 쿼리 키 캐시 삭제
     queryClient.invalidateQueries({ queryKey: ["searchNetworks"] })
-    alert("Cache has been cleared!") // 영어 메시지
+    alert("Cache has been cleared!")
+  }
+
+  if (!isVisible) {
+    return (
+      <button
+        onClick={() => setIsVisible(true)} // 검색창 다시 표시
+        className="fixed top-4 right-4 bg-blue-500 text-white p-2 rounded-full shadow-lg hover:bg-blue-600 transition"
+      >
+        <FiSearch size={20} /> {/* 검색 아이콘 */}
+      </button>
+    )
   }
 
   if (isLoading) {
@@ -55,13 +67,20 @@ const SearchResults: FC<SearchResultsProps> = ({
   const totalCount = data?.totalCount || 0
 
   return (
-    <div className="my-1 w-full max-w-lg sm:max-w-full">
+    <div className="relative my-1 w-full max-w-lg sm:max-w-full bg-white shadow-lg rounded-lg p-4">
+      {/* Close Button */}
+      <button
+        onClick={() => setIsVisible(false)} // 검색창 숨기기
+        className="absolute top-2 right-2 bg-gray-200 text-gray-600 p-2 rounded-full hover:bg-gray-300 transition"
+      >
+        <FiX size={16} /> {/* 닫기 아이콘 */}
+      </button>
+
       {/* Search Results */}
       <div className="flex justify-center items-center mb-4 sm:text-sm">
         <h2 className="text-lg font-bold sm:text-xl text-sm">
           {t("Found")} {totalCount} {t("Results")}
         </h2>
-        {/* Clear Cache Icon */}
         <button
           onClick={handleClearCache}
           className="ml-1 sm:ml-2 text-red-500 hover:text-red-700"
@@ -85,7 +104,6 @@ const SearchResults: FC<SearchResultsProps> = ({
 
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
-        {/* Pagination Centered */}
         <div className="flex justify-center items-center flex-1 gap-4">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -116,9 +134,9 @@ const SearchResults: FC<SearchResultsProps> = ({
               {...network}
               setFocusedNode={setFocusedNode}
               handleEntityClick={handleEntityClick}
-              handleMigrationTraceClick={handleMigrationTraceClick} // 추가
-              handleEdgeClick={handleEdgeClick} // 추가
-              handleNetworkEdgesToggle={handleNetworkEdgesToggle} // 추가
+              handleMigrationTraceClick={handleMigrationTraceClick}
+              handleEdgeClick={handleEdgeClick}
+              handleNetworkEdgesToggle={handleNetworkEdgesToggle}
             />
           ))}
         </ul>
