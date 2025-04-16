@@ -80061,7 +80061,7 @@ const Map: React.FC = () => {
 
   const [networks, setNetworks] = useState<Network[] | undefined>()
 
-  const [showNetworkNames, setShowNetworkNames] = useState<boolean>(true) // 네트워크 이름 표시 여부 상태 추가
+  const [showNetworkNames, setShowNetworkNames] = useState<boolean>(false) // 네트워크 이름 표시 여부 상태 추가
 
   const [migrants, setMigrants] = useState<Migrant[]>([])
 
@@ -80146,9 +80146,9 @@ const Map: React.FC = () => {
   const [isTopContributorsVisible, setIsTopContributorsVisible] = useState(true) // 기여자 랭킹 표시 여부 상태
 
   const [showMigrationReasons, setShowMigrationReasons] =
-    useState<boolean>(true) // 이주 원인 표시 여부 상태 추가
+    useState<boolean>(false) // 이주 원인 표시 여부 상태 추가
 
-  const [showEdgeDetails, setShowEdgeDetails] = useState<boolean>(true) // 엣지 세부정보 표시 여부 상태 추가
+  const [showEdgeDetails, setShowEdgeDetails] = useState<boolean>(false) // 엣지 세부정보 표시 여부 상태 추가
 
   const toggleEdgeDetails = () => {
     setShowEdgeDetails((prev) => !prev) // 엣지 세부정보 표시/비표시 토글 함수
