@@ -82408,6 +82408,7 @@ const Map: React.FC = () => {
               zIndex: 1,
 
               opacity: 0.8, // 투명도 조정
+              pointerEvents: "none", // 검색 결과 영역이 클릭 이벤트를 차단하지 않도록 설정
             }}
           >
             <div
@@ -82420,6 +82421,7 @@ const Map: React.FC = () => {
                 position: "relative",
 
                 backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
+                pointerEvents: "auto", // 검색 결과 내부는 클릭 가능하도록 설정
               }}
             >
               <SearchResults
