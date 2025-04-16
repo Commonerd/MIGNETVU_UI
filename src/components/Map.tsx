@@ -80076,7 +80076,7 @@ const Map: React.FC = () => {
 
     entityType: "all",
 
-    yearRange: [1000, new Date().getFullYear()], // 현재 연도로 자동 설정
+    yearRange: [1860, 1945], // 현재 연도로 자동 설정
 
     userNetworkFilter: false,
 
@@ -80118,9 +80118,9 @@ const Map: React.FC = () => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
 
   const [yearRange, setYearRange] = useState<[number, number]>([
-    1000,
+    1860,
 
-    new Date().getFullYear(),
+    1945,
   ])
 
   const [searchQuery, setSearchQuery] = useState("")
@@ -82449,8 +82449,8 @@ const Map: React.FC = () => {
         />
       ) : (
         <MapContainer
-          center={[30, -30]} // 스페인과 아메리카 대륙 중간 대서양 좌표
-          zoom={2}
+          center={[40, 130]} // 스페인과 아메리카 대륙 중간 대서양 좌표
+          zoom={5}
           zoomControl={false} // 확대/축소 컨트롤 제거
           style={{
             height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
@@ -82466,7 +82466,7 @@ const Map: React.FC = () => {
 
             [-90, 360], // 최대 위도, 경도
           ]}
-          maxBoundsViscosity={1.0} // 최대 경계 범위 조정
+          maxBoundsViscosity={1.2} // 최대 경계 범위 조정
           minZoom={3} // 최소 줌 레벨 설정
         >
           <HandleRightClick />
