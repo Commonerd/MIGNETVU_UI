@@ -81064,10 +81064,7 @@ const Map: React.FC = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
       )
-      console.log("photo response:", response)
-      console.log("photo response data:", response.data)
-      const imageUrl = URL.createObjectURL(response.data)
-
+      const imageUrl = response.data.photo
       setHighlightedNode({
         id,
 
