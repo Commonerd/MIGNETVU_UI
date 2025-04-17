@@ -80262,15 +80262,11 @@ const Map: React.FC = () => {
       return
     }
 
-    console.log("Setting networks:", data)
-
     setNetworks(data)
   }, [data])
 
   useEffect(() => {
     const markersLayer = L.layerGroup()
-
-    console.log(networks)
 
     if (networks && networks.length > 0) {
       networks.forEach((network) => {
@@ -80556,18 +80552,6 @@ const Map: React.FC = () => {
         const matchesEdgeType =
           filters.edgeType.includes("all") ||
           filters.edgeType.includes(edge.edgeType)
-
-        console.log("edge.year:", edge.year, typeof edge.year)
-
-        console.log(
-          "filters.yearRange:",
-
-          filters.yearRange,
-
-          typeof filters.yearRange[0],
-
-          typeof filters.yearRange[1],
-        )
 
         const matchesYearRange =
           Number(edge.year) >= Number(filters.yearRange[0]) &&

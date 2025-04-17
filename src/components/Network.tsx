@@ -77,10 +77,8 @@ export const Network = () => {
     if (photo) {
       formData.append("photo", photo)
     }
-    console.log(formData)
     // FormData 내용 콘솔에 출력
     for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`)
     }
     try {
       if (id === 0) {
@@ -139,11 +137,6 @@ export const Network = () => {
           connectionsString,
         ] = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/) // CSV 쉼표 구분
 
-        console.log(
-          `Line ${index + 1} original connectionsString:`,
-          connectionsString,
-        )
-
         let connections: any = []
 
         try {
@@ -188,10 +181,7 @@ export const Network = () => {
         }
       })
 
-      console.log("Final imported data:", importedData)
-
       importedData.forEach((network) => {
-        console.log("Sending network to mutation:", network)
         createNetworkMutation.mutate(network)
       })
     }
@@ -201,8 +191,6 @@ export const Network = () => {
 
   const handleExportXLSX = async () => {
     if (!data) return
-
-    console.log("Data:", data)
 
     const networksSheet = [
       [
@@ -257,7 +245,6 @@ export const Network = () => {
         "Year",
       ],
       ...data.flatMap((network) => {
-        console.log("Network Edges:", network.edges)
         return (network.edges || []).map((edge) => [
           edge.id,
           network.id,
@@ -281,7 +268,6 @@ export const Network = () => {
         "Reason",
       ],
       ...data.flatMap((network) => {
-        console.log("Network Migration Traces:", network.migration_traces)
         return (network.migration_traces || []).map((trace) => [
           trace.id,
           network.id,

@@ -19,7 +19,6 @@ export const fetchAllComments = async () => {
 export const createComment = async (
   comment: Omit<Comment, "id" | "createdAt" | "updatedAt">,
 ) => {
-  console.log("api comment", comment)
   const response = await axios.post<Comment>(`${API_URL}/comments`, comment)
   return response.data
 }

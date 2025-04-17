@@ -43,7 +43,6 @@ export const EditProfile = () => {
       setIsLoading(false)
       if (res != null) {
         toast.success("Profile updated successfully!")
-        console.log("res", res)
         setUser({
           isLoggedIn: true,
           name: res.data.name,
