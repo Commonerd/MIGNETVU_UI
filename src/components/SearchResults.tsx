@@ -67,7 +67,7 @@ const SearchResults: FC<SearchResultsProps> = ({
   const totalCount = data?.totalCount || 0
 
   return (
-    <div className="relative my-1 w-full max-w-lg sm:max-w-full bg-white shadow-md rounded-md p-2">
+    <div className="relative my-1 w-full max-w-lg sm:max-w-full shadow-md rounded-md p-2">
       {/* Close Button */}
       <button
         onClick={() => setIsVisible(false)} // 검색창 숨기기
