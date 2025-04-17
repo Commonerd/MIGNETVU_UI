@@ -81066,7 +81066,6 @@ const Map: React.FC = () => {
 
         {
           responseType: "blob",
-          withCredentials: true, // Include credentials for CORS requests
         },
       )
 
