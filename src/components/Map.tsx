@@ -82399,15 +82399,14 @@ const Map: React.FC = () => {
 
         {triggerSearch && searchQuery && (
           <div
-            className="flex justify-end absolute w-full z-10"
+            className={`flex justify-end absolute w-full z-10 ${
+              triggerSearch ? "block" : "hidden"
+            }`} // 검색 결과가 숨겨지면 완전히 제거
             style={{
               top: "4rem",
-
               right: "0",
-
-              zIndex: 1,
-
-              opacity: 0.8, // 투명도 조정
+              opacity: triggerSearch ? 0.8 : 0, // 투명도 조정
+              pointerEvents: "none",
             }}
           >
             <div
@@ -82420,6 +82419,7 @@ const Map: React.FC = () => {
                 position: "relative",
 
                 backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
+                pointerEvents: "auto",
               }}
             >
               <SearchResults
