@@ -83369,8 +83369,8 @@ const Map: React.FC = () => {
                       }}
                     >
                       <div>
-                        <strong>{t("Network ID")}:</strong> {trace.network_id} (
-                        {networkName})
+                        <strong>{t("Network ID")}:</strong> {trace.network_id}-
+                        {networkName}
                       </div>
 
                       <div>
