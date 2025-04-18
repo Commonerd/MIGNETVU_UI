@@ -40,6 +40,8 @@ const NetworkItemMemo: FC<
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
+  const { user } = useStore()
+  console.log(user_id, user.id)
 
   return (
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
@@ -58,44 +60,49 @@ const NetworkItemMemo: FC<
         <span className="font-bold text-xs flex justify-between items-center">
           {t("Creator Name")} : {user_name}
         </span>
-        <div className="flex ml-4">
-          <PencilIcon
-            className="h-4 w-4 mx-1 text-blue-500 cursor-pointer"
-            onClick={() => {
-              updateNetwork({
-                id: id,
-                title: title,
-                type: type,
-                nationality: nationality,
-                ethnicity: ethnicity,
-                migration_year: migration_year,
-                end_year,
-                latitude: latitude,
-                longitude: longitude,
-                connections: connections,
-                edge: edges,
-                migration_traces: migration_traces,
-                user_id: 0,
-              })
-              window.location.href.includes("network")
-                ? window.scrollTo({
-                    top: document.body.scrollHeight,
-                    behavior: "instant",
-                  })
-                : navigate("/network")
-            }}
-          />
-          <TrashIcon
-            className="h-4 w-4 text-red-500 cursor-pointer"
-            onClick={() => {
-              if (
-                window.confirm(`Are you sure you want to delete "${title}"?`)
-              ) {
-                deleteNetworkMutation.mutate(id)
-              }
-            }}
-          />
-        </div>
+        {/* 수정 및 삭제 아이콘 */}
+        {user_id === user.id ? (
+          <div className="flex ml-4">
+            <PencilIcon
+              className="h-4 w-4 mx-1 text-blue-500 cursor-pointer"
+              onClick={() => {
+                updateNetwork({
+                  id: id,
+                  title: title,
+                  type: type,
+                  nationality: nationality,
+                  ethnicity: ethnicity,
+                  migration_year: migration_year,
+                  end_year,
+                  latitude: latitude,
+                  longitude: longitude,
+                  connections: connections,
+                  edge: edges,
+                  migration_traces: migration_traces,
+                  user_id: 0,
+                })
+                window.location.href.includes("network")
+                  ? window.scrollTo({
+                      top: document.body.scrollHeight,
+                      behavior: "instant",
+                    })
+                  : navigate("/network")
+              }}
+            />
+            <TrashIcon
+              className="h-4 w-4 text-red-500 cursor-pointer"
+              onClick={() => {
+                if (
+                  window.confirm(`Are you sure you want to delete "${title}"?`)
+                ) {
+                  deleteNetworkMutation.mutate(id)
+                }
+              }}
+            />
+          </div>
+        ) : (
+          <div className="flex ml-4"></div>
+        )}
       </div>
 
       <div className="mt-2 overflow-x-auto">
