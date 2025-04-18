@@ -40,17 +40,26 @@ const NetworkItemMemo: FC<
   const navigate = useNavigate()
   const location = useLocation()
   const { t } = useTranslation()
+  const [tooltipVisible, setTooltipVisible] = useState(false) // 툴팁 상태
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 }) // 툴팁 위치
+
+  const handleNameClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setTooltipPosition({ x: rect.left + rect.width / 2, y: rect.top - 10 }) // 툴팁 위치 계산
+    setTooltipVisible(!tooltipVisible) // 툴팁 표시/숨김 토글
+  }
 
   return (
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
       <div className="flex justify-between items-center w-full max-w-lg">
         <span
           className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer w-full sm:w-auto"
-          onClick={() =>
-            location.pathname !== "/network"
-              ? (setFocusedNode({ lat: latitude, lng: longitude }),
-                handleEntityClick(id))
-              : null
+          onClick={
+            (e) =>
+              location.pathname !== "/network"
+                ? (setFocusedNode({ lat: latitude, lng: longitude }),
+                  handleEntityClick(id))
+                : handleNameClick(e) // 툴팁 표시
           }
         >
           No.{id} : {title}

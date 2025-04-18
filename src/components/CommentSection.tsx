@@ -52,7 +52,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   }
 
   return (
-    <div className="w-30 mx-auto bg-gray-100 border border-gray-300 rounded-md p-3">
+    <div className="w-30 h-30 mx-auto bg-[rgba(241,245,249,0.6)] p-3">
+      {" "}
+      {/* 투명도 추가 */}
       <h3 className="text-sm font-semibold mb-2">{t("Comments")}</h3>
       <ul className="space-y-2">
         {comments[networkId] && comments[networkId].length > 0 ? (
@@ -79,7 +81,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
                     <span className="font-semibold text-gray-900">
                       {comment.user_name}
                     </span>
-                    <span className="text-gray-500">({t(comment.user_role)})</span>
+                    <span className="text-gray-500">
+                      ({t(comment.user_role)})
+                    </span>
                     <span className="text-gray-400 text-[11px]">
                       {comment.created_at instanceof Date
                         ? comment.created_at

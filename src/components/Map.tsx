@@ -24,7 +24,7 @@ import L, {
 } from "leaflet"
 
 import "leaflet-polylinedecorator"
-
+import ResizablePopup from "./ResizablePopup"
 import {
   Migrant,
   Organization,
@@ -80150,6 +80150,23 @@ const Map: React.FC = () => {
 
   const [showEdgeDetails, setShowEdgeDetails] = useState<boolean>(false) // 엣지 세부정보 표시 여부 상태 추가
 
+  const [popupPosition, setPopupPosition] = useState<{
+    x: number
+    y: number
+  } | null>(null)
+
+  const HandleMapClickForPopupSize = () => {
+    useMapEvents({
+      click(e) {
+        setPopupPosition({
+          x: e.containerPoint.x,
+          y: e.containerPoint.y,
+        })
+      },
+    })
+    return null
+  }
+
   const toggleEdgeDetails = () => {
     setShowEdgeDetails((prev) => !prev) // 엣지 세부정보 표시/비표시 토글 함수
   }
@@ -82691,7 +82708,13 @@ const Map: React.FC = () => {
                 })}
                 zIndexOffset={1000} // 네트워크 노드의 zIndex를 높게 설정
                 eventHandlers={{
-                  click: () => handleTooltipOpen(network.id),
+                  click: (e) => {
+                    handleTooltipOpen(network.id)
+                    setPopupPosition({
+                      x: e.latlng.lat, // 노드 바로 위에 팝업 위치 설정
+                      y: e.latlng.lng,
+                    })
+                  },
                 }}
               >
                 {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
@@ -82719,102 +82742,107 @@ const Map: React.FC = () => {
                     </div>
                   </Tooltip>
                 )}
-
-                <Popup>
-                  <PopupContent>
-                    <strong className="text-lg font-semibold block mb-2">
-                      No.{network.id} : {network.title}
-                    </strong>
-
-                    <div className="text-gray-700 text-sm space-y-1">
-                      {highlightedNode?.id === network.id &&
-                        highlightedNode.photo && (
-                          <div className="flex justify-center mb-2">
-                            <img
-                              src={highlightedNode.photo}
-                              alt="Network"
-                              className="w-24 h-24 object-cover rounded-lg shadow-md"
-                            />
-                          </div>
-                        )}
-
-                      <p>
-                        <span className="font-medium">
-                          {t("Creator Name")}:
-                        </span>{" "}
-                        {userNames[network.user_id]}
-                      </p>
-
-                      <p>
-                        <span className="font-medium">{t("Type")}:</span>{" "}
-                        {network.type}
-                      </p>
-
-                      <p>
-                        {t("Centrality")}: {centralityValues[network.id] || 0}
-                      </p>
-
-                      <p>
-                        <span className="font-medium">{t("Nationality")}</span>{" "}
-                        {network.nationality}
-                      </p>
-
-                      <p>
-                        <span className="font-medium">{t("Ethnicity")}:</span>{" "}
-                        {network.ethnicity}
-                      </p>
-
-                      <p>
-                        <span className="font-medium">
-                          {network.type === "Migrant"
-                            ? t("Birth Year")
-                            : t("Established Year")}
-                        </span>
-
-                        <span className="font-medium">
-                          : {network.migration_year}
-                        </span>
-                      </p>
-
-                      <p>
-                        <span className="font-medium">
-                          {network.type === "Migrant"
-                            ? t("Death Year")
-                            : t("Dissolved Year")}
-                        </span>
-
-                        <span className="font-medium">
-                          : {network.end_year}
-                        </span>
-                      </p>
-
-                      <p>
-                        <span className="font-medium">{t("Latitude")}:</span>{" "}
-                        {network.latitude.toFixed(5)}
-                      </p>
-
-                      <p>
-                        <span className="font-medium">{t("Longitude")}:</span>{" "}
-                        {network.longitude.toFixed(5)}
-                      </p>
-                    </div>
-                  </PopupContent>
-
-                  <div
-                    className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
-                    style={{
-                      width: "100%",
-
-                      maxHeight: "150px",
-
-                      marginTop: "16px",
-                    }}
+                {popupPosition && highlightedNode?.id === network.id && (
+                  <ResizablePopup
+                    position={popupPosition}
+                    onClose={() => setPopupPosition(null)}
                   >
-                    <CommentSectionWrapper>
+                    <PopupContent>
+                      <strong className="text-lg font-semibold block mb-2">
+                        No.{network.id} : {network.title}
+                      </strong>
+
+                      <div className="text-gray-700 text-sm space-y-1">
+                        {highlightedNode?.id === network.id &&
+                          highlightedNode.photo && (
+                            <div className="flex justify-center mb-2">
+                              <img
+                                src={highlightedNode.photo}
+                                alt="Network"
+                                className="w-24 h-24 object-cover rounded-lg shadow-md"
+                              />
+                            </div>
+                          )}
+
+                        <p>
+                          <span className="font-medium">
+                            {t("Creator Name")}:
+                          </span>{" "}
+                          {userNames[network.user_id]}
+                        </p>
+
+                        <p>
+                          <span className="font-medium">{t("Type")}:</span>{" "}
+                          {network.type}
+                        </p>
+
+                        <p>
+                          {t("Centrality")}: {centralityValues[network.id] || 0}
+                        </p>
+
+                        <p>
+                          <span className="font-medium">
+                            {t("Nationality")}
+                          </span>{" "}
+                          {network.nationality}
+                        </p>
+
+                        <p>
+                          <span className="font-medium">{t("Ethnicity")}:</span>{" "}
+                          {network.ethnicity}
+                        </p>
+
+                        <p>
+                          <span className="font-medium">
+                            {network.type === "Migrant"
+                              ? t("Birth Year")
+                              : t("Established Year")}
+                          </span>
+
+                          <span className="font-medium">
+                            : {network.migration_year}
+                          </span>
+                        </p>
+
+                        <p>
+                          <span className="font-medium">
+                            {network.type === "Migrant"
+                              ? t("Death Year")
+                              : t("Dissolved Year")}
+                          </span>
+
+                          <span className="font-medium">
+                            : {network.end_year}
+                          </span>
+                        </p>
+
+                        <p>
+                          <span className="font-medium">{t("Latitude")}:</span>{" "}
+                          {network.latitude.toFixed(5)}
+                        </p>
+
+                        <p>
+                          <span className="font-medium">{t("Longitude")}:</span>{" "}
+                          {network.longitude.toFixed(5)}
+                        </p>
+                      </div>
+                    </PopupContent>
+
+                    <div
+                      className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
+                      style={{
+                        width: "100%",
+
+                        maxHeight: "200px",
+
+                        marginTop: "16px",
+                      }}
+                    >
                       <CommentSection networkId={network.id} />
-                    </CommentSectionWrapper>
-                  </div>
-                </Popup>
+                    </div>
+                  </ResizablePopup>
+                )}
+                <HandleMapClickForPopupSize />
               </Marker>
             )
           })}
@@ -86244,134 +86272,90 @@ const MobileCarousel = styled(Slider)`
 `
 
 const PopupContent = styled.div`
-  width: 300px; /* 팝업 너비 */
-
-  max-height: 400px; /* 팝업 최대 높이 */
-
+  width: 110%; /* 팝업 너비 */
+  max-height: 80%; /* 팝업 최대 높이 */
   font-size: 14px;
-
-  background: #ffffff; /* 배경색 */
-
-  border-radius: 8px;
-
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-
-  padding: 16px;
-
+  background: rgba(241, 245, 249, 0.6); /* 약간의 투명도 추가 */
+  padding: 2rem;
   overflow-y: auto;
-
   z-index: 2000;
-
-  margin-bottom: 5px;
+  margin: -1rem -1rem;
 
   h2 {
-    font-size: 18px;
-
+    font-size: 16px;
     font-weight: bold;
-
     color: #3e2723; /* 제목 색상 */
-
     margin-bottom: 8px;
   }
 
   p {
-    font-size: 14px;
-
-    color: #5d4037; /* 텍스트 색상 */
-
-    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: #1f2937; /* 텍스트 색상 */
+    margin-bottom: 0.2rem;
   }
 
   .popup-image {
     display: flex;
-
     justify-content: center;
-
     margin-bottom: 10px;
 
     img {
-      width: 100px;
-
-      height: 100px;
-
+      width: 80px;
+      height: 80px;
       object-fit: cover;
-
       border-radius: 50%;
-
       box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     }
   }
 
   @media (max-width: 768px) {
-    width: 300px;
-
+    width: 100%;
     max-height: 350px;
-
     font-size: 12px;
   }
 
   @media (max-width: 480px) {
-    width: 280px;
-
+    width: 100%;
     max-height: 250px;
-
     font-size: 10px;
   }
 `
 
 const CommentSectionWrapper = styled.div`
-  margin-top: 5px; /* 팝업 내용과 코멘트 섹션 간격 */
-
-  max-height: 150px; /* 코멘트 섹션 최대 높이 */
-
+  max-height: calc(100%); /* 팝업 내부에서 꽉 차도록 설정 */
   border-radius: 8px;
-
-  padding: 10px;
-
-  .comment-input {
+  width: 100%; /* 팝업 콘텐츠와 동일한 너비 */
+  background: #f9fafb; /* 팝업과 동일한 배경색 */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  font-color: #111827 .comment-input {
     display: flex;
-
     flex-direction: column;
-
     gap: 8px;
-
     margin-bottom: 8px;
 
     input {
       padding: 8px;
-
       border: 1px solid #ccc;
-
       border-radius: 4px;
-
       font-size: 14px;
-
       outline: none;
-
       transition: border-color 0.3s;
 
       &:focus {
         border-color: #3e2723;
-
         box-shadow: 0 0 0 2px rgba(62, 39, 35, 0.2);
       }
     }
 
     button {
       padding: 8px 16px;
-
       background-color: #3e2723;
-
       color: #ffffff;
-
       border: none;
-
       border-radius: 4px;
-
       font-size: 14px;
-
       cursor: pointer;
-
       transition: background-color 0.3s;
 
       &:hover {
@@ -86381,32 +86365,21 @@ const CommentSectionWrapper = styled.div`
   }
 
   .comment-list {
-    max-height: 150px;
-
+    max-height: calc(100%); /* 코멘트 리스트가 꽉 차도록 설정 */
     overflow-y: auto;
 
     li {
       background: #ffffff;
-
       border-radius: 4px;
-
       padding: 8px;
-
-      margin-bottom: 8px;
-
       box-shadow: 0px 2px 4px rgba(62, 39, 35, 0.2);
 
       .comment-header {
         display: flex;
-
         justify-content: space-between;
-
         align-items: center;
-
         font-size: 12px;
-
         color: #5d4037;
-
         margin-bottom: 4px;
 
         .comment-user {
@@ -86415,30 +86388,25 @@ const CommentSectionWrapper = styled.div`
 
         .comment-date {
           font-size: 11px;
-
           color: #9e9e9e;
         }
       }
 
       .comment-content {
         font-size: 12px;
-
         color: #3e2723;
       }
     }
   }
 
   @media (max-width: 768px) {
-    max-height: 120px;
-
+    max-height: calc(100% - 2rem);
     padding: 8px;
   }
 
   @media (max-width: 480px) {
-    max-height: 100px;
-
+    max-height: calc(100% - 1.5rem);
     font-size: 10px;
-
     padding: 5px;
   }
 `
