@@ -71,7 +71,7 @@ const SearchResults: FC<SearchResultsProps> = ({
       {/* Close Button */}
       <button
         onClick={() => setIsVisible(false)} // 검색창 숨기기
-        className="absolute top-2 right-2 bg-gray-200 text-gray-600 p-2 rounded-full hover:bg-gray-300 transition"
+        className="fixed top-30 right-10 bg-gray-200 text-gray-600 p-2 rounded-full hover:bg-gray-300 transition"
       >
         <FiX size={16} /> {/* 닫기 아이콘 */}
       </button>
