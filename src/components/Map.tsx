@@ -82849,12 +82849,14 @@ const Map: React.FC = () => {
           <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
           {migrationTraces.map((traces) =>
             traces.map((trace) => {
+              // 네트워크 이름 가져오기
+              const network = networks?.find((n) => n.id === trace.network_id)
+              const networkName = network ? network.title : "Unknown"
+
               // Calculate size dynamically based on trace number
 
               const baseSize = 17 // Base size for the marker
-
-              const sizeIncrement = 2.2 // Smaller increment size for each trace number
-
+              const sizeIncrement = 2 // Smaller increment size for each trace number
               const size = baseSize + trace.traceNumber * sizeIncrement
 
               // Filter out duplicate markers at the same position
@@ -83367,7 +83369,8 @@ const Map: React.FC = () => {
                       }}
                     >
                       <div>
-                        <strong>{t("Network ID")}:</strong> {trace.network_id}
+                        <strong>{t("Network ID")}:</strong> {trace.network_id} (
+                        {networkName})
                       </div>
 
                       <div>
