@@ -80076,7 +80076,7 @@ const Map: React.FC = () => {
 
     entityType: "all",
 
-    yearRange: [1860, 1945], // 현재 연도로 자동 설정
+    yearRange: [1800, 1945], // 현재 연도로 자동 설정
 
     userNetworkFilter: false,
 
@@ -80118,7 +80118,7 @@ const Map: React.FC = () => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
 
   const [yearRange, setYearRange] = useState<[number, number]>([
-    1860,
+    1800,
 
     1945,
   ])
