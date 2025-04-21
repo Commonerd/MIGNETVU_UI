@@ -143,5 +143,10 @@
   "migrationTrace": "Migración",
   "add comments": "Por favor, ingrese un comentario.",
   "Centrality": "Centralidad",
-  "Update": "Actualizar"
+  "Update": "Actualizar",
+  "Yes": "Sí",
+  "No": "No",
+  "User Guide": "Guía del Usuario",
+  "Would you like to view the user guide?": "¿Le gustaría ver la guía del usuario?",
+  "Do not show again for 30 days": "No mostrar de nuevo durante 30 días"
 }

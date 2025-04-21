@@ -143,5 +143,10 @@
   "migrationTrace": "이동",
   "add comments": "댓글을 입력해주세요.",
   "Centrality": "중심성",
-  "Update": "수정"
+  "Update": "수정",
+  "Yes": "예",
+  "No": "아니요",
+  "User Guide": "사용 설명",
+  "Would you like to view the user guide?": "사용 설명서를 보시겠습니까?",
+  "Do not show again for 30 days": "30일 동안 보지 않기"
 }

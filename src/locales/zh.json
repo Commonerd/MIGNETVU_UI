@@ -143,5 +143,10 @@
   "migrationTrace": "迁徙",
   "add comments": "请输入评论",
   "Centrality": "中心性",
-  "Update": "更新"
+  "Update": "更新",
+  "Yes": "是",
+  "No": "否",
+  "User Guide": "用户指南",
+  "Would you like to view the user guide?": "您想查看用户指南吗？",
+  "Do not show again for 30 days": "30天内不再显示"
 }

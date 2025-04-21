@@ -143,5 +143,10 @@
   "migrationTrace": "移動",
   "add comments": "コメントを入力してください。",
   "Centrality": "中心性",
-  "Update": "修正"
+  "Update": "修正",
+  "Yes": "はい",
+  "No": "いいえ",
+  "User Guide": "ユーザーガイド",
+  "Would you like to view the user guide?": "ユーザーガイドを表示しますか？",
+  "Do not show again for 30 days": "30日間表示しない"
 }
