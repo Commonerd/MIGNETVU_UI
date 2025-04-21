@@ -38,7 +38,11 @@ const Header: React.FC = () => {
         {/* 왼쪽: Info 아이콘 + 앱 로고 및 이름 */}
         <div className="flex items-center gap-1">
           <a
-            href="https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
+            href={
+              i18n.language === "ja"
+                ? "https://url.kr/y2rua7"
+                : "https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
+            }
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs sm:text-sm"
