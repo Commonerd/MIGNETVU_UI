@@ -87,27 +87,31 @@ const Header: React.FC = () => {
               </button>
             </>
           ) : (
-            <Link to="/login" className="flex items-center">
-              <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span className="hidden sm:inline text-xs sm:text-sm">
-                {t("login")}
-              </span>
-            </Link>
+            <>
+              <Link to="/login" className="flex items-center">
+                <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span className="hidden sm:inline text-xs sm:text-sm">
+                  {t("login")}
+                </span>
+              </Link>
+            </>
           )}
 
-          {/* 언어 선택 */}
-          <select
-            value={i18n.language}
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="hidden sm:block bg-[#3E2723] text-white text-xs sm:text-sm border-none"
-          >
-            <option value="en">English</option>
-            <option value="ko">한국어</option>
-            <option value="ja">日本語</option>
-            <option value="ru">Русский</option>
-            <option value="es">Español</option>
-            <option value="zh">中文</option>
-          </select>
+          {/* 언어 선택: 데스크톱에서는 항상 보이고, 모바일에서는 로그인하지 않은 경우에만 표시 */}
+          {!user.isLoggedIn || window.innerWidth >= 640 ? (
+            <select
+              value={i18n.language}
+              onChange={(e) => changeLanguage(e.target.value)}
+              className="bg-[#3E2723] text-white text-xs sm:text-sm border-none"
+            >
+              <option value="en">English</option>
+              <option value="ko">한국어</option>
+              <option value="ja">日本語</option>
+              <option value="ru">Русский</option>
+              <option value="es">Español</option>
+              <option value="zh">中文</option>
+            </select>
+          ) : null}
         </div>
       </div>
     </header>
