@@ -118,8 +118,8 @@ function App() {
           <Modal
             isOpen={isModalOpen}
             onRequestClose={() => setIsModalOpen(false)}
-            className="bg-[#f5f5f5] p-6 rounded-lg shadow-lg max-w-md mx-auto mt-20"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+            className="bg-[#f5f5f5] bg-opacity-80 p-6 rounded-lg shadow-lg max-w-md mx-auto mt-20"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center"
           >
             <h2 className="text-lg font-bold mb-4 text-[#3E2723]">
               {t("User Guide")}
