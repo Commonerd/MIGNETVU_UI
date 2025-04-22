@@ -55,8 +55,8 @@ function App() {
   const handleViewGuide = () => {
     const guideUrl =
       i18n.language === "ja"
-        ? "https://docs.google.com/presentation/d/1ExYqnvf2o3_ClSi5emWLm2r5RPeclXi0WpcrBAzsnto/edit?usp=sharing"
-        : "https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
+        ? "https://docs.google.com/presentation/d/1ExYqnvf2o3_ClSi5emWLm2r5RPeclXi0WpcrBAzsnto/edit?slide=id.g34dba400f31_0_157#slide=id.g34dba400f31_0_157"
+        : "https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?slide=id.g34af6f1bf9f_0_370#slide=id.g34af6f1bf9f_0_370"
     window.open(guideUrl, "_blank")
     if (dontShowAgain) {
       localStorage.setItem("guideDismissedAt", new Date().getTime().toString())
