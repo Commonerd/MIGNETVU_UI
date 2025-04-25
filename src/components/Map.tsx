@@ -81198,7 +81198,6 @@ const Map: React.FC = () => {
       }
 
       // 특정 네트워크가 선택된 경우, 해당 네트워크의 마이그레이션 트레이스만 추가
-
       if (
         !selectedMigrationNetworkId || // 선택된 네트워크가 없거나
         network.id === selectedMigrationNetworkId // 선택된 네트워크와 일치하는 경우
@@ -81209,12 +81208,17 @@ const Map: React.FC = () => {
           }
 
           // 연도 및 필터 조건 적용
-
           if (
             trace.migration_year >= yearRange[0] &&
             trace.migration_year <= yearRange[1] &&
             (filters.migrationReasons.includes("all") ||
-              filters.migrationReasons.includes(trace.reason))
+              filters.migrationReasons.includes(trace.reason)) &&
+            (filters.entityType.includes("all") ||
+              filters.entityType.includes(network.type)) && // 개체 필터 추가
+            (filters.nationality.includes("all") ||
+              filters.nationality.includes(network.nationality)) && // 국적 필터 추가
+            (filters.ethnicity.includes("all") ||
+              filters.ethnicity.includes(network.ethnicity)) // 민족 필터 추가
           ) {
             tracesByNetwork[network.id].push(trace)
           }
@@ -81223,24 +81227,17 @@ const Map: React.FC = () => {
     })
 
     // 네트워크별로 정렬 및 번호 부여
-
     return Object.values(tracesByNetwork)
-
       .map((traces) =>
         traces
-
           .sort((a, b) => a.migration_year - b.migration_year) // 연도 기준 정렬
-
           .map((trace, index) => ({
             ...trace,
-
             traceNumber: index + 1, // 네트워크별로 번호 부여
           })),
       )
-
       .filter((traces) => {
         // 기존 필터 조건 적용
-
         const matchesYearRange = traces.some(
           (trace) =>
             trace.migration_year >= yearRange[0] &&
