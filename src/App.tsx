@@ -104,12 +104,12 @@ function App() {
             {" "}
             {/* mb-16 to account for the fixed footer height */}
             <Routes>
+              <Route path="/" element={<Map user={user} setUser={setUser} />} />
               <Route path="/login" element={<Auth />} />
               <Route path="/network" element={<Network />} />
               <Route path="/editprofile" element={<EditProfile />} />
               <Route path="/todo" element={<Todo />} />
               {/* 잠정 */}
-              <Route path="/" element={<Map user={user} setUser={setUser} />} />
               {/* <Route path="/add-network" element={<NetworkForm />} /> */}
               {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
               {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
