@@ -5,7 +5,7 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/24/solid"
 import useStore from "../store"
-import { useQueryNetworks } from "../hooks/useQueryNetworks"
+import { useQueryAllNetworksOnMap } from "../hooks/useQueryNetworks"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
 import SearchResults from "./SearchResults"
 import { useNavigate } from "react-router-dom"
@@ -21,7 +21,7 @@ export const Network = () => {
   const { t } = useTranslation()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const { data } = useQueryNetworks()
+  const { data } = useQueryAllNetworksOnMap()
   const { createNetworkMutation, updateNetworkMutation } = useMutateNetwork()
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
