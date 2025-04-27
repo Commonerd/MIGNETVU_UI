@@ -49,6 +49,8 @@ import MigrationTraceDecorator from "./MigrationTraceDecorator"
 import { calculateCentrality } from "../utils/centralityUtils"
 import { fetchComments } from "../api/comments"
 import Slider from "react-slick"
+import { Legend } from "./Legend"
+
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -71,124 +73,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 })
-// Legend Component
-const legendStyles = `
-  background-color: rgba(255, 255, 255, 0.7);
-  padding: 7px;
-  top: 0;
-  right: 1rem;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  font-size: 0.7rem;
-  max-width: 10rem;
-  overflow-y: auto;
-  h2 {
-    font-size: 1rem;
-    margin-bottom: 0.3rem;
-    text-align: center;
-    font-weight: bold;
-  }
-  div {
-    font-size: 0.8rem;
-    margin-bottom: 0.2rem;
-  }
-  @media (max-width: 768px) {
-    font-size: 0.7rem;
-    max-width: 8rem;
-    h2 {
-      font-size: 0.9rem;
-    }
-    div {
-      font-size: 0.8rem;
-    }
-  }
-  @media (max-width: 480px) {
-    font-size: 0.4rem;
-    max-width: 7rem;
-    h2 {
-      font-size: 0.7rem;
-    }
-    div {
-      font-size: 0.7rem;
-    }
-  }
-`
-const Legend = ({
-  topNetworks,
-  onEntityClick,
-  centralityType,
-}: {
-  topNetworks: {
-    id: number
-    name: string
-    centrality: number
-  }[]
-  onEntityClick: (id: number) => void
-  centralityType: string
-}) => {
-  const map = useMap()
-  const { t } = useTranslation()
-  useEffect(() => {
-    const legend = new L.Control({ position: "topright" })
-    legend.onAdd = () => {
-      const div = L.DomUtil.create("div", "legend-container")
-      div.style.cssText = legendStyles // 스타일 적용
-      div.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("migrant")}
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("organization")}
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid red; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("migrationTrace")}
-        </div>
-      `
-      if (centralityType !== "none") {
-        const topEntitiesHtml = topNetworks
-          .map(
-            (entity, index) =>
-              `<div style="cursor: pointer;" data-id="${entity.id}">
-              ${index + 1}. ${entity.name}: ${entity.centrality.toFixed(2)}
-            </div>`,
-          )
-          .join("")
-        div.innerHTML += `<br><strong>${t("topEntities")}</strong><br>${topEntitiesHtml}`
-      }
-      // 클릭 이벤트 직접 연결
-      div.addEventListener("click", (event) => {
-        const target = event.target as HTMLElement
-        const id = target.getAttribute("data-id")
-        if (id) {
-          onEntityClick(Number(id)) // 클릭된 네트워크로 이동
-        }
-      })
-      return div
-    }
-    legend.addTo(map)
-    return () => {
-      legend.remove()
-    }
-  }, [map, t, topNetworks, centralityType, onEntityClick])
-}
+
 const Map: React.FC = () => {
   const isMobile = window.innerWidth <= 768
   const { t } = useTranslation()
@@ -456,22 +341,25 @@ const Map: React.FC = () => {
     },
     0,
   )
-  // Example usage in handleEntityClick
-  //const handleEntityClick = (id: number, type: "migrant" | "organization") => {
-  const handleEntityClick = (id: number) => {
+  const handleEntityClick = async (id: number) => {
     const entity = getEntityById(id)
     if (entity) {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
+      )
+      const imageUrl = response.data.photo
       // 지도 중심을 클릭된 엔티티의 위치로 이동
       setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
+      setHighlightedNode({ id: id, photo: imageUrl })
     } else {
       console.warn(`Entity with ID ${id} not found.`)
     }
-    setHighlightedNode((prev) => {
-      if (prev && prev.id === id) {
-        return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
-      }
-      return { id }
-    })
+    // setHighlightedNode((prev) => {
+    //   if (prev && prev.id === id) {
+    //     return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
+    //   }
+    //   return { id, photo: "" }
+    // })
   }
   const handleMigrationTraceClick = (networkId: number) => {
     setSelectedMigrationNetworkId(
@@ -961,8 +849,15 @@ const Map: React.FC = () => {
   }
   const HandleMapClick = () => {
     useMapEvents({
-      click: () => {
-        setHighlightedNode(null) // 지도 클릭 시 하이라이트 해제
+      click: (e) => {
+        // 클릭된 대상이 범례가 아닌 경우에만 하이라이트 해제
+        if (
+          e.originalEvent.target instanceof HTMLElement &&
+          e.originalEvent.target.closest(".legend-container")
+        ) {
+          return // 범례를 클릭한 경우 아무 작업도 하지 않음
+        }
+        setHighlightedNode(null) // 지도 빈 공간 클릭 시 하이라이트 해제
       },
     })
     return null
@@ -2159,6 +2054,7 @@ const Map: React.FC = () => {
             )
             const isHighlighted =
               highlightedNode && highlightedNode.id === network.id
+            console.log("Node ID:", network.id, "isHighlighted:", isHighlighted)
             // Determine color: Organization is blue, highlighted is yellow, default is red
             let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
             if (isHighlighted) {
