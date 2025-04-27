@@ -351,6 +351,7 @@ const Map: React.FC = () => {
         }
         return { id: id, photo: imageUrl }
       })
+      setPopupPosition({ x: entity.latitude, y: entity.longitude }) // 팝업 위치 설정
     } else {
       console.warn(`Entity with ID ${id} not found.`)
     }
