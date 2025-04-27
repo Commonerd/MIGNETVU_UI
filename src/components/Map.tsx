@@ -345,7 +345,12 @@ const Map: React.FC = () => {
       const imageUrl = response.data.photo
       // 지도 중심을 클릭된 엔티티의 위치로 이동
       setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
-      setHighlightedNode({ id: id, photo: imageUrl })
+      setHighlightedNode((prev) => {
+        if (prev && prev.id === id) {
+          return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
+        }
+        return { id: id, photo: imageUrl }
+      })
     } else {
       console.warn(`Entity with ID ${id} not found.`)
     }
