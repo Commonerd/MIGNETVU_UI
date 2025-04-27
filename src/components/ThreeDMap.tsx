@@ -110,7 +110,7 @@ const ThreeDMap: React.FC<{
         )
         const geometry = new THREE.SphereGeometry(0.03, 16, 16) // 노드 크기를 줄임
         const material = new THREE.MeshBasicMaterial({
-          color: network.type === "Migrant" ? 0xff0000 : 0x0000ff, // 이민자면 빨간색, 단체면 파란색
+          color: network.type === "Person" ? 0xff0000 : 0x0000ff, // 이민자면 빨간색, 단체면 파란색
         })
         const marker = new THREE.Mesh(geometry, material)
         marker.position.copy(position)

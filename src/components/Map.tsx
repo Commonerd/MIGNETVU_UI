@@ -21,7 +21,6 @@ import L, {
 import "leaflet-polylinedecorator"
 import ResizablePopup from "./ResizablePopup"
 import {
-  Migrant,
   Organization,
   EntityType,
   Connection,
@@ -29,8 +28,6 @@ import {
   Network,
   CsrfToken,
 } from "../types"
-import { mockMigrants, mockOrganizations } from "../mockData"
-import { members } from "../members"
 import styled from "styled-components"
 import useStore from "../store"
 import {
@@ -79,8 +76,6 @@ const Map: React.FC = () => {
   const { t } = useTranslation()
   const [networks, setNetworks] = useState<Network[] | undefined>()
   const [showNetworkNames, setShowNetworkNames] = useState<boolean>(false) // 네트워크 이름 표시 여부 상태 추가
-  const [migrants, setMigrants] = useState<Migrant[]>([])
-  const [organizations, setOrganizations] = useState<Organization[]>([])
   const [filters, setFilters] = useState<FilterOptions>({
     nationality: ["all"],
     ethnicity: ["all"],
@@ -731,7 +726,7 @@ const Map: React.FC = () => {
         id: 0,
         user_id: 0,
         title: "",
-        type: "Migrant",
+        type: "Person",
         nationality: "",
         ethnicity: "",
         migration_year: 0,
@@ -740,7 +735,7 @@ const Map: React.FC = () => {
         migration_traces: [],
         connections: [
           {
-            targetType: "Migrant",
+            targetType: "Person",
             targetId: 0,
             strength: 0,
             type: "",
@@ -2057,7 +2052,7 @@ const Map: React.FC = () => {
               highlightedNode && highlightedNode.id === network.id
             console.log("Node ID:", network.id, "isHighlighted:", isHighlighted)
             // Determine color: Organization is blue, highlighted is yellow, default is red
-            let color = network.type === "Organization" ? "blue" : "red" // Migrant is red by default
+            let color = network.type === "Organization" ? "blue" : "red" // is red by default
             if (isHighlighted) {
               // Highlighted nodes are yellow regardless of type
               color = "orange"
@@ -2148,7 +2143,7 @@ const Map: React.FC = () => {
                         </p>
                         <p>
                           <span className="font-medium">
-                            {network.type === "Migrant"
+                            {network.type === "Person"
                               ? t("Birth Year")
                               : t("Established Year")}
                           </span>
@@ -2158,7 +2153,7 @@ const Map: React.FC = () => {
                         </p>
                         <p>
                           <span className="font-medium">
-                            {network.type === "Migrant"
+                            {network.type === "Person"
                               ? t("Death Year")
                               : t("Dissolved Year")}
                           </span>

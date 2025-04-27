@@ -77,7 +77,7 @@ export type Credential = {
 
 // new
 
-export interface Migrant {
+export interface Person {
   id: number
   name: string
   nationality: string

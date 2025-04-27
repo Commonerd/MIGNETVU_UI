@@ -54,9 +54,9 @@ export const Network = () => {
       photo,
     } = editedNetwork
 
-    // Ensure type is either 'Migrant' or 'Organization'
-    if (type !== "Migrant" && type !== "Organization") {
-      alert('Type must be either "Migrant" or "Organization".')
+    // Ensure type is either 'Person' or 'Organization'
+    if (type !== "Person" && type !== "Organization") {
+      alert('Type must be either "Person" or "Organization".')
       setIsSubmitting(false)
       return
     }
@@ -352,7 +352,7 @@ export const Network = () => {
     updateNetwork({
       id: 0,
       title: "",
-      type: "Migrant",
+      type: "Person",
       nationality: "",
       ethnicity: "",
       migration_year: 0,
@@ -482,9 +482,9 @@ export const Network = () => {
                 onChange={(e) =>
                   updateNetwork({ ...editedNetwork, type: e.target.value })
                 }
-                value={editedNetwork.type || "Migrant"}
+                value={editedNetwork.type || "Person"}
               >
-                <option value="Migrant">Migrant</option>
+                <option value="Person">Person</option>
                 <option value="Organization">Organization</option>
               </select>
             </div>
@@ -527,14 +527,14 @@ export const Network = () => {
             {!isBirthComplete && (
               <div>
                 <label className="block text-gray-700 font-semibold text-xs mb-1">
-                  {editedNetwork.type === "Migrant"
+                  {editedNetwork.type === "Person"
                     ? t("Birth")
                     : t("Established")}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                   placeholder={
-                    editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                    editedNetwork.type === "Person" ? "ex) 1990" : "ex) 2000"
                   }
                   type="number"
                   onChange={(e) =>
@@ -553,14 +553,14 @@ export const Network = () => {
             {isBirthComplete && (
               <div>
                 <label className="block text-gray-700 font-semibold text-xs mb-1">
-                  {editedNetwork.type === "Migrant"
+                  {editedNetwork.type === "Person"
                     ? t("Death")
                     : t("Dissolved")}
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
                   placeholder={
-                    editedNetwork.type === "Migrant" ? "ex) 1990" : "ex) 2000"
+                    editedNetwork.type === "Person" ? "ex) 1990" : "ex) 2000"
                   }
                   type="number"
                   onChange={(e) =>
@@ -803,7 +803,7 @@ export const Network = () => {
                     ) : (
                       <select
                         className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                        value={edge.targetType || "Migrant"}
+                        value={edge.targetType || "Person"}
                         onChange={(e) =>
                           updateNetwork({
                             ...editedNetwork,
@@ -816,7 +816,7 @@ export const Network = () => {
                         }
                         onBlur={() => setIsTargetIdComplete(false)} // 포커스 아웃 시 Target ID로 전환
                       >
-                        <option value="Migrant">Migrant</option>
+                        <option value="Person">Person</option>
                         <option value="Organization">Organization</option>
                       </select>
                     )}
@@ -913,7 +913,7 @@ export const Network = () => {
                         ...(editedNetwork.edge || []),
                         {
                           targetId: 0,
-                          targetType: "Migrant",
+                          targetType: "Person",
                           strength: 0,
                           edgeType: "",
                           year: 0,

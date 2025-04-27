@@ -80,7 +80,7 @@ const useStore = create<State>((set) => ({
     id: 0,
     user_id: 0,
     title: "",
-    type: "Migrant",
+    type: "Person",
     nationality: "",
     ethnicity: "",
     migration_year: 0,
@@ -89,12 +89,12 @@ const useStore = create<State>((set) => ({
     longitude: 0,
     migration_traces: [],
     connections: [
-      { targetType: "Migrant", targetId: 0, strength: 0, type: "", year: 0 },
+      { targetType: "Person", targetId: 0, strength: 0, type: "", year: 0 },
     ],
     edge: [
       {
         targetId: 0,
-        targetType: "Migrant",
+        targetType: "Person",
         strength: 0,
         edgeType: "",
         year: 0,
@@ -113,7 +113,7 @@ const useStore = create<State>((set) => ({
         id: 0,
         user_id: 0,
         title: "",
-        type: "Migrant",
+        type: "Person",
         nationality: "",
         ethnicity: "",
         migration_year: 0,
@@ -123,7 +123,7 @@ const useStore = create<State>((set) => ({
         migration_traces: [],
         connections: [
           {
-            targetType: "Migrant",
+            targetType: "Person",
             targetId: 0,
             strength: 0,
             type: "",
@@ -133,7 +133,7 @@ const useStore = create<State>((set) => ({
         edge: [
           {
             targetId: 0,
-            targetType: "Migrant",
+            targetType: "Person",
             strength: 0,
             edgeType: "",
             year: 0,

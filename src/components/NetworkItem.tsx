@@ -119,10 +119,10 @@ const NetworkItemMemo: FC<
                 {t("Ethnicity")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                {type === "Migrant" ? t("Birth") : t("Established")}
+                {type === "Person" ? t("Birth") : t("Established")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
-                {type === "Migrant" ? t("Death") : t("Dissolved")}
+                {type === "Person" ? t("Death") : t("Dissolved")}
               </th>
               <th className="px-1 py-1 border font-semibold text-center">
                 {t("Lat.")}
