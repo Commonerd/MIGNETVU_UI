@@ -130,12 +130,7 @@ const Map: React.FC = () => {
     x: number
     y: number
   } | null>(null)
-  useEffect(() => {
-    console.log("Map mounted")
-    return () => {
-      console.log("Map unmounted")
-    }
-  }, [])
+
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
       click(e) {
