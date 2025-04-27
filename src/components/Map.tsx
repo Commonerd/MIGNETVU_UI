@@ -49294,9 +49294,9 @@ const Legend = ({
       <div>
         <h2>Legend</h2>
         <ul>
-          <li><span style="background-color: red; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> Migrant</li>
-          <li><span style="background-color: blue; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> Organization</li>
-          <li><span style="background-color: orange; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> Highlighted</li>
+          <li><span style="background-color: red; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> ${t("migrant")}</li>
+          <li><span style="background-color: blue; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> ${t("organization")}</li>
+          <li><span style="background-color: orange; width: 10px; height: 10px; display: inline-block; margin-right: 5px;"></span> ${t("migrationTrace")}</li>
         </ul>
       </div>
     `
