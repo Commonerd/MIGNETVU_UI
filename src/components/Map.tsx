@@ -2050,7 +2050,6 @@ const Map: React.FC = () => {
             )
             const isHighlighted =
               highlightedNode && highlightedNode.id === network.id
-            console.log("Node ID:", network.id, "isHighlighted:", isHighlighted)
             // Determine color: Organization is blue, highlighted is yellow, default is red
             let color = network.type === "Organization" ? "blue" : "red" // is red by default
             if (isHighlighted) {

@@ -41,7 +41,6 @@ const NetworkItemMemo: FC<
   const location = useLocation()
   const { t } = useTranslation()
   const { user } = useStore()
-  console.log(user_id, user.id)
 
   return (
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
