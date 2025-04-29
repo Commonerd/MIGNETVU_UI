@@ -151,70 +151,6 @@ const NetworkItemMemo: FC<
             </tr>
           </tbody>
         </table>
-        {/* 마이그레이션 트레이스 표시 */}
-        <div className="mt-4">
-          <div
-            className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
-            onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
-          >
-            <strong>{t("Migration Trace")}</strong>
-          </div>
-          {migration_traces && migration_traces.length > 0 ? (
-            <div className="mt-2">
-              <table className="table-auto w-full border-collapse text-xs">
-                <thead>
-                  <tr>
-                    <th className="px-2 py-1 border font-semibold text-center">
-                      {t("Location")}
-                    </th>
-                    <th className="px-2 py-1 border font-semibold text-center">
-                      {t("Longitude")}
-                    </th>
-                    <th className="px-2 py-1 border font-semibold text-center">
-                      {t("Latitude")}
-                    </th>
-                    <th className="px-2 py-1 border font-semibold text-center">
-                      {t("Year")}
-                    </th>
-                    <th className="px-2 py-1 border font-semibold text-center">
-                      {t("Reason")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {migration_traces.map((trace, index) => (
-                    <tr
-                      key={index}
-                      className="cursor-pointer hover:bg-gray-100"
-                      onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
-                    >
-                      <td className="px-2 py-1 border text-center">
-                        {trace.location_name}
-                      </td>
-                      <td className="px-2 py-1 border text-center">
-                        {trace.longitude}
-                      </td>
-                      <td className="px-2 py-1 border text-center">
-                        {trace.latitude}
-                      </td>
-                      <td className="px-2 py-1 border text-center">
-                        {trace.migration_year}
-                      </td>
-                      <td className="px-2 py-1 border text-center">
-                        {trace.reason}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <div className="mt-4">
-              <p className="text-xs">{t("No migration traces available.")}</p>
-            </div>
-          )}
-        </div>
-
         {/* Render the connections */}
         <div className="mt-4">
           <div
@@ -277,6 +213,69 @@ const NetworkItemMemo: FC<
             </div>
           ) : (
             <p className="text-xs">{t("No edges available.")}</p>
+          )}
+        </div>
+        {/* 마이그레이션 트레이스 표시 */}
+        <div className="mt-4">
+          <div
+            className="text-xs font-bold block p-4 border rounded-lg hover:bg-gray-100 transition-all cursor-pointer"
+            onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
+          >
+            <strong>{t("Migration Trace")}</strong>
+          </div>
+          {migration_traces && migration_traces.length > 0 ? (
+            <div className="mt-2">
+              <table className="table-auto w-full border-collapse text-xs">
+                <thead>
+                  <tr>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Location")}
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Longitude")}
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Latitude")}
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Year")}
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Reason")}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {migration_traces.map((trace, index) => (
+                    <tr
+                      key={index}
+                      className="cursor-pointer hover:bg-gray-100"
+                      onClick={() => handleMigrationTraceClick(id)} // 클릭 이벤트 추가
+                    >
+                      <td className="px-2 py-1 border text-center">
+                        {trace.location_name}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.longitude}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.latitude}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.migration_year}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {trace.reason}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <p className="text-xs">{t("No migration traces available.")}</p>
+            </div>
           )}
         </div>
       </div>
