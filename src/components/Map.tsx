@@ -1486,11 +1486,11 @@ const Map: React.FC = () => {
                   options={[
                     { value: "none", label: t("selectCentrality") },
                     { value: "degree", label: t("degreeCentrality") },
-                    {
-                      value: "betweenness",
-                      label: t("betweenessCentrality"),
-                    },
-                    { value: "closeness", label: t("closenessCentrality") },
+                    // {
+                    //   value: "betweenness",
+                    //   label: t("betweenessCentrality"),
+                    // },
+                    // { value: "closeness", label: t("closenessCentrality") },
                     {
                       value: "eigenvector",
                       label: t("eigenvectorCentrality"),
