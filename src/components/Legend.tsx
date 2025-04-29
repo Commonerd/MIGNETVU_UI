@@ -111,7 +111,7 @@ export const Legend = ({
         const networkAnalysisHtml = networkAnalysis
           .map((result) => `<div>${result}</div>`)
           .join("")
-        div.innerHTML += `<br><strong>${t("Network Analysis Results")}</strong><br>${networkAnalysisHtml}`
+        div.innerHTML += `<br><strong>${t("Analysis Results")}</strong><br>${networkAnalysisHtml}`
       }
       // 클릭 이벤트 직접 연결
       div.addEventListener("click", (event) => {
