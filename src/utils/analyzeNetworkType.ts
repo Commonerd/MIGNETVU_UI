@@ -27,9 +27,9 @@ export const analyzeNetworkType = (
   const maxPossibleEdges = (numNodes * (numNodes - 1)) / 2
   const density = numEdges / maxPossibleEdges
   if (density > 0.5) {
-    analysisResult.push("*Dense Network: high connectivity")
+    analysisResult.push("Dense Network")
   } else if (density < 0.1) {
-    analysisResult.push("*Sparse Network: weak connectivity")
+    analysisResult.push("Sparse Network")
   }
   analysisResult.push(`Network Density: ${density.toFixed(2)}`)
 
@@ -71,11 +71,11 @@ export const analyzeNetworkType = (
   // 이동성 분석 (Mobility Patterns)
   const totalTraces = traces.length
   const avgTracesPerNode = totalTraces / numNodes
-  if (avgTracesPerNode > 2) {
-    analysisResult.push("High Mobility Activity")
-  } else if (avgTracesPerNode === 0) {
-    analysisResult.push("No Observed Mobility")
-  }
+  // if (avgTracesPerNode > 2) {
+  //   analysisResult.push("High Mobility")
+  // } else if (avgTracesPerNode > 1) {
+  //   analysisResult.push("M")
+  // }
   analysisResult.push(`Average Traces Per Node: ${avgTracesPerNode.toFixed(2)}`)
 
   //   // 클러스터링 계수 (Clustering Coefficient)
