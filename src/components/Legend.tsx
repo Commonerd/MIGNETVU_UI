@@ -49,6 +49,7 @@ export const Legend = ({
   topNetworks,
   onEntityClick,
   centralityType,
+  networkAnalysis, // 네트워크 분석 결과 추가
 }: {
   topNetworks: {
     id: number
@@ -57,6 +58,7 @@ export const Legend = ({
   }[]
   onEntityClick: (id: number) => void
   centralityType: string
+  networkAnalysis: string[] // 네트워크 분석 결과 타입 정의
 }) => {
   const map = useMap()
   const { t } = useTranslation()
@@ -104,6 +106,12 @@ export const Legend = ({
           )
           .join("")
         div.innerHTML += `<br><strong>${t("topEntities")}</strong><br>${topEntitiesHtml}`
+
+        // Network Analysis 결과 추가
+        const networkAnalysisHtml = networkAnalysis
+          .map((result) => `<div>${result}</div>`)
+          .join("")
+        div.innerHTML += `<br><strong>${t("Network Analysis")}</strong><br>${networkAnalysisHtml}`
       }
       // 클릭 이벤트 직접 연결
       div.addEventListener("click", (event) => {
@@ -119,5 +127,5 @@ export const Legend = ({
     return () => {
       legend.remove()
     }
-  }, [map, t, topNetworks, centralityType, onEntityClick])
+  }, [map, t, topNetworks, centralityType, onEntityClick, networkAnalysis])
 }

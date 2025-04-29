@@ -47,6 +47,7 @@ import { calculateCentrality } from "../utils/centralityUtils"
 import { fetchComments } from "../api/comments"
 import Slider from "react-slick"
 import { Legend } from "./Legend"
+import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -125,6 +126,16 @@ const Map: React.FC = () => {
     x: number
     y: number
   } | null>(null)
+  const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
+
+  useEffect(() => {
+    if (networks && networks.length > 0) {
+      const edges = getEdges()
+      const traces = getMigrationTraces().flat()
+      const analysis = analyzeNetworkType(networks, edges, traces)
+      setNetworkAnalysis(analysis)
+    }
+  }, [networks, filters])
 
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
@@ -1879,6 +1890,7 @@ const Map: React.FC = () => {
               topNetworks={topNetworks}
               onEntityClick={handleEntityClick}
               centralityType={centralityType}
+              networkAnalysis={networkAnalysis} // 네트워크 분석 결과 전달
             />
           )}
           {/* 네트워크 이름 표시/비표시 토글 버튼 */}
