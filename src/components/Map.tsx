@@ -1619,10 +1619,11 @@ const Map: React.FC = () => {
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
-            {user.isLoggedIn ? (
-              <>
-                {/* Search */}
-                <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
+
+            {/* Search */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
+              {user.isLoggedIn ? (
+                <>
                   <div className="ml-1 flex items-center gap-0.5">
                     <input
                       type="checkbox"
@@ -1680,44 +1681,44 @@ const Map: React.FC = () => {
                       {t("filterByUserNetworkTrace")}
                     </label>
                   </div>
-                  <input
-                    type="text"
-                    placeholder={t("Search Networks")}
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSearchClick()
-                      } else if (e.key === "Escape") {
-                        setSearchQuery("") // ESC 키를 누르면 검색창 초기화
-                      }
-                    }}
-                    className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                </>
+              ) : (
+                <></>
+              )}
+              <input
+                type="text"
+                placeholder={t("Search Networks")}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchClick()
+                  } else if (e.key === "Escape") {
+                    setSearchQuery("") // ESC 키를 누르면 검색창 초기화
+                  }
+                }}
+                className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+              <button
+                onClick={handleSearchClick}
+                className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
                   />
-                  <button
-                    onClick={handleSearchClick}
-                    className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
+                </svg>
+              </button>
+            </div>
           </SwipeableContainer>
         )}
         {/* Render Search Results */}
