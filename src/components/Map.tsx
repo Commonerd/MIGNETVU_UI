@@ -128,15 +128,6 @@ const Map: React.FC = () => {
   } | null>(null)
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
 
-  useEffect(() => {
-    if (networks && networks.length > 0) {
-      const edges = getEdges()
-      const traces = getMigrationTraces().flat()
-      const analysis = analyzeNetworkType(networks, edges, traces)
-      setNetworkAnalysis(analysis)
-    }
-  }, [networks, filters])
-
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
       click(e) {
@@ -665,13 +656,14 @@ const Map: React.FC = () => {
     }
     return distances
   }
-  const centralityValues = calculateCentrality(networks ?? [], centralityType)
+  // 중심성 계산
+  const centralityValues = calculateCentrality(filteredNetworks, centralityType) // 필터링된 네트워크 사용
   const topNetworks = Object.entries(centralityValues)
-    .filter(([id]) => networks?.some((m) => m.id === Number(id)))
+    .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
     .map(([id, centrality]) => {
-      const network = networks?.find((m: { id: number }) => m.id === Number(id))
+      const network = filteredNetworks.find((m) => m.id === Number(id)) // 필터링된 네트워크에서 찾기
       return {
         id: Number(id),
         name: String(network ? network.title : "Unknown"),
@@ -791,6 +783,16 @@ const Map: React.FC = () => {
       })
     }
   }
+
+  useEffect(() => {
+    if (filteredNetworks && filteredNetworks.length > 0) {
+      const edges = getEdges() // 필터링된 네트워크의 엣지 가져오기
+      const traces = getMigrationTraces().flat() // 필터링된 네트워크의 트레이스 가져오기
+      const analysis = analyzeNetworkType(filteredNetworks, edges, traces) // 필터링된 네트워크로 분석 수행
+      setNetworkAnalysis(analysis) // 분석 결과 업데이트
+    }
+  }, [filteredNetworks, filters]) // filteredNetworks를 의존성에 추가
+
   const CustomMapComponent = () => {
     const map = useMap()
     const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
