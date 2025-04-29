@@ -158,7 +158,7 @@ const Map: React.FC = () => {
     speed: 200,
     slidesToShow: 1,
     slidesToScroll: 1,
-    initialSlide: 0, // 첫 번째 슬라이드로 시작
+    initialSlide: 10, // 첫 번째 슬라이드로 시작
     appendDots: (dots: React.ReactNode) => (
       <div
         style={{
@@ -1227,45 +1227,43 @@ const Map: React.FC = () => {
               </div>
             )}
             {/* 검색창 */}
-            {user.isLoggedIn && (
-              <div>
-                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                  <input
-                    type="text"
-                    placeholder={t("Search Networks")}
-                    value={searchQuery}
-                    onChange={handleSearchChange}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSearchClick()
-                      } else if (e.key === "Escape") {
-                        setSearchQuery("") // ESC 키를 누르면 검색창 초기화
-                      }
-                    }}
-                    className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                  <button
-                    onClick={handleSearchClick}
-                    className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                <input
+                  type="text"
+                  placeholder={t("Search Networks")}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchClick()
+                    } else if (e.key === "Escape") {
+                      setSearchQuery("") // ESC 키를 누르면 검색창 초기화
+                    }
+                  }}
+                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <button
+                  onClick={handleSearchClick}
+                  className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-5 h-5"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+                    />
+                  </svg>
+                </button>
               </div>
-            )}
+            </div>
           </MobileCarousel>
         ) : (
           <SwipeableContainer isVisible={isFiltersVisible}>
