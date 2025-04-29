@@ -951,28 +951,10 @@ const Map: React.FC = () => {
                 placeholder={t("allEntityTypes")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -991,28 +973,10 @@ const Map: React.FC = () => {
                 placeholder={t("allNationalities")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -1031,118 +995,10 @@ const Map: React.FC = () => {
                 placeholder={t("allEthnicities")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-            {/* 관계 필터 */}
-            <div>
-              <Select
-                options={edgeTypeOptions}
-                onChange={(selectedOptions) =>
-                  handleFilterChange(
-                    "edgeType",
-                    selectedOptions
-                      ? selectedOptions.map((option) => option.value)
-                      : ["all"],
-                  )
-                }
-                placeholder={t("allConnectionTypes")}
-                isClearable
-                isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-
-            {/* 중심성 필터 */}
-            <div>
-              <Select
-                options={[
-                  { value: "none", label: t("selectCentrality") },
-                  { value: "degree", label: t("degreeCentrality") },
-                  { value: "betweenness", label: t("betweenessCentrality") },
-                  { value: "closeness", label: t("closenessCentrality") },
-                  { value: "eigenvector", label: t("eigenvectorCentrality") },
-                ]}
-                onChange={(selectedOption) =>
-                  setCentralityType(
-                    selectedOption ? selectedOption.value : "none",
-                  )
-                }
-                value={{
-                  value: centralityType,
-                  label: t(
-                    centralityType === "none"
-                      ? "selectCentrality"
-                      : `${centralityType}Centrality`,
-                  ),
-                }}
-                placeholder={t("selectCentrality")}
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
@@ -1176,6 +1032,59 @@ const Map: React.FC = () => {
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
+            </div>
+            {/* 관계 유형 */}
+            <div>
+              <Select
+                options={edgeTypeOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "edgeType",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allConnectionTypes")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            {/* 중심성 */}
+            <div>
+              <Select
+                options={[
+                  { value: "none", label: t("selectCentrality") },
+                  { value: "degree", label: t("degreeCentrality") },
+                  { value: "betweenness", label: t("betweenessCentrality") },
+                  { value: "closeness", label: t("closenessCentrality") },
+                  { value: "eigenvector", label: t("eigenvectorCentrality") },
+                ]}
+                onChange={(selectedOption) =>
+                  setCentralityType(
+                    selectedOption ? selectedOption.value : "none",
+                  )
+                }
+                value={{
+                  value: centralityType,
+                  label: t(
+                    centralityType === "none"
+                      ? "selectCentrality"
+                      : `${centralityType}Centrality`,
+                  ),
+                }}
+                placeholder={t("selectCentrality")}
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
             </div>
             {/* 이동 연도 */}
             <div>
@@ -1225,6 +1134,28 @@ const Map: React.FC = () => {
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
+            </div>
+            {/* 이동 원인 */}
+            <div>
+              <Select
+                options={migrationReasonOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "migrationReasons",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allMigrationReasons")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
             </div>
             {/* 나의 노드 */}
             {user.isLoggedIn && (
