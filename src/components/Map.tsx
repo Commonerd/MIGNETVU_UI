@@ -1238,6 +1238,8 @@ const Map: React.FC = () => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleSearchClick()
+                      } else if (e.key === "Escape") {
+                        setSearchQuery("") // ESC 키를 누르면 검색창 초기화
                       }
                     }}
                     className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1686,6 +1688,8 @@ const Map: React.FC = () => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         handleSearchClick()
+                      } else if (e.key === "Escape") {
+                        setSearchQuery("") // ESC 키를 누르면 검색창 초기화
                       }
                     }}
                     className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
