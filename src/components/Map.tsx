@@ -127,6 +127,7 @@ const Map: React.FC = () => {
     y: number
   } | null>(null)
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
+  const canvasRenderer = useMemo(() => L.canvas(), []) // Canvas Renderer 생성
 
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
@@ -1799,7 +1800,7 @@ const Map: React.FC = () => {
           <HandleRightClick />
           <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
           {latLng && (
-            <Marker position={latLng}>
+            <Marker renderer={canvasRenderer} position={latLng}>
               <Popup>
                 <div style={{ textAlign: "center" }}>
                   <p style={{ marginBottom: "10px" }}>
@@ -1968,6 +1969,7 @@ const Map: React.FC = () => {
             }
             return (
               <Marker
+                renderer={canvasRenderer}
                 key={network.id}
                 position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
@@ -2118,6 +2120,7 @@ const Map: React.FC = () => {
               }
               return (
                 <Marker
+                  renderer={canvasRenderer}
                   key={trace.id}
                   position={[trace.latitude, trace.longitude]}
                   icon={L.divIcon({
@@ -2198,6 +2201,7 @@ const Map: React.FC = () => {
               }
               return (
                 <Polyline
+                  renderer={canvasRenderer}
                   key={`${trace.id}-${nextTrace.id}`}
                   positions={[
                     [trace.latitude, trace.longitude],

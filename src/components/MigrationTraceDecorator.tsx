@@ -8,6 +8,8 @@ const MigrationTraceDecorator = ({ traces }: { traces: any[] }) => {
   const map = useMap()
 
   const animationRef = useRef<number | null>(null)
+  // Canvas Renderer 생성
+  const canvasRenderer = L.canvas()
 
   useEffect(() => {
     if (!traces || traces.length < 2) return
@@ -55,6 +57,7 @@ const MigrationTraceDecorator = ({ traces }: { traces: any[] }) => {
           opacity: 0.8,
 
           dashArray: "5, 5",
+          renderer: canvasRenderer, // Canvas Renderer 적용
         },
       )
 
