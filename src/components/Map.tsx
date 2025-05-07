@@ -160,7 +160,7 @@ const Map: React.FC = () => {
     speed: 200,
     slidesToShow: 1,
     slidesToScroll: 1,
-    initialSlide: 10, // 첫 번째 슬라이드로 시작
+    initialSlide: user.isLoggedIn ? 11 : 8, // 로그인 여부에 따라 초기 슬라이드 설정
     appendDots: (dots: React.ReactNode) => (
       <div
         style={{
