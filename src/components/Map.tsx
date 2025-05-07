@@ -127,7 +127,6 @@ const Map: React.FC = () => {
     y: number
   } | null>(null)
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
-  const canvasRenderer = useMemo(() => L.canvas(), []) // Canvas Renderer 생성
 
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
@@ -2199,7 +2198,6 @@ const Map: React.FC = () => {
               }
               return (
                 <Polyline
-                  renderer={canvasRenderer}
                   key={`${trace.id}-${nextTrace.id}`}
                   positions={[
                     [trace.latitude, trace.longitude],
