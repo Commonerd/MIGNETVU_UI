@@ -1800,7 +1800,7 @@ const Map: React.FC = () => {
           <HandleRightClick />
           <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
           {latLng && (
-            <Marker renderer={canvasRenderer} position={latLng}>
+            <Marker position={latLng}>
               <Popup>
                 <div style={{ textAlign: "center" }}>
                   <p style={{ marginBottom: "10px" }}>
@@ -1969,7 +1969,6 @@ const Map: React.FC = () => {
             }
             return (
               <Marker
-                renderer={canvasRenderer}
                 key={network.id}
                 position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
@@ -2120,7 +2119,6 @@ const Map: React.FC = () => {
               }
               return (
                 <Marker
-                  renderer={canvasRenderer}
                   key={trace.id}
                   position={[trace.latitude, trace.longitude]}
                   icon={L.divIcon({
