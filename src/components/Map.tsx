@@ -775,6 +775,10 @@ const Map: React.FC = () => {
         id,
         photo: imageUrl,
       })
+      const entity = getEntityById(id)
+      if (entity) {
+        setPopupPosition({ x: entity.latitude, y: entity.longitude })
+      }
     } catch (error) {
       console.error("Error fetching photo:", error)
       setHighlightedNode({
@@ -2103,8 +2107,8 @@ const Map: React.FC = () => {
               const network = networks?.find((n) => n.id === trace.network_id)
               const networkName = network ? network.title : "Unknown"
               // Calculate size dynamically based on trace number
-              const baseSize = 17 // Base size for the marker
-              const sizeIncrement = 2 // Smaller increment size for each trace number
+              const baseSize = 16 // Base size for the marker
+              const sizeIncrement = 1.5 // Smaller increment size for each trace number
               const size = baseSize + trace.traceNumber * sizeIncrement
               // Filter out duplicate markers at the same position
               const isDuplicate = traces.some(
@@ -2138,6 +2142,23 @@ const Map: React.FC = () => {
             ${trace.traceNumber}
           </div>`,
                   })}
+                  eventHandlers={{
+                    click: (e) => {
+                      L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(
+                          `
+          <div>
+            <strong>${t("Network ID")}:</strong> ${trace.network_id}-${networkName}<br/>
+            <strong>${t("Place")}:</strong> ${trace.location_name}<br/>
+            <strong>${t("Migration Year")}:</strong> ${trace.migration_year}<br/>
+            <strong>${t("Reason")}:</strong> ${trace.reason}
+          </div>
+        `,
+                        )
+                        .openOn(e.target._map)
+                    },
+                  }}
                 >
                   {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
                   {showMigrationReasons && (
