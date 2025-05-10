@@ -49,6 +49,7 @@ import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
+
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -129,6 +130,8 @@ const Map: React.FC = () => {
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
   // 검색어 상태
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<Network[]>([])
+  const searchWorkerRef = useRef<Worker | null>(null)
 
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
@@ -772,11 +775,31 @@ const Map: React.FC = () => {
       })
     }
   }
+
+  useEffect(() => {
+    // 웹 워커 초기화
+    searchWorkerRef.current = new Worker(
+      new URL("../workers/searchWorker.ts", import.meta.url),
+    )
+
+    searchWorkerRef.current.onmessage = (event) => {
+      setSearchResults(event.data) // 필터링된 결과 업데이트
+    }
+
+    return () => {
+      searchWorkerRef.current?.terminate() // 컴포넌트 언마운트 시 워커 종료
+    }
+  }, [])
+
   // 검색창 입력 핸들러
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
     setSearchQuery(query) // 즉시 검색어 상태 업데이트
     updateDebouncedSearchQuery(query) // 디바운싱된 검색어 업데이트
+
+    if (searchWorkerRef.current && networks) {
+      searchWorkerRef.current.postMessage({ networks, query }) // 워커에 데이터 전달
+    }
   }
 
   const handleSearchClick = () => {
