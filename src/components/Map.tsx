@@ -521,51 +521,53 @@ const Map: React.FC = () => {
       return updatedFilters
     })
   }
-  const filteredNetworks = networks
-    ? networks.filter((network) => {
-        // 선택된 엣지와 관련된 네트워크만 포함
-        if (selectedEdgeId) {
-          const isEdgeTarget = network.edges.some(
-            (edge) => edge.targetId === selectedEdgeId,
-          )
-          if (isEdgeTarget) {
-            return true
-          }
+  // filteredNetworks를 useMemo로 메모이제이션
+  const filteredNetworks = useMemo(() => {
+    if (!networks) return []
+    return networks.filter((network) => {
+      // 선택된 엣지와 관련된 네트워크만 포함
+      if (selectedEdgeId) {
+        const isEdgeTarget = network.edges.some(
+          (edge) => edge.targetId === selectedEdgeId,
+        )
+        if (isEdgeTarget) {
+          return true
         }
-        // 강제로 포함된 네트워크는 항상 포함
-        const isForcedIncluded = filters.forceIncludeNetworkIds?.includes(
-          network.id,
-        )
-        // 기존 필터 조건
-        const matchesNationality =
-          filters.nationality.includes("all") ||
-          filters.nationality.includes(network.nationality)
-        const matchesEthnicity =
-          filters.ethnicity.includes("all") ||
-          filters.ethnicity.includes(network.ethnicity)
-        const matchesYearRange =
-          network.migration_year >= filters.yearRange[0] &&
-          network.migration_year <= filters.yearRange[1]
-        // 새로 추가된 유저 이름 필터
-        const matchesUserNetwork =
-          !filters.userNetworkFilter ||
-          !user.name ||
-          network.user_name === user.name
-        // 엔티티 유형 필터 조건
-        const matchesEntityType =
-          filters.entityType.includes("all") ||
-          filters.entityType.includes(network.type)
-        // 모든 필터 조건을 종합적으로 확인
-        return (
-          isForcedIncluded || // 강제로 포함된 네트워크는 항상 포함
-          (matchesNationality &&
-            matchesEthnicity &&
-            matchesYearRange &&
-            matchesUserNetwork &&
-            matchesEntityType)
-        )
-      })
-    : []
+      }
+      // 강제로 포함된 네트워크는 항상 포함
+      const isForcedIncluded = filters.forceIncludeNetworkIds?.includes(
+        network.id,
+      )
+      // 기존 필터 조건
+      const matchesNationality =
+        filters.nationality.includes("all") ||
+        filters.nationality.includes(network.nationality)
+      const matchesEthnicity =
+        filters.ethnicity.includes("all") ||
+        filters.ethnicity.includes(network.ethnicity)
+      const matchesYearRange =
+        network.migration_year >= filters.yearRange[0] &&
+        network.migration_year <= filters.yearRange[1]
+      // 새로 추가된 유저 이름 필터
+      const matchesUserNetwork =
+        !filters.userNetworkFilter ||
+        !user.name ||
+        network.user_name === user.name
+      // 엔티티 유형 필터 조건
+      const matchesEntityType =
+        filters.entityType.includes("all") ||
+        filters.entityType.includes(network.type)
+      // 모든 필터 조건을 종합적으로 확인
+      return (
+        isForcedIncluded || // 강제로 포함된 네트워크는 항상 포함
+        (matchesNationality &&
+          matchesEthnicity &&
+          matchesYearRange &&
+          matchesUserNetwork &&
+          matchesEntityType)
+      )
+    })
+  }, [networks, filters, selectedEdgeId, user.name])
   const filteredNetworkTraces = networks
     ? networks.filter((network) => {
         // 기존 필터 조건
@@ -656,8 +658,11 @@ const Map: React.FC = () => {
     }
     return distances
   }
-  // 중심성 계산
-  const centralityValues = calculateCentrality(filteredNetworks, centralityType) // 필터링된 네트워크 사용
+  // centralityValues를 useMemo로 메모이제이션
+  const centralityValues = useMemo(() => {
+    return calculateCentrality(filteredNetworks, centralityType)
+  }, [filteredNetworks, centralityType])
+
   const topNetworks = Object.entries(centralityValues)
     .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
     .sort(([, a], [, b]) => b - a)
@@ -947,7 +952,11 @@ const Map: React.FC = () => {
         )
       })
   }
-  const migrationTraces = getMigrationTraces()
+  // migrationTraces를 useMemo로 메모이제이션
+  const migrationTraces = useMemo(
+    () => getMigrationTraces(),
+    [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
+  )
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
