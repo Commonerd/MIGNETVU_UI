@@ -776,7 +776,9 @@ const Map: React.FC = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
     setSearchQuery(query) // 즉시 검색어 상태 업데이트
-    updateDebouncedSearchQuery(query) // 디바운싱된 검색어 업데이트
+    window.requestAnimationFrame(() => {
+      updateDebouncedSearchQuery(query)
+    })
   }
 
   const handleSearchClick = () => {
