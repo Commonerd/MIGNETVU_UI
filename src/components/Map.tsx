@@ -48,7 +48,7 @@ import { fetchComments } from "../api/comments"
 import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
-
+import { debounce } from "lodash"
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -127,6 +127,17 @@ const Map: React.FC = () => {
     y: number
   } | null>(null)
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
+  // 검색어 상태
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
+
+  // 디바운싱된 검색어 업데이트 함수
+  const updateDebouncedSearchQuery = useMemo(
+    () =>
+      debounce((query: string) => {
+        setDebouncedSearchQuery(query)
+      }, 300), // 300ms 지연
+    [],
+  )
 
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
@@ -661,7 +672,7 @@ const Map: React.FC = () => {
   // centralityValues를 useMemo로 메모이제이션
   const centralityValues = useMemo(() => {
     return calculateCentrality(filteredNetworks, centralityType)
-  }, [filteredNetworks, centralityType, filters])
+  }, [filteredNetworks, centralityType])
 
   const topNetworks = Object.entries(centralityValues)
     .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
@@ -761,9 +772,13 @@ const Map: React.FC = () => {
       })
     }
   }
+  // 검색창 입력 핸들러
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value)
+    const query = event.target.value
+    setSearchQuery(query) // 즉시 검색어 상태 업데이트
+    updateDebouncedSearchQuery(query) // 디바운싱된 검색어 업데이트
   }
+
   const handleSearchClick = () => {
     if (searchQuery.trim() !== "") {
       setTriggerSearch(true)

@@ -23,6 +23,7 @@
     "leaflet": "^1.9.4",
     "leaflet-arrowheads": "^1.4.0",
     "leaflet-polylinedecorator": "github:bbecquet/Leaflet.polylineDecorator",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.454.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
