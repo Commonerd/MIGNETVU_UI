@@ -661,7 +661,7 @@ const Map: React.FC = () => {
   // centralityValues를 useMemo로 메모이제이션
   const centralityValues = useMemo(() => {
     return calculateCentrality(filteredNetworks, centralityType)
-  }, [filteredNetworks, centralityType])
+  }, [filteredNetworks, centralityType, filters])
 
   const topNetworks = Object.entries(centralityValues)
     .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
