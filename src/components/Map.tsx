@@ -808,14 +808,31 @@ const Map: React.FC = () => {
     }
   }
 
+  const tracesRef = useRef<any[]>([])
+  const edgesRef = useRef<any[]>([])
+
   useEffect(() => {
-    if (filteredNetworks && filteredNetworks.length > 0) {
-      const edges = getEdges() // 필터링된 네트워크의 엣지 가져오기
-      const traces = getMigrationTraces().flat() // 필터링된 네트워크의 트레이스 가져오기
-      const analysis = analyzeNetworkType(filteredNetworks, edges, traces) // 필터링된 네트워크로 분석 수행
-      setNetworkAnalysis(analysis) // 분석 결과 업데이트
+    const newTraces = getMigrationTraces()
+    const newEdges = getEdges()
+
+    // 트레이스와 엣지의 변경 여부를 확인
+    const tracesChanged =
+      JSON.stringify(tracesRef.current) !== JSON.stringify(newTraces)
+    const edgesChanged =
+      JSON.stringify(edgesRef.current) !== JSON.stringify(newEdges)
+
+    if (tracesChanged || edgesChanged) {
+      // 이전 값 업데이트
+      tracesRef.current = newTraces
+      edgesRef.current = newEdges
+
+      if (filteredNetworks && filteredNetworks.length > 0) {
+        const traces = newTraces.flat() // 새로운 트레이스 가져오기
+        const analysis = analyzeNetworkType(filteredNetworks, newEdges, traces) // 분석 수행
+        setNetworkAnalysis(analysis) // 분석 결과 업데이트
+      }
     }
-  }, [filteredNetworks, filters]) // filteredNetworks를 의존성에 추가
+  }, [filteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
 
   const CustomMapComponent = () => {
     const map = useMap()
