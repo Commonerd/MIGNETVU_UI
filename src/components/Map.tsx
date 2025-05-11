@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -49,7 +49,6 @@ import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
-import SearchBar from "./SearchBar"
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -774,16 +773,13 @@ const Map: React.FC = () => {
     }
   }
   // 검색창 입력 핸들러
-  const handleSearchChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const query = event.target.value
-      setSearchQuery(query)
-      window.requestAnimationFrame(() => {
-        updateDebouncedSearchQuery(query)
-      })
-    },
-    [],
-  )
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const query = event.target.value
+    setSearchQuery(query) // 즉시 검색어 상태 업데이트
+    window.requestAnimationFrame(() => {
+      updateDebouncedSearchQuery(query)
+    })
+  }
 
   const handleSearchClick = () => {
     if (searchQuery.trim() !== "") {
@@ -1293,10 +1289,19 @@ const Map: React.FC = () => {
             {/* 검색창 */}
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <SearchBar
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  onSearch={handleSearchClick}
+                <input
+                  type="text"
+                  placeholder={t("Search Networks")}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchClick()
+                    } else if (e.key === "Escape") {
+                      setSearchQuery("") // ESC 키를 누르면 검색창 초기화
+                    }
+                  }}
+                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <button
                   onClick={handleSearchClick}
@@ -1738,10 +1743,19 @@ const Map: React.FC = () => {
               ) : (
                 <></>
               )}
-              <SearchBar
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                onSearch={handleSearchClick}
+              <input
+                type="text"
+                placeholder={t("Search Networks")}
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSearchClick()
+                  } else if (e.key === "Escape") {
+                    setSearchQuery("") // ESC 키를 누르면 검색창 초기화
+                  }
+                }}
+                className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               <button
                 onClick={handleSearchClick}
