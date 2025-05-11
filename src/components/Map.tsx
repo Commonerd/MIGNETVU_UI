@@ -783,7 +783,7 @@ const Map: React.FC = () => {
 
   const handleSearchClick = () => {
     if (searchQuery.trim() !== "") {
-      setTriggerSearch(true)
+      setTriggerSearch((prev) => !prev) // 이전 상태를 반전
     }
   }
   const handleTooltipOpen = async (id: number) => {
