@@ -249,29 +249,55 @@ const Map: React.FC = () => {
       markersLayer.clearLayers()
     }
   }, [Map, networks])
-  const filteredTraces =
-    networks?.flatMap((network) =>
+  const filteredTraces = useMemo(() => {
+    if (!networks) return []
+
+    return networks.flatMap((network) =>
       network.migration_traces.filter((trace) => {
         // 기존 필터 조건: 이주 연도 범위
         const matchesYearRange =
           trace.migration_year >= yearRange[0] &&
           trace.migration_year <= yearRange[1]
+
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
           !user.name ||
           network.user_name === user.name
+
         // 이주 추적 원인 필터 조건
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
           filters.migrationReasons.length === 0 ||
           filters.migrationReasons.includes(trace.reason)
+
+        // 개체 유형 필터 조건
+        const matchesEntityType =
+          filters.entityType.includes("all") ||
+          filters.entityType.includes(network.type)
+
+        // 국적 필터 조건
+        const matchesNationality =
+          filters.nationality.includes("all") ||
+          filters.nationality.includes(network.nationality)
+
+        // 민족 필터 조건
+        const matchesEthnicity =
+          filters.ethnicity.includes("all") ||
+          filters.ethnicity.includes(network.ethnicity)
+
         // 모든 조건을 종합적으로 확인
         return (
-          matchesYearRange && matchesUserNetworkTrace && matchesMigrationReasons
+          matchesYearRange &&
+          matchesUserNetworkTrace &&
+          matchesMigrationReasons &&
+          matchesEntityType &&
+          matchesNationality &&
+          matchesEthnicity
         )
       }),
-    ) ?? [] // Fallback to an empty array if undefined
+    )
+  }, [networks, yearRange, filters, user.name])
   const positions = filteredTraces.map(
     (trace: { latitude: any; longitude: any }) => [
       trace.latitude,
