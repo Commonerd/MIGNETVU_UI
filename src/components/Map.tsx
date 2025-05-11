@@ -129,13 +129,12 @@ const Map: React.FC = () => {
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
   // 검색어 상태
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
-  const [finalSearchQuery, setFinalSearchQuery] = useState("") // 실제 검색에 사용되는 검색어
 
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
     () =>
       debounce((query: string) => {
-        setFinalSearchQuery(query)
+        setDebouncedSearchQuery(query)
       }, 300), // 300ms 지연
     [],
   )
@@ -776,14 +775,14 @@ const Map: React.FC = () => {
   // 검색창 입력 핸들러
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
-    setSearchQuery(query)
-    updateDebouncedSearchQuery(query)
+    setSearchQuery(query) // 즉시 검색어 상태 업데이트
+    window.requestAnimationFrame(() => {
+      updateDebouncedSearchQuery(query)
+    })
   }
 
   const handleSearchClick = () => {
     if (searchQuery.trim() !== "") {
-      setFinalSearchQuery(searchQuery) // 검색 버튼 클릭 시 검색어 확정
-
       setTriggerSearch(true)
     }
   }
@@ -1803,17 +1802,14 @@ const Map: React.FC = () => {
                 pointerEvents: "auto",
               }}
             >
-              {/* 검색 결과 */}
-              {finalSearchQuery && (
-                <SearchResults
-                  searchQuery={finalSearchQuery}
-                  setFocusedNode={setFocusedNode}
-                  handleEntityClick={handleEntityClick}
-                  handleMigrationTraceClick={handleMigrationTraceClick}
-                  handleEdgeClick={handleEdgeClick}
-                  handleNetworkEdgesToggle={handleNetworkEdgesToggle}
-                />
-              )}
+              <SearchResults
+                searchQuery={searchQuery}
+                setFocusedNode={setFocusedNode}
+                handleEntityClick={handleEntityClick}
+                handleMigrationTraceClick={handleMigrationTraceClick}
+                handleEdgeClick={handleEdgeClick}
+                handleNetworkEdgesToggle={handleNetworkEdgesToggle}
+              />
             </div>
           </div>
         )}

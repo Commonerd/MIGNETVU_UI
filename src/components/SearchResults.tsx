@@ -4,7 +4,6 @@ import { NetworkItem } from "./NetworkItem"
 import { useQueryClient } from "@tanstack/react-query"
 import { useTranslation } from "react-i18next"
 import { FiSearch, FiX } from "react-icons/fi" // 아이콘 추가
-import React from "react"
 
 interface SearchResultsProps {
   searchQuery: string
@@ -146,5 +145,4 @@ const SearchResults: FC<SearchResultsProps> = ({
   )
 }
 
-// React.memo 적용
-export default React.memo(SearchResults)
+export default SearchResults
