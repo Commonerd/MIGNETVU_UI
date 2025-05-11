@@ -49,6 +49,7 @@ import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
+import SearchBar from "./SearchBar"
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -135,7 +136,7 @@ const Map: React.FC = () => {
     () =>
       debounce((query: string) => {
         setDebouncedSearchQuery(query)
-      }, 0), // 1000ms 지연
+      }, 300), // 1000ms 지연
     [],
   )
 
@@ -1290,7 +1291,7 @@ const Map: React.FC = () => {
             {/* 검색창 */}
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
+                {/* <input
                   type="text"
                   placeholder={t("Search Networks")}
                   value={searchQuery}
@@ -1303,7 +1304,8 @@ const Map: React.FC = () => {
                     }
                   }}
                   className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
+                />{" "} */}
+                <SearchBar onSearch={handleSearchClick} />
                 <button
                   onClick={handleSearchClick}
                   className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1744,7 +1746,7 @@ const Map: React.FC = () => {
               ) : (
                 <></>
               )}
-              <input
+              {/* <input
                 type="text"
                 placeholder={t("Search Networks")}
                 value={searchQuery}
@@ -1757,7 +1759,9 @@ const Map: React.FC = () => {
                   }
                 }}
                 className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
+              /> */}
+              <SearchBar onSearch={handleSearchClick} />
+
               <button
                 onClick={handleSearchClick}
                 className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
