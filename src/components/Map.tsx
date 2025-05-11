@@ -135,7 +135,7 @@ const Map: React.FC = () => {
     () =>
       debounce((query: string) => {
         setDebouncedSearchQuery(query)
-      }, 1000), // 1000ms 지연
+      }, 0), // 1000ms 지연
     [],
   )
 
