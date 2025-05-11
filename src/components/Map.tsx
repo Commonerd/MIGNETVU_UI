@@ -135,7 +135,7 @@ const Map: React.FC = () => {
     () =>
       debounce((query: string) => {
         setDebouncedSearchQuery(query)
-      }, 300), // 300ms 지연
+      }, 1000), // 1000ms 지연
     [],
   )
 
@@ -773,19 +773,20 @@ const Map: React.FC = () => {
     }
   }
   // 검색창 입력 핸들러
+  // 검색어 입력 핸들러
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value
     setSearchQuery(query) // 즉시 검색어 상태 업데이트
-    window.requestAnimationFrame(() => {
-      updateDebouncedSearchQuery(query)
-    })
+    updateDebouncedSearchQuery(query) // 디바운싱된 검색어 업데이트
   }
 
+  // 검색 버튼 클릭 핸들러
   const handleSearchClick = () => {
-    if (searchQuery.trim() !== "") {
-      setTriggerSearch((prev) => !prev) // 이전 상태를 반전
+    if (debouncedSearchQuery.trim() !== "") {
+      setTriggerSearch((prev) => !prev) // 검색 실행 여부 토글
     }
   }
+
   const handleTooltipOpen = async (id: number) => {
     fetchComments(id)
     try {
@@ -1803,7 +1804,7 @@ const Map: React.FC = () => {
               }}
             >
               <SearchResults
-                searchQuery={searchQuery}
+                searchQuery={debouncedSearchQuery}
                 setFocusedNode={setFocusedNode}
                 handleEntityClick={handleEntityClick}
                 handleMigrationTraceClick={handleMigrationTraceClick}
