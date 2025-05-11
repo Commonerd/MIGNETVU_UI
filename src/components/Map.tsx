@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react"
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -773,13 +773,16 @@ const Map: React.FC = () => {
     }
   }
   // 검색창 입력 핸들러
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const query = event.target.value
-    setSearchQuery(query) // 즉시 검색어 상태 업데이트
-    window.requestAnimationFrame(() => {
-      updateDebouncedSearchQuery(query)
-    })
-  }
+  const handleSearchChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const query = event.target.value
+      setSearchQuery(query)
+      window.requestAnimationFrame(() => {
+        updateDebouncedSearchQuery(query)
+      })
+    },
+    [],
+  )
 
   const handleSearchClick = () => {
     if (searchQuery.trim() !== "") {
