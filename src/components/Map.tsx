@@ -49,6 +49,7 @@ import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
+
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -991,6 +992,16 @@ const Map: React.FC = () => {
     () => getMigrationTraces(),
     [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
   )
+
+  const debouncedSetSearchQuery = useMemo(
+    () =>
+      debounce((query: string) => {
+        setSearchQuery(query)
+        setTriggerSearch(true)
+      }, 300), // 300ms 지연
+    [],
+  )
+
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
@@ -1293,7 +1304,10 @@ const Map: React.FC = () => {
                   type="text"
                   placeholder={t("Search Networks")}
                   value={searchQuery}
-                  onChange={handleSearchChange}
+                  onChange={(e) => {
+                    const query = e.target.value
+                    debouncedSetSearchQuery(query)
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       handleSearchClick()
@@ -1747,7 +1761,10 @@ const Map: React.FC = () => {
                 type="text"
                 placeholder={t("Search Networks")}
                 value={searchQuery}
-                onChange={handleSearchChange}
+                onChange={(e) => {
+                  const query = e.target.value
+                  debouncedSetSearchQuery(query)
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSearchClick()
