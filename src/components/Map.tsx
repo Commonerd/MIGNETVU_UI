@@ -49,6 +49,7 @@ import Slider from "react-slick"
 import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
+import SearchBar from "./SearchBar"
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -71,7 +72,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 })
-
 const Map: React.FC = () => {
   const isMobile = window.innerWidth <= 768
   const { t } = useTranslation()
@@ -129,16 +129,14 @@ const Map: React.FC = () => {
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
   // 검색어 상태
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
-
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
     () =>
       debounce((query: string) => {
         setDebouncedSearchQuery(query)
-      }, 1000), // 1000ms 지연
+      }, 300), // 1000ms 지연
     [],
   )
-
   const HandleMapClickForPopupSize = () => {
     useMapEvents({
       click(e) {
@@ -673,7 +671,6 @@ const Map: React.FC = () => {
   const centralityValues = useMemo(() => {
     return calculateCentrality(filteredNetworks, centralityType)
   }, [filteredNetworks, centralityType])
-
   const topNetworks = Object.entries(centralityValues)
     .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
     .sort(([, a], [, b]) => b - a)
@@ -779,14 +776,15 @@ const Map: React.FC = () => {
     setSearchQuery(query) // 즉시 검색어 상태 업데이트
     updateDebouncedSearchQuery(query) // 디바운싱된 검색어 업데이트
   }
-
   // 검색 버튼 클릭 핸들러
-  const handleSearchClick = () => {
-    if (debouncedSearchQuery.trim() !== "") {
+  const handleSearchClick = (query: string) => {
+    console.log("Map handleSearchClick called with query:", query) // 디버깅용 로그
+
+    setSearchQuery(query) // 검색어 업데이트
+    if (query.trim() !== "") {
       setTriggerSearch((prev) => !prev) // 검색 실행 여부 토글
     }
   }
-
   const handleTooltipOpen = async (id: number) => {
     fetchComments(id)
     try {
@@ -810,25 +808,20 @@ const Map: React.FC = () => {
       })
     }
   }
-
   const tracesRef = useRef<any[]>([])
   const edgesRef = useRef<any[]>([])
-
   useEffect(() => {
     const newTraces = getMigrationTraces()
     const newEdges = getEdges()
-
     // 트레이스와 엣지의 변경 여부를 확인
     const tracesChanged =
       JSON.stringify(tracesRef.current) !== JSON.stringify(newTraces)
     const edgesChanged =
       JSON.stringify(edgesRef.current) !== JSON.stringify(newEdges)
-
     if (tracesChanged || edgesChanged) {
       // 이전 값 업데이트
       tracesRef.current = newTraces
       edgesRef.current = newEdges
-
       if (filteredNetworks && filteredNetworks.length > 0) {
         const traces = newTraces.flat() // 새로운 트레이스 가져오기
         const analysis = analyzeNetworkType(filteredNetworks, newEdges, traces) // 분석 수행
@@ -836,7 +829,6 @@ const Map: React.FC = () => {
       }
     }
   }, [filteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
-
   const CustomMapComponent = () => {
     const map = useMap()
     const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
@@ -1290,7 +1282,7 @@ const Map: React.FC = () => {
             {/* 검색창 */}
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
+                {/* <input
                   type="text"
                   placeholder={t("Search Networks")}
                   value={searchQuery}
@@ -1303,26 +1295,8 @@ const Map: React.FC = () => {
                     }
                   }}
                   className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-                <button
-                  onClick={handleSearchClick}
-                  className="ml-2 px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                    />
-                  </svg>
-                </button>
+                />{" "} */}
+                <SearchBar onSearch={handleSearchClick} />
               </div>
             </div>
           </MobileCarousel>
@@ -1527,7 +1501,6 @@ const Map: React.FC = () => {
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
-
               {/* Centrality */}
               {user.isLoggedIn ? (
                 <Select
@@ -1678,7 +1651,6 @@ const Map: React.FC = () => {
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
             </div>
-
             {/* Search */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
               {user.isLoggedIn ? (
@@ -1744,7 +1716,7 @@ const Map: React.FC = () => {
               ) : (
                 <></>
               )}
-              <input
+              {/* <input
                 type="text"
                 placeholder={t("Search Networks")}
                 value={searchQuery}
@@ -1757,26 +1729,8 @@ const Map: React.FC = () => {
                   }
                 }}
                 className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              <button
-                onClick={handleSearchClick}
-                className="px-4 py-1 bg-amber-700 text-white rounded hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M21 21l-4.35-4.35m1.94-7.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
-                  />
-                </svg>
-              </button>
+              /> */}
+              <SearchBar onSearch={handleSearchClick} />
             </div>
           </SwipeableContainer>
         )}

@@ -27,7 +27,6 @@ const SearchResults: FC<SearchResultsProps> = ({
   const [currentPage, setCurrentPage] = useState(1)
   const [isVisible, setIsVisible] = useState(true) // 검색창 표시 여부 상태 추가
   const { t } = useTranslation()
-
   const { data, isLoading, error } = useQuerySearchNetworks(
     searchQuery,
     currentPage,
