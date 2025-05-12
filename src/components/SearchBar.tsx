@@ -22,9 +22,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     setSearchQuery(query) // 검색어 상태 업데이트
   }
 
-  useEffect(() => {
-    onSearch(searchQuery) // 상태가 변경될 때 최신 값을 전달
-  }, [searchQuery])
+  // 실시간 검색어전달 : 그러나 과부하 가능성으로 기능막기
+  // useEffect(() => {
+  //   onSearch(searchQuery) // 상태가 변경될 때 최신 값을 전달
+  // }, [searchQuery])
+
   return (
     <div className="w-full flex items-center gap-2">
       {" "}
