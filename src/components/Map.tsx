@@ -1804,7 +1804,7 @@ const Map: React.FC = () => {
               }}
             >
               <SearchResults
-                searchQuery={debouncedSearchQuery}
+                searchQuery={searchQuery}
                 setFocusedNode={setFocusedNode}
                 handleEntityClick={handleEntityClick}
                 handleMigrationTraceClick={handleMigrationTraceClick}
