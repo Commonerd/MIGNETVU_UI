@@ -1,5 +1,5 @@
 import { t } from "i18next"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 interface SearchBarProps {
   onSearch: (query: string) => void // 검색어를 전달받는 콜백
@@ -22,6 +22,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
     setSearchQuery(query) // 검색어 상태 업데이트
   }
 
+  useEffect(() => {
+    onSearch(searchQuery) // 상태가 변경될 때 최신 값을 전달
+  }, [searchQuery])
   return (
     <div className="w-full flex items-center gap-2">
       {" "}

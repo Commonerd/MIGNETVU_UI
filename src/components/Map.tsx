@@ -977,11 +977,13 @@ const Map: React.FC = () => {
         )
       })
   }
+
   // migrationTraces를 useMemo로 메모이제이션
   const migrationTraces = useMemo(
     () => getMigrationTraces(),
     [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
   )
+
   return (
     <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
