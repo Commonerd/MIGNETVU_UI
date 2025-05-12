@@ -778,8 +778,6 @@ const Map: React.FC = () => {
   }
   // 검색 버튼 클릭 핸들러
   const handleSearchClick = (query: string) => {
-    console.log("Map handleSearchClick called with query:", query) // 디버깅용 로그
-
     setSearchQuery(query) // 검색어 업데이트
     if (query.trim() !== "") {
       setTriggerSearch((prev) => !prev) // 검색 실행 여부 토글

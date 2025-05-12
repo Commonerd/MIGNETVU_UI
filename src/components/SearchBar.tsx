@@ -23,7 +23,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   }
 
   return (
-    <div className="w-full p-2 flex items-center gap-2">
+    <div className="w-full flex items-center gap-2">
       {" "}
       {/* flexbox 적용 */}
       <input
