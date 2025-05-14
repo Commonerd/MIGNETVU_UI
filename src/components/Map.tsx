@@ -684,8 +684,8 @@ const Map: React.FC = () => {
       }
     })
   const getNodeSize = (centrality: number, centralityType: string) => {
-    let baseSize = 4
-    let scaleFactor = 1
+    let baseSize = 6
+    let scaleFactor = 1.5
     if (centralityType === "degree") {
       scaleFactor = 0.5
     } else if (
