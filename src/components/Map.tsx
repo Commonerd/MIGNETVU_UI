@@ -130,7 +130,7 @@ const Map: React.FC = () => {
   // 검색어 상태
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
-
+  const [progress, setProgress] = useState(0)
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
     () =>
@@ -238,6 +238,20 @@ const Map: React.FC = () => {
     }, 2000) // Adjust the timeout as needed
 
     return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval)
+          return 100
+        }
+        return prev + 10 // Adjust increment as needed
+      })
+    }, 200) // Adjust interval duration as needed
+
+    return () => clearInterval(interval)
   }, [])
 
   useEffect(() => {
@@ -996,8 +1010,8 @@ const Map: React.FC = () => {
     [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
   )
 
-  if (isLoading) {
-    return <div className="spinner">Loading...</div> // Replace with your spinner component or styling
+  if (progress < 100) {
+    return <div className="spinner">Loading... {progress}%</div> // Replace with your spinner component or styling
   }
 
   return (
