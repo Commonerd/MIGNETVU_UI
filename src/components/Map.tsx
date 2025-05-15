@@ -1014,7 +1014,7 @@ const Map: React.FC = () => {
 
   if (progress < 100) {
     return (
-      <div style={styles.container}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", backgroundColor: "#f0f0f0" }}>
         <ClipLoader color="#3498db" size={50} />
         <div style={styles.text}>Loading... {progress}%</div>
       </div>
