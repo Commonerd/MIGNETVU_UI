@@ -129,6 +129,8 @@ const Map: React.FC = () => {
   const [networkAnalysis, setNetworkAnalysis] = useState<string[]>([])
   // 검색어 상태
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
     () =>
@@ -228,6 +230,16 @@ const Map: React.FC = () => {
     }
     setNetworks(data)
   }, [data])
+
+  useEffect(() => {
+    // Simulate data fetching or rendering process
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 2000) // Adjust the timeout as needed
+
+    return () => clearTimeout(timer)
+  }, [])
+
   useEffect(() => {
     const markersLayer = L.layerGroup()
     if (networks && networks.length > 0) {
@@ -983,6 +995,10 @@ const Map: React.FC = () => {
     () => getMigrationTraces(),
     [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
   )
+
+  if (isLoading) {
+    return <div className="spinner">Loading...</div> // Replace with your spinner component or styling
+  }
 
   return (
     <div className="h-[calc(87vh-64px)] relative">
