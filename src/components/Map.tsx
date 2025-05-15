@@ -50,6 +50,8 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
+import { ClipLoader } from "react-spinners" // Import a spinner from react-spinners
+
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -1011,8 +1013,16 @@ const Map: React.FC = () => {
   )
 
   if (progress < 100) {
-    return <div className="spinner">Loading... {progress}%</div> // Replace with your spinner component or styling
+    return (
+      <div style={styles.container}>
+        <ClipLoader color="#3498db" size={50} />
+        <div style={styles.text}>Loading... {progress}%</div>
+      </div>
+    );
   }
+
+  return <div>Content Loaded!</div>;
+};
 
   return (
     <div className="h-[calc(87vh-64px)] relative">
@@ -2582,4 +2592,22 @@ const CommentSectionWrapper = styled.div`
     padding: 5px;
   }
 `
+
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    backgroundColor: '#f9f9f9',
+  },
+  text: {
+    marginTop: '10px',
+    fontSize: '18px',
+    color: '#555',
+    fontWeight: 'bold',
+  },
+};
+
 export default Map
