@@ -50,8 +50,6 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
-import { ClipLoader } from "react-spinners" // Import a spinner from react-spinners
-
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -1013,351 +1011,16 @@ const Map: React.FC = () => {
   )
 
   if (progress < 100) {
-    return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-          backgroundColor: "#f0f0f0",
-        }}
-      >
-        <ClipLoader color="#3498db" size={50} />
-        <div style={styles.text}>Loading... {progress}%</div>
-      </div>
-    )
+    return <div className="spinner">Loading... {progress}%</div> // Replace with your spinner component or styling
   }
 
-  return <div>Content Loaded!</div>
-}
-
-return (
-  <div className="h-[calc(87vh-64px)] relative">
-    <div className="p-2 bg-[#d1c6b1] relative w-full">
-      {isMobile ? (
-        <MobileCarousel {...sliderSettings}>
-          {/* 개체 필터 */}
-          <div>
-            <Select
-              options={entityOptions}
-              onChange={(entityOptions) =>
-                handleFilterChange(
-                  "entityType",
-                  entityOptions
-                    ? entityOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allEntityTypes")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 국적 필터 */}
-          <div>
-            <Select
-              options={nationalityOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "nationality",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allNationalities")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 민족 필터 */}
-          <div>
-            <Select
-              options={ethnicityOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "ethnicity",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allEthnicities")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 관계 연도 */}
-          <div>
-            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-              <label className="text-sm">{t("yearRange")}</label>
-              <input
-                type="number"
-                placeholder="1800"
-                value={filters.yearRange[0]}
-                onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    parseInt(e.target.value),
-                    filters.yearRange[1],
-                  ])
-                }
-                className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              <span className="text-sm">-</span>
-              <input
-                type="number"
-                placeholder="2024"
-                value={filters.yearRange[1]}
-                onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    filters.yearRange[0],
-                    parseInt(e.target.value),
-                  ])
-                }
-                className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-          </div>
-          {/* 관계 유형 */}
-          <div>
-            <Select
-              options={edgeTypeOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "edgeType",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allConnectionTypes")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 중심성 */}
-          <div>
-            <Select
-              options={[
-                { value: "none", label: t("selectCentrality") },
-                { value: "degree", label: t("degreeCentrality") },
-                // { value: "betweenness", label: t("betweenessCentrality") },
-                // { value: "closeness", label: t("closenessCentrality") },
-                { value: "eigenvector", label: t("eigenvectorCentrality") },
-              ]}
-              onChange={(selectedOption) =>
-                setCentralityType(
-                  selectedOption ? selectedOption.value : "none",
-                )
-              }
-              value={{
-                value: centralityType,
-                label: t(
-                  centralityType === "none"
-                    ? "selectCentrality"
-                    : `${centralityType}Centrality`,
-                ),
-              }}
-              placeholder={t("selectCentrality")}
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 이동 연도 */}
-          <div>
-            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-              <label className="text-sm">{t("migrationTraceability")}</label>
-              <input
-                type="number"
-                value={yearRange[0] === 0 ? "" : yearRange[0]}
-                placeholder="1800"
-                onFocus={() => {
-                  if (yearRange[0] === 0) {
-                    setYearRange([0, yearRange[1]])
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === "") {
-                    setYearRange([0, yearRange[1]])
-                  }
-                }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([value, yearRange[1]])
-                }}
-                className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-              <span className="text-sm">-</span>
-              <input
-                type="number"
-                placeholder="2024"
-                value={yearRange[1] === 0 ? "" : yearRange[1]}
-                onFocus={() => {
-                  if (yearRange[1] === 0) {
-                    setYearRange([yearRange[0], 0])
-                  }
-                }}
-                onBlur={(e) => {
-                  if (e.target.value === "") {
-                    setYearRange([yearRange[0], 0])
-                  }
-                }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([yearRange[0], value])
-                }}
-                className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
-          </div>
-          {/* 이동 원인 */}
-          <div>
-            <Select
-              options={migrationReasonOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "migrationReasons",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allMigrationReasons")}
-              isClearable
-              isMulti
-              styles={customStyles}
-              menuPortalTarget={document.body}
-              menuPlacement="auto"
-              menuPosition="fixed"
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* 나의 노드 */}
-          {user.isLoggedIn && (
+  return (
+    <div className="h-[calc(87vh-64px)] relative">
+      <div className="p-2 bg-[#d1c6b1] relative w-full">
+        {isMobile ? (
+          <MobileCarousel {...sliderSettings}>
+            {/* 개체 필터 */}
             <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkFilter}
-                  onChange={(e) =>
-                    handleFilterChange("userNetworkFilter", e.target.checked)
-                  }
-                />
-                <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
-                  {t("filterByUserNetwork")}
-                </label>
-              </div>
-            </div>
-          )}
-          {/* 나의 관계망 */}
-          {user.isLoggedIn && (
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkConnectionFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkConnectionFilter}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "userNetworkConnectionFilter",
-                      e.target.checked,
-                    )
-                  }
-                />
-                <label
-                  htmlFor="userNetworkConnectionFilter"
-                  className="ml-2 text-sm"
-                >
-                  {t("filterByUserNetworkConnection")}
-                </label>
-              </div>
-            </div>
-          )}
-          {/* 나의 이동 */}
-          {user.isLoggedIn && (
-            <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-                <input
-                  type="checkbox"
-                  id="userNetworkTraceFilter"
-                  className="w-4 h-4"
-                  checked={filters.userNetworkTraceFilter}
-                  onChange={(e) =>
-                    handleFilterChange(
-                      "userNetworkTraceFilter",
-                      e.target.checked,
-                    )
-                  }
-                />
-                <label
-                  htmlFor="userNetworkTraceFilter"
-                  className="ml-2 text-sm"
-                >
-                  {t("filterByUserNetworkTrace")}
-                </label>
-              </div>
-            </div>
-          )}
-          {/* 검색창 */}
-          <div>
-            <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
-              {/* <input
-                  type="text"
-                  placeholder={t("Search Networks")}
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleSearchClick()
-                    } else if (e.key === "Escape") {
-                      setSearchQuery("") // ESC 키를 누르면 검색창 초기화
-                    }
-                  }}
-                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />{" "} */}
-              <SearchBar onSearch={handleSearchClick} />
-            </div>
-          </div>
-        </MobileCarousel>
-      ) : (
-        <SwipeableContainer isVisible={isFiltersVisible}>
-          {/* 3D 모드 전환 버튼 추가 */}
-          <ThreeDButton onClick={toggle3DMode}>
-            {is3DMode ? "2D" : "3D"}
-          </ThreeDButton>
-          {/* Entity Filters */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
-            <FilterContainer>
               <Select
                 options={entityOptions}
                 onChange={(entityOptions) =>
@@ -1371,30 +1034,15 @@ return (
                 placeholder={t("allEntityTypes")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
+            {/* 국적 필터 */}
+            <div>
               <Select
                 options={nationalityOptions}
                 onChange={(selectedOptions) =>
@@ -1408,30 +1056,15 @@ return (
                 placeholder={t("allNationalities")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
+            </div>
+            {/* 민족 필터 */}
+            <div>
               <Select
                 options={ethnicityOptions}
                 onChange={(selectedOptions) =>
@@ -1445,126 +1078,75 @@ return (
                 placeholder={t("allEthnicities")}
                 isClearable
                 isMulti
-                styles={{
-                  ...customStyles,
-                  multiValue: (provided) => ({
-                    ...provided,
-                    display: "inline-flex", // 선택된 항목을 가로로 정렬
-                    alignItems: "center",
-                    margin: "0 4px", // 항목 간격 조정
-                  }),
-                  multiValueLabel: (provided) => ({
-                    ...provided,
-                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                  }),
-                  multiValueRemove: (provided) => ({
-                    ...provided,
-                    cursor: "pointer",
-                  }),
-                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-                }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
-            </FilterContainer>
-          </div>
-          {/* Year Range */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-            <label className="text-sm">{t("yearRange")}</label>
-            <input
-              type="number"
-              placeholder="1800"
-              value={filters.yearRange[0]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  parseInt(e.target.value),
-                  filters.yearRange[1],
-                ])
-              }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <span className="text-sm">-</span>
-            <input
-              type="number"
-              placeholder="2024"
-              value={filters.yearRange[1]}
-              onChange={(e) =>
-                handleFilterChange("yearRange", [
-                  filters.yearRange[0],
-                  parseInt(e.target.value),
-                ])
-              }
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <Select
-              options={edgeTypeOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "edgeType",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              value={
-                Array.isArray(filters.edgeType)
-                  ? filters.edgeType
-                      .filter((value) => value !== "all")
-                      .map((value) => ({
-                        value,
-                        label: value,
-                      }))
-                  : []
-              }
-              placeholder={t("allConnectionTypes")}
-              isClearable
-              isMulti
-              styles={{
-                ...customStyles,
-                multiValue: (provided) => ({
-                  ...provided,
-                  display: "inline-flex", // 선택된 항목을 가로로 정렬
-                  alignItems: "center",
-                  margin: "0 4px", // 항목 간격 조정
-                }),
-                multiValueLabel: (provided) => ({
-                  ...provided,
-                  whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                  overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                }),
-                multiValueRemove: (provided) => ({
-                  ...provided,
-                  cursor: "pointer",
-                }),
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-              }}
-              menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-              menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-              menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-            {/* Centrality */}
-            {user.isLoggedIn ? (
+            </div>
+            {/* 관계 연도 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("yearRange")}</label>
+                <input
+                  type="number"
+                  placeholder="1800"
+                  value={filters.yearRange[0]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      parseInt(e.target.value),
+                      filters.yearRange[1],
+                    ])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm">-</span>
+                <input
+                  type="number"
+                  placeholder="2024"
+                  value={filters.yearRange[1]}
+                  onChange={(e) =>
+                    handleFilterChange("yearRange", [
+                      filters.yearRange[0],
+                      parseInt(e.target.value),
+                    ])
+                  }
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+            {/* 관계 유형 */}
+            <div>
+              <Select
+                options={edgeTypeOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "edgeType",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allConnectionTypes")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            {/* 중심성 */}
+            <div>
               <Select
                 options={[
                   { value: "none", label: t("selectCentrality") },
                   { value: "degree", label: t("degreeCentrality") },
-                  // {
-                  //   value: "betweenness",
-                  //   label: t("betweenessCentrality"),
-                  // },
+                  // { value: "betweenness", label: t("betweenessCentrality") },
                   // { value: "closeness", label: t("closenessCentrality") },
-                  {
-                    value: "eigenvector",
-                    label: t("eigenvectorCentrality"),
-                  },
+                  { value: "eigenvector", label: t("eigenvectorCentrality") },
                 ]}
                 onChange={(selectedOption) =>
                   setCentralityType(
@@ -1580,6 +1162,351 @@ return (
                   ),
                 }}
                 placeholder={t("selectCentrality")}
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            {/* 이동 연도 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("migrationTraceability")}</label>
+                <input
+                  type="number"
+                  value={yearRange[0] === 0 ? "" : yearRange[0]}
+                  placeholder="1800"
+                  onFocus={() => {
+                    if (yearRange[0] === 0) {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      setYearRange([0, yearRange[1]])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([value, yearRange[1]])
+                  }}
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <span className="text-sm">-</span>
+                <input
+                  type="number"
+                  placeholder="2024"
+                  value={yearRange[1] === 0 ? "" : yearRange[1]}
+                  onFocus={() => {
+                    if (yearRange[1] === 0) {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === "") {
+                      setYearRange([yearRange[0], 0])
+                    }
+                  }}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value === "" ? 0 : parseInt(e.target.value)
+                    setYearRange([yearRange[0], value])
+                  }}
+                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+            </div>
+            {/* 이동 원인 */}
+            <div>
+              <Select
+                options={migrationReasonOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "migrationReasons",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allMigrationReasons")}
+                isClearable
+                isMulti
+                styles={customStyles}
+                menuPortalTarget={document.body}
+                menuPlacement="auto"
+                menuPosition="fixed"
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            {/* 나의 노드 */}
+            {user.isLoggedIn && (
+              <div>
+                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                  <input
+                    type="checkbox"
+                    id="userNetworkFilter"
+                    className="w-4 h-4"
+                    checked={filters.userNetworkFilter}
+                    onChange={(e) =>
+                      handleFilterChange("userNetworkFilter", e.target.checked)
+                    }
+                  />
+                  <label htmlFor="userNetworkFilter" className="ml-2 text-sm">
+                    {t("filterByUserNetwork")}
+                  </label>
+                </div>
+              </div>
+            )}
+            {/* 나의 관계망 */}
+            {user.isLoggedIn && (
+              <div>
+                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                  <input
+                    type="checkbox"
+                    id="userNetworkConnectionFilter"
+                    className="w-4 h-4"
+                    checked={filters.userNetworkConnectionFilter}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "userNetworkConnectionFilter",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor="userNetworkConnectionFilter"
+                    className="ml-2 text-sm"
+                  >
+                    {t("filterByUserNetworkConnection")}
+                  </label>
+                </div>
+              </div>
+            )}
+            {/* 나의 이동 */}
+            {user.isLoggedIn && (
+              <div>
+                <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                  <input
+                    type="checkbox"
+                    id="userNetworkTraceFilter"
+                    className="w-4 h-4"
+                    checked={filters.userNetworkTraceFilter}
+                    onChange={(e) =>
+                      handleFilterChange(
+                        "userNetworkTraceFilter",
+                        e.target.checked,
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor="userNetworkTraceFilter"
+                    className="ml-2 text-sm"
+                  >
+                    {t("filterByUserNetworkTrace")}
+                  </label>
+                </div>
+              </div>
+            )}
+            {/* 검색창 */}
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex items-center border-2 border-[#9e9d89]">
+                {/* <input
+                  type="text"
+                  placeholder={t("Search Networks")}
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearchClick()
+                    } else if (e.key === "Escape") {
+                      setSearchQuery("") // ESC 키를 누르면 검색창 초기화
+                    }
+                  }}
+                  className="w-full p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />{" "} */}
+                <SearchBar onSearch={handleSearchClick} />
+              </div>
+            </div>
+          </MobileCarousel>
+        ) : (
+          <SwipeableContainer isVisible={isFiltersVisible}>
+            {/* 3D 모드 전환 버튼 추가 */}
+            <ThreeDButton onClick={toggle3DMode}>
+              {is3DMode ? "2D" : "3D"}
+            </ThreeDButton>
+            {/* Entity Filters */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
+              <FilterContainer>
+                <Select
+                  options={entityOptions}
+                  onChange={(entityOptions) =>
+                    handleFilterChange(
+                      "entityType",
+                      entityOptions
+                        ? entityOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allEntityTypes")}
+                  isClearable
+                  isMulti
+                  styles={{
+                    ...customStyles,
+                    multiValue: (provided) => ({
+                      ...provided,
+                      display: "inline-flex", // 선택된 항목을 가로로 정렬
+                      alignItems: "center",
+                      margin: "0 4px", // 항목 간격 조정
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                      overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      cursor: "pointer",
+                    }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                  }}
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                  menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                  className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <Select
+                  options={nationalityOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "nationality",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allNationalities")}
+                  isClearable
+                  isMulti
+                  styles={{
+                    ...customStyles,
+                    multiValue: (provided) => ({
+                      ...provided,
+                      display: "inline-flex", // 선택된 항목을 가로로 정렬
+                      alignItems: "center",
+                      margin: "0 4px", // 항목 간격 조정
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                      overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      cursor: "pointer",
+                    }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                  }}
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                  menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                  className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+                <Select
+                  options={ethnicityOptions}
+                  onChange={(selectedOptions) =>
+                    handleFilterChange(
+                      "ethnicity",
+                      selectedOptions
+                        ? selectedOptions.map((option) => option.value)
+                        : ["all"],
+                    )
+                  }
+                  placeholder={t("allEthnicities")}
+                  isClearable
+                  isMulti
+                  styles={{
+                    ...customStyles,
+                    multiValue: (provided) => ({
+                      ...provided,
+                      display: "inline-flex", // 선택된 항목을 가로로 정렬
+                      alignItems: "center",
+                      margin: "0 4px", // 항목 간격 조정
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                      overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      cursor: "pointer",
+                    }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                  }}
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                  menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                  className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              </FilterContainer>
+            </div>
+            {/* Year Range */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("yearRange")}</label>
+              <input
+                type="number"
+                placeholder="1800"
+                value={filters.yearRange[0]}
+                onChange={(e) =>
+                  handleFilterChange("yearRange", [
+                    parseInt(e.target.value),
+                    filters.yearRange[1],
+                  ])
+                }
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <span className="text-sm">-</span>
+              <input
+                type="number"
+                placeholder="2024"
+                value={filters.yearRange[1]}
+                onChange={(e) =>
+                  handleFilterChange("yearRange", [
+                    filters.yearRange[0],
+                    parseInt(e.target.value),
+                  ])
+                }
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <Select
+                options={edgeTypeOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "edgeType",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                value={
+                  Array.isArray(filters.edgeType)
+                    ? filters.edgeType
+                        .filter((value) => value !== "all")
+                        .map((value) => ({
+                          value,
+                          label: value,
+                        }))
+                    : []
+                }
+                placeholder={t("allConnectionTypes")}
+                isClearable
+                isMulti
                 styles={{
                   ...customStyles,
                   multiValue: (provided) => ({
@@ -1604,165 +1531,222 @@ return (
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
-            ) : (
-              <></>
-            )}
-          </div>
-          {/* Migration Traceability */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-            <label className="text-sm">{t("migrationTraceability")}</label>
-            <input
-              type="number"
-              value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
-              placeholder="1800"
-              onFocus={() => {
-                // 포커스 시 값이 0이면 빈 문자열로 변환
-                if (yearRange[0] === 0) {
-                  setYearRange([0, yearRange[1]])
+              {/* Centrality */}
+              {user.isLoggedIn ? (
+                <Select
+                  options={[
+                    { value: "none", label: t("selectCentrality") },
+                    { value: "degree", label: t("degreeCentrality") },
+                    // {
+                    //   value: "betweenness",
+                    //   label: t("betweenessCentrality"),
+                    // },
+                    // { value: "closeness", label: t("closenessCentrality") },
+                    {
+                      value: "eigenvector",
+                      label: t("eigenvectorCentrality"),
+                    },
+                  ]}
+                  onChange={(selectedOption) =>
+                    setCentralityType(
+                      selectedOption ? selectedOption.value : "none",
+                    )
+                  }
+                  value={{
+                    value: centralityType,
+                    label: t(
+                      centralityType === "none"
+                        ? "selectCentrality"
+                        : `${centralityType}Centrality`,
+                    ),
+                  }}
+                  placeholder={t("selectCentrality")}
+                  styles={{
+                    ...customStyles,
+                    multiValue: (provided) => ({
+                      ...provided,
+                      display: "inline-flex", // 선택된 항목을 가로로 정렬
+                      alignItems: "center",
+                      margin: "0 4px", // 항목 간격 조정
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                      overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      cursor: "pointer",
+                    }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                  }}
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                  menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                  className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+            {/* Migration Traceability */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("migrationTraceability")}</label>
+              <input
+                type="number"
+                value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+                placeholder="1800"
+                onFocus={() => {
+                  // 포커스 시 값이 0이면 빈 문자열로 변환
+                  if (yearRange[0] === 0) {
+                    setYearRange([0, yearRange[1]])
+                  }
+                }}
+                onBlur={(e) => {
+                  // 블러 시 빈 문자열이면 0으로 변환
+                  if (e.target.value === "") {
+                    setYearRange([0, yearRange[1]])
+                  }
+                }}
+                onChange={(e) => {
+                  const value =
+                    e.target.value === "" ? 0 : parseInt(e.target.value)
+                  setYearRange([value, yearRange[1]])
+                }}
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <span className="text-sm">-</span>
+              <input
+                type="number"
+                placeholder="2024"
+                value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
+                onFocus={() => {
+                  // 포커스 시 값이 0이면 빈 문자열로 변환
+                  if (yearRange[1] === 0) {
+                    setYearRange([yearRange[0], 0])
+                  }
+                }}
+                onBlur={(e) => {
+                  // 블러 시 빈 문자열이면 0으로 변환
+                  if (e.target.value === "") {
+                    setYearRange([yearRange[0], 0])
+                  }
+                }}
+                onChange={(e) => {
+                  const value =
+                    e.target.value === "" ? 0 : parseInt(e.target.value)
+                  setYearRange([yearRange[0], value])
+                }}
+                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
+                  user.isLoggedIn ? "w-14" : "w-22"
+                }`}
+              />
+              <Select
+                options={migrationReasonOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "migrationReasons",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
                 }
-              }}
-              onBlur={(e) => {
-                // 블러 시 빈 문자열이면 0으로 변환
-                if (e.target.value === "") {
-                  setYearRange([0, yearRange[1]])
-                }
-              }}
-              onChange={(e) => {
-                const value =
-                  e.target.value === "" ? 0 : parseInt(e.target.value)
-                setYearRange([value, yearRange[1]])
-              }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <span className="text-sm">-</span>
-            <input
-              type="number"
-              placeholder="2024"
-              value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
-              onFocus={() => {
-                // 포커스 시 값이 0이면 빈 문자열로 변환
-                if (yearRange[1] === 0) {
-                  setYearRange([yearRange[0], 0])
-                }
-              }}
-              onBlur={(e) => {
-                // 블러 시 빈 문자열이면 0으로 변환
-                if (e.target.value === "") {
-                  setYearRange([yearRange[0], 0])
-                }
-              }}
-              onChange={(e) => {
-                const value =
-                  e.target.value === "" ? 0 : parseInt(e.target.value)
-                setYearRange([yearRange[0], value])
-              }}
-              className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                user.isLoggedIn ? "w-14" : "w-22"
-              }`}
-            />
-            <Select
-              options={migrationReasonOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "migrationReasons",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allMigrationReasons")}
-              isClearable
-              isMulti
-              styles={{
-                ...customStyles,
-                multiValue: (provided) => ({
-                  ...provided,
-                  display: "inline-flex", // 선택된 항목을 가로로 정렬
-                  alignItems: "center",
-                  margin: "0 4px", // 항목 간격 조정
-                }),
-                multiValueLabel: (provided) => ({
-                  ...provided,
-                  whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                  overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                }),
-                multiValueRemove: (provided) => ({
-                  ...provided,
-                  cursor: "pointer",
-                }),
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-              }}
-              menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-              menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-              menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-          </div>
-          {/* Search */}
-          <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
-            {user.isLoggedIn ? (
-              <>
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange("userNetworkFilter", e.target.checked)
-                    }
-                  />
-                  <label htmlFor="userNetworkFilter" className="text-xs">
-                    {t("filterByUserNetwork")}
-                  </label>
-                </div>
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkConnectionFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkConnectionFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "userNetworkConnectionFilter",
-                        e.target.checked,
-                      )
-                    }
-                  />
-                  <label
-                    htmlFor="userNetworkConnectionFilter"
-                    className="text-xs"
-                  >
-                    {t("filterByUserNetworkConnection")}
-                  </label>
-                </div>
-                <div className="ml-1 flex items-center gap-0.5">
-                  <input
-                    type="checkbox"
-                    id="userNetworkTraceFilter"
-                    className="w-2 h-2"
-                    checked={filters.userNetworkTraceFilter}
-                    defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
-                    onChange={(e) =>
-                      handleFilterChange(
-                        "userNetworkTraceFilter",
-                        e.target.checked,
-                      )
-                    }
-                  />
-                  <label htmlFor="userNetworkTraceFilter" className="text-xs">
-                    {t("filterByUserNetworkTrace")}
-                  </label>
-                </div>
-              </>
-            ) : (
-              <></>
-            )}
-            {/* <input
+                placeholder={t("allMigrationReasons")}
+                isClearable
+                isMulti
+                styles={{
+                  ...customStyles,
+                  multiValue: (provided) => ({
+                    ...provided,
+                    display: "inline-flex", // 선택된 항목을 가로로 정렬
+                    alignItems: "center",
+                    margin: "0 4px", // 항목 간격 조정
+                  }),
+                  multiValueLabel: (provided) => ({
+                    ...provided,
+                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                  }),
+                  multiValueRemove: (provided) => ({
+                    ...provided,
+                    cursor: "pointer",
+                  }),
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                }}
+                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            {/* Search */}
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
+              {user.isLoggedIn ? (
+                <>
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkFilter" className="text-xs">
+                      {t("filterByUserNetwork")}
+                    </label>
+                  </div>
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkConnectionFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkConnectionFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkConnectionFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label
+                      htmlFor="userNetworkConnectionFilter"
+                      className="text-xs"
+                    >
+                      {t("filterByUserNetworkConnection")}
+                    </label>
+                  </div>
+                  <div className="ml-1 flex items-center gap-0.5">
+                    <input
+                      type="checkbox"
+                      id="userNetworkTraceFilter"
+                      className="w-2 h-2"
+                      checked={filters.userNetworkTraceFilter}
+                      defaultChecked={false} // 초기값으로 체크되어있지 않게 설정
+                      onChange={(e) =>
+                        handleFilterChange(
+                          "userNetworkTraceFilter",
+                          e.target.checked,
+                        )
+                      }
+                    />
+                    <label htmlFor="userNetworkTraceFilter" className="text-xs">
+                      {t("filterByUserNetworkTrace")}
+                    </label>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
+              {/* <input
                 type="text"
                 placeholder={t("Search Networks")}
                 value={searchQuery}
@@ -1776,399 +1760,401 @@ return (
                 }}
                 className="w-36 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
               /> */}
-            <SearchBar onSearch={handleSearchClick} />
-          </div>
-        </SwipeableContainer>
-      )}
-      {/* Render Search Results */}
-      {triggerSearch && searchQuery && (
-        <div
-          className={`flex justify-end absolute w-full z-10 ${
-            triggerSearch ? "block" : "hidden"
-          }`} // 검색 결과가 숨겨지면 완전히 제거
-          style={{
-            top: "4rem",
-            right: "0",
-            opacity: triggerSearch ? 0.8 : 0, // 투명도 조정
-            pointerEvents: "none",
-          }}
-        >
+              <SearchBar onSearch={handleSearchClick} />
+            </div>
+          </SwipeableContainer>
+        )}
+        {/* Render Search Results */}
+        {triggerSearch && searchQuery && (
           <div
-            className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
+            className={`flex justify-end absolute w-full z-10 ${
+              triggerSearch ? "block" : "hidden"
+            }`} // 검색 결과가 숨겨지면 완전히 제거
             style={{
-              maxWidth: window.innerWidth <= 768 ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
-              marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
-              position: "relative",
-              backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
-              pointerEvents: "auto",
+              top: "4rem",
+              right: "0",
+              opacity: triggerSearch ? 0.8 : 0, // 투명도 조정
+              pointerEvents: "none",
             }}
           >
-            <SearchResults
-              searchQuery={searchQuery}
-              setFocusedNode={setFocusedNode}
-              handleEntityClick={handleEntityClick}
-              handleMigrationTraceClick={handleMigrationTraceClick}
-              handleEdgeClick={handleEdgeClick}
-              handleNetworkEdgesToggle={handleNetworkEdgesToggle}
-            />
-          </div>
-        </div>
-      )}
-    </div>
-    {/* 3D 모드와 2D 모드 전환 */}
-    {is3DMode ? (
-      <ThreeDMap
-        networks={networks}
-        filters={filters}
-        filteredNetworks={filteredNetworks}
-        filteredTraces={filteredTraces}
-        filteredEdges={getEdgesFor3D()}
-        handleEdgeClick={handleEdgeClick}
-        handleNetworkEdgesToggle={handleNetworkEdgesToggle}
-      />
-    ) : (
-      <MapContainer
-        center={[40, 130]} // 스페인과 아메리카 대륙 중간 대서양 좌표
-        zoom={5}
-        zoomControl={false} // 확대/축소 컨트롤 제거
-        style={{
-          height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
-          width: "100%",
-          position: "relative",
-          zIndex: 0,
-        }}
-        maxBounds={[
-          [90, -360], // 최소 위도, 경도
-          [-90, 360], // 최대 위도, 경도
-        ]}
-        maxBoundsViscosity={1.2} // 최대 경계 범위 조정
-        minZoom={3} // 최소 줌 레벨 설정
-      >
-        <HandleRightClick />
-        <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
-        {latLng && (
-          <Marker position={latLng}>
-            <Popup>
-              <div style={{ textAlign: "center" }}>
-                <p style={{ marginBottom: "10px" }}>
-                  <strong>Lat:</strong> {latLng.lat}
-                </p>
-                <p style={{ marginBottom: "20px" }}>
-                  <strong>Lng:</strong> {latLng.lng}
-                </p>
-                <button
-                  className="copy-btn"
-                  data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
-                  onClick={copyToClipboard}
-                  style={{
-                    padding: "10px 20px",
-                    fontSize: "16px",
-                    backgroundColor: copied ? "green" : "#007BFF", // 복사 후 버튼 색상은 녹색
-                    color: copied ? "#fff" : "#fff", // 글자 색상은 흰색으로 고정
-                    border: "none",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    transition: "background-color 0.3s ease", // 부드러운 배경색 변화
-                  }}
-                >
-                  {copied ? (
-                    <span>Copied!</span> // 복사 후 상태 표시
-                  ) : (
-                    "Copy"
-                  )}
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        )}
-        {focusedNode && (
-          <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
-        )}
-        {/* 기여자 랭킹 토글 버튼 */}
-        <button
-          onClick={toggleTopContributorsVisibility}
-          style={{
-            position: "absolute",
-            top: "0rem",
-            left: "0rem",
-            zIndex: 2000,
-            backgroundColor: "#3e2723",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          {isTopContributorsVisible ? "-" : "+"}
-        </button>
-        {/* 범례 토글 버튼 */}
-        <button
-          onClick={toggleLegendVisibility}
-          style={{
-            position: "absolute",
-            top: "0rem",
-            right: "0rem", // 화면 오른쪽 끝에 고정
-            zIndex: 2000,
-            backgroundColor: "#3e2723",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          {isLegendVisible ? "-" : "+"}
-        </button>
-        {/* 기여자 랭킹 */}
-        {isTopContributorsVisible && (
-          <LegendBox>
-            <h2>{t("topRegistrants")}</h2>
-            <ul>
-              {topRegistrants.map((registrant) => (
-                <li key={registrant.registrantId}>
-                  {registrant.medal} {registrant.userName} : {registrant.count}{" "}
-                  {t("nodeCount")}
-                </li>
-              ))}
-            </ul>
-          </LegendBox>
-        )}
-        {/* 범례 */}
-        {isLegendVisible && (
-          <Legend
-            topNetworks={topNetworks}
-            onEntityClick={handleEntityClick}
-            centralityType={centralityType}
-            networkAnalysis={networkAnalysis} // 네트워크 분석 결과 전달
-          />
-        )}
-        {/* 네트워크 이름 표시/비표시 토글 버튼 */}
-        <button
-          onClick={toggleNetworkNames}
-          style={{
-            position: "absolute",
-            top: "2rem", // 범례 토글 버튼 바로 아래
-            right: "0rem",
-            zIndex: 2000,
-            backgroundColor: "#3e2723",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          {showNetworkNames ? "-" : "+"}
-        </button>
-        {/* 엣지 세부정보 표시/비표시 토글 버튼 */}
-        <button
-          onClick={toggleEdgeDetails}
-          style={{
-            position: "absolute",
-            top: "4rem", // 네트워크 토글 버튼 바로 아래
-            right: "0rem",
-            zIndex: 2000,
-            backgroundColor: "#3e2723",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          {showEdgeDetails ? "-" : "+"}
-        </button>
-        <button
-          onClick={toggleMigrationReasons}
-          style={{
-            position: "absolute",
-            top: "6rem", // 관계 토글 버튼 바로 아래
-            right: "0rem",
-            zIndex: 2000,
-            backgroundColor: "#3e2723",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            padding: "8px 12px",
-            cursor: "pointer",
-          }}
-        >
-          {showMigrationReasons ? "-" : "+"}
-        </button>
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        />
-        {/* 지도에 표시될 네트워크 데이터 */}
-        {filteredNetworks.map((network) => {
-          const size = getNodeSize(
-            centralityValues[network.id] || 0,
-            centralityType,
-          )
-          const isHighlighted =
-            highlightedNode && highlightedNode.id === network.id
-          // Determine color: Organization is blue, highlighted is yellow, default is red
-          let color = network.type === "Organization" ? "blue" : "red" // is red by default
-          if (isHighlighted) {
-            // Highlighted nodes are yellow regardless of type
-            color = "orange"
-          }
-          return (
-            <Marker
-              key={network.id}
-              position={[network.latitude, network.longitude]}
-              icon={L.divIcon({
-                className: "custom-marker",
-                html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
-                iconSize: [size, size],
-              })}
-              zIndexOffset={1000} // 네트워크 노드의 zIndex를 높게 설정
-              eventHandlers={{
-                click: (e) => {
-                  handleTooltipOpen(network.id)
-                  setPopupPosition({
-                    x: e.latlng.lat, // 노드 바로 위에 팝업 위치 설정
-                    y: e.latlng.lng,
-                  })
-                },
+            <div
+              className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
+              style={{
+                maxWidth: window.innerWidth <= 768 ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
+                marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
+                position: "relative",
+                backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
+                pointerEvents: "auto",
               }}
             >
-              {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
-              {showNetworkNames && (
-                <Tooltip
-                  permanent
-                  direction="top"
-                  offset={[0, -size / 2]} // Adjust tooltip position based on marker size
-                  className="custom-tooltip"
-                  opacity={0.7} //
-                >
-                  <div
+              <SearchResults
+                searchQuery={searchQuery}
+                setFocusedNode={setFocusedNode}
+                handleEntityClick={handleEntityClick}
+                handleMigrationTraceClick={handleMigrationTraceClick}
+                handleEdgeClick={handleEdgeClick}
+                handleNetworkEdgesToggle={handleNetworkEdgesToggle}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+      {/* 3D 모드와 2D 모드 전환 */}
+      {is3DMode ? (
+        <ThreeDMap
+          networks={networks}
+          filters={filters}
+          filteredNetworks={filteredNetworks}
+          filteredTraces={filteredTraces}
+          filteredEdges={getEdgesFor3D()}
+          handleEdgeClick={handleEdgeClick}
+          handleNetworkEdgesToggle={handleNetworkEdgesToggle}
+        />
+      ) : (
+        <MapContainer
+          center={[40, 130]} // 스페인과 아메리카 대륙 중간 대서양 좌표
+          zoom={5}
+          zoomControl={false} // 확대/축소 컨트롤 제거
+          style={{
+            height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
+            width: "100%",
+            position: "relative",
+            zIndex: 0,
+          }}
+          maxBounds={[
+            [90, -360], // 최소 위도, 경도
+            [-90, 360], // 최대 위도, 경도
+          ]}
+          maxBoundsViscosity={1.2} // 최대 경계 범위 조정
+          minZoom={3} // 최소 줌 레벨 설정
+        >
+          <HandleRightClick />
+          <HandleMapClick /> {/* 지도 클릭 시 하이라이트 해제 */}
+          {latLng && (
+            <Marker position={latLng}>
+              <Popup>
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ marginBottom: "10px" }}>
+                    <strong>Lat:</strong> {latLng.lat}
+                  </p>
+                  <p style={{ marginBottom: "20px" }}>
+                    <strong>Lng:</strong> {latLng.lng}
+                  </p>
+                  <button
+                    className="copy-btn"
+                    data-clipboard-text={`${latLng.lat}, ${latLng.lng}`}
+                    onClick={copyToClipboard}
                     style={{
-                      textAlign: "center",
-                      fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
-                      fontWeight: "bold",
-                      color: "#3E2723",
+                      padding: "10px 20px",
+                      fontSize: "16px",
+                      backgroundColor: copied ? "green" : "#007BFF", // 복사 후 버튼 색상은 녹색
+                      color: copied ? "#fff" : "#fff", // 글자 색상은 흰색으로 고정
+                      border: "none",
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s ease", // 부드러운 배경색 변화
                     }}
                   >
-                    {network.title}
-                  </div>
-                </Tooltip>
-              )}
-              {popupPosition && highlightedNode?.id === network.id && (
-                <ResizablePopup
-                  position={popupPosition}
-                  onClose={() => setPopupPosition(null)}
-                >
-                  <PopupContent>
-                    <strong className="text-lg font-semibold block mb-2">
-                      No.{network.id} : {network.title}
-                    </strong>
-                    <div className="text-gray-700 text-sm space-y-1">
-                      {highlightedNode?.id === network.id &&
-                        highlightedNode.photo && (
-                          <div className="flex justify-center mb-2">
-                            <img
-                              src={highlightedNode.photo}
-                              alt="Network"
-                              className="w-24 h-24 object-cover rounded-lg shadow-md"
-                            />
-                          </div>
-                        )}
-                      <p>
-                        <span className="font-medium">
-                          {t("Creator Name")}:
-                        </span>{" "}
-                        {userNames[network.user_id]}
-                      </p>
-                      <p>
-                        <span className="font-medium">{t("Type")}:</span>{" "}
-                        {network.type}
-                      </p>
-                      <p>
-                        {t("Centrality")}: {centralityValues[network.id] || 0}
-                      </p>
-                      <p>
-                        <span className="font-medium">{t("Nationality")}</span>{" "}
-                        {network.nationality}
-                      </p>
-                      <p>
-                        <span className="font-medium">{t("Ethnicity")}:</span>{" "}
-                        {network.ethnicity}
-                      </p>
-                      <p>
-                        <span className="font-medium">
-                          {network.type === "Person"
-                            ? t("Birth Year")
-                            : t("Established Year")}
-                        </span>
-                        <span className="font-medium">
-                          : {network.migration_year}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="font-medium">
-                          {network.type === "Person"
-                            ? t("Death Year")
-                            : t("Dissolved Year")}
-                        </span>
-                        <span className="font-medium">
-                          : {network.end_year}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="font-medium">{t("Latitude")}:</span>{" "}
-                        {network.latitude.toFixed(5)}
-                      </p>
-                      <p>
-                        <span className="font-medium">{t("Longitude")}:</span>{" "}
-                        {network.longitude.toFixed(5)}
-                      </p>
-                    </div>
-                  </PopupContent>
-                  <div
-                    className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
-                    style={{
-                      width: "100%",
-                      maxHeight: "200px",
-                      marginTop: "16px",
-                    }}
-                  >
-                    <CommentSection networkId={network.id} />
-                  </div>
-                </ResizablePopup>
-              )}
-              <HandleMapClickForPopupSize />
+                    {copied ? (
+                      <span>Copied!</span> // 복사 후 상태 표시
+                    ) : (
+                      "Copy"
+                    )}
+                  </button>
+                </div>
+              </Popup>
             </Marker>
-          )
-        })}
-        <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
-        {migrationTraces.map((traces) =>
-          traces.map((trace) => {
-            // 네트워크 이름 가져오기
-            const network = networks?.find((n) => n.id === trace.network_id)
-            const networkName = network ? network.title : "Unknown"
-            // Calculate size dynamically based on trace number
-            const baseSize = 16 // Base size for the marker
-            const sizeIncrement = 1.5 // Smaller increment size for each trace number
-            const size = baseSize + trace.traceNumber * sizeIncrement
-            // Filter out duplicate markers at the same position
-            const isDuplicate = traces.some(
-              (t) =>
-                t.id !== trace.id &&
-                t.latitude === trace.latitude &&
-                t.longitude === trace.longitude,
+          )}
+          {focusedNode && (
+            <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
+          )}
+          {/* 기여자 랭킹 토글 버튼 */}
+          <button
+            onClick={toggleTopContributorsVisibility}
+            style={{
+              position: "absolute",
+              top: "0rem",
+              left: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {isTopContributorsVisible ? "-" : "+"}
+          </button>
+          {/* 범례 토글 버튼 */}
+          <button
+            onClick={toggleLegendVisibility}
+            style={{
+              position: "absolute",
+              top: "0rem",
+              right: "0rem", // 화면 오른쪽 끝에 고정
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {isLegendVisible ? "-" : "+"}
+          </button>
+          {/* 기여자 랭킹 */}
+          {isTopContributorsVisible && (
+            <LegendBox>
+              <h2>{t("topRegistrants")}</h2>
+              <ul>
+                {topRegistrants.map((registrant) => (
+                  <li key={registrant.registrantId}>
+                    {registrant.medal} {registrant.userName} :{" "}
+                    {registrant.count} {t("nodeCount")}
+                  </li>
+                ))}
+              </ul>
+            </LegendBox>
+          )}
+          {/* 범례 */}
+          {isLegendVisible && (
+            <Legend
+              topNetworks={topNetworks}
+              onEntityClick={handleEntityClick}
+              centralityType={centralityType}
+              networkAnalysis={networkAnalysis} // 네트워크 분석 결과 전달
+            />
+          )}
+          {/* 네트워크 이름 표시/비표시 토글 버튼 */}
+          <button
+            onClick={toggleNetworkNames}
+            style={{
+              position: "absolute",
+              top: "2rem", // 범례 토글 버튼 바로 아래
+              right: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {showNetworkNames ? "-" : "+"}
+          </button>
+          {/* 엣지 세부정보 표시/비표시 토글 버튼 */}
+          <button
+            onClick={toggleEdgeDetails}
+            style={{
+              position: "absolute",
+              top: "4rem", // 네트워크 토글 버튼 바로 아래
+              right: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {showEdgeDetails ? "-" : "+"}
+          </button>
+          <button
+            onClick={toggleMigrationReasons}
+            style={{
+              position: "absolute",
+              top: "6rem", // 관계 토글 버튼 바로 아래
+              right: "0rem",
+              zIndex: 2000,
+              backgroundColor: "#3e2723",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            {showMigrationReasons ? "-" : "+"}
+          </button>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          {/* 지도에 표시될 네트워크 데이터 */}
+          {filteredNetworks.map((network) => {
+            const size = getNodeSize(
+              centralityValues[network.id] || 0,
+              centralityType,
             )
-            if (isDuplicate) {
-              return null // Skip rendering duplicate markers
+            const isHighlighted =
+              highlightedNode && highlightedNode.id === network.id
+            // Determine color: Organization is blue, highlighted is yellow, default is red
+            let color = network.type === "Organization" ? "blue" : "red" // is red by default
+            if (isHighlighted) {
+              // Highlighted nodes are yellow regardless of type
+              color = "orange"
             }
             return (
               <Marker
-                key={trace.id}
-                position={[trace.latitude, trace.longitude]}
+                key={network.id}
+                position={[network.latitude, network.longitude]}
                 icon={L.divIcon({
-                  className: "custom-trace-marker",
-                  html: `<div style="
+                  className: "custom-marker",
+                  html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
+                  iconSize: [size, size],
+                })}
+                zIndexOffset={1000} // 네트워크 노드의 zIndex를 높게 설정
+                eventHandlers={{
+                  click: (e) => {
+                    handleTooltipOpen(network.id)
+                    setPopupPosition({
+                      x: e.latlng.lat, // 노드 바로 위에 팝업 위치 설정
+                      y: e.latlng.lng,
+                    })
+                  },
+                }}
+              >
+                {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
+                {showNetworkNames && (
+                  <Tooltip
+                    permanent
+                    direction="top"
+                    offset={[0, -size / 2]} // Adjust tooltip position based on marker size
+                    className="custom-tooltip"
+                    opacity={0.7} //
+                  >
+                    <div
+                      style={{
+                        textAlign: "center",
+                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                        fontWeight: "bold",
+                        color: "#3E2723",
+                      }}
+                    >
+                      {network.title}
+                    </div>
+                  </Tooltip>
+                )}
+                {popupPosition && highlightedNode?.id === network.id && (
+                  <ResizablePopup
+                    position={popupPosition}
+                    onClose={() => setPopupPosition(null)}
+                  >
+                    <PopupContent>
+                      <strong className="text-lg font-semibold block mb-2">
+                        No.{network.id} : {network.title}
+                      </strong>
+                      <div className="text-gray-700 text-sm space-y-1">
+                        {highlightedNode?.id === network.id &&
+                          highlightedNode.photo && (
+                            <div className="flex justify-center mb-2">
+                              <img
+                                src={highlightedNode.photo}
+                                alt="Network"
+                                className="w-24 h-24 object-cover rounded-lg shadow-md"
+                              />
+                            </div>
+                          )}
+                        <p>
+                          <span className="font-medium">
+                            {t("Creator Name")}:
+                          </span>{" "}
+                          {userNames[network.user_id]}
+                        </p>
+                        <p>
+                          <span className="font-medium">{t("Type")}:</span>{" "}
+                          {network.type}
+                        </p>
+                        <p>
+                          {t("Centrality")}: {centralityValues[network.id] || 0}
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            {t("Nationality")}
+                          </span>{" "}
+                          {network.nationality}
+                        </p>
+                        <p>
+                          <span className="font-medium">{t("Ethnicity")}:</span>{" "}
+                          {network.ethnicity}
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            {network.type === "Person"
+                              ? t("Birth Year")
+                              : t("Established Year")}
+                          </span>
+                          <span className="font-medium">
+                            : {network.migration_year}
+                          </span>
+                        </p>
+                        <p>
+                          <span className="font-medium">
+                            {network.type === "Person"
+                              ? t("Death Year")
+                              : t("Dissolved Year")}
+                          </span>
+                          <span className="font-medium">
+                            : {network.end_year}
+                          </span>
+                        </p>
+                        <p>
+                          <span className="font-medium">{t("Latitude")}:</span>{" "}
+                          {network.latitude.toFixed(5)}
+                        </p>
+                        <p>
+                          <span className="font-medium">{t("Longitude")}:</span>{" "}
+                          {network.longitude.toFixed(5)}
+                        </p>
+                      </div>
+                    </PopupContent>
+                    <div
+                      className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
+                      style={{
+                        width: "100%",
+                        maxHeight: "200px",
+                        marginTop: "16px",
+                      }}
+                    >
+                      <CommentSection networkId={network.id} />
+                    </div>
+                  </ResizablePopup>
+                )}
+                <HandleMapClickForPopupSize />
+              </Marker>
+            )
+          })}
+          <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
+          {migrationTraces.map((traces) =>
+            traces.map((trace) => {
+              // 네트워크 이름 가져오기
+              const network = networks?.find((n) => n.id === trace.network_id)
+              const networkName = network ? network.title : "Unknown"
+              // Calculate size dynamically based on trace number
+              const baseSize = 16 // Base size for the marker
+              const sizeIncrement = 1.5 // Smaller increment size for each trace number
+              const size = baseSize + trace.traceNumber * sizeIncrement
+              // Filter out duplicate markers at the same position
+              const isDuplicate = traces.some(
+                (t) =>
+                  t.id !== trace.id &&
+                  t.latitude === trace.latitude &&
+                  t.longitude === trace.longitude,
+              )
+              if (isDuplicate) {
+                return null // Skip rendering duplicate markers
+              }
+              return (
+                <Marker
+                  key={trace.id}
+                  position={[trace.latitude, trace.longitude]}
+                  icon={L.divIcon({
+                    className: "custom-trace-marker",
+                    html: `<div style="
             position: relative;
             display: flex;
             align-items: center;
@@ -2183,13 +2169,13 @@ return (
             border: 2px solid #BF360C;">
             ${trace.traceNumber}
           </div>`,
-                })}
-                eventHandlers={{
-                  click: (e) => {
-                    L.popup()
-                      .setLatLng(e.latlng)
-                      .setContent(
-                        `
+                  })}
+                  eventHandlers={{
+                    click: (e) => {
+                      L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(
+                          `
           <div>
             <strong>${t("Network ID")}:</strong> ${trace.network_id}-${networkName}<br/>
             <strong>${t("Place")}:</strong> ${trace.location_name}<br/>
@@ -2197,123 +2183,123 @@ return (
             <strong>${t("Reason")}:</strong> ${trace.reason}
           </div>
         `,
-                      )
-                      .openOn(e.target._map)
-                  },
-                }}
-              >
-                {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
-                {showMigrationReasons && (
-                  <Tooltip
-                    permanent
-                    direction="top"
-                    offset={[0, -12]} // Adjust tooltip position
-                    className="custom-tooltip"
-                    opacity={0.7} // 투명도를 1로 설정하여 완전히 불투명하게 만듦
-                  >
+                        )
+                        .openOn(e.target._map)
+                    },
+                  }}
+                >
+                  {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
+                  {showMigrationReasons && (
+                    <Tooltip
+                      permanent
+                      direction="top"
+                      offset={[0, -12]} // Adjust tooltip position
+                      className="custom-tooltip"
+                      opacity={0.7} // 투명도를 1로 설정하여 완전히 불투명하게 만듦
+                    >
+                      <div
+                        style={{
+                          textAlign: "center",
+                          fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                          fontWeight: "bold",
+                          color: "#3E2723",
+                        }}
+                      >
+                        {trace.reason} ({trace.migration_year})
+                      </div>
+                    </Tooltip>
+                  )}
+                  <Popup>
                     <div
                       style={{
-                        textAlign: "center",
-                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
-                        fontWeight: "bold",
-                        color: "#3E2723",
+                        fontSize: "14px",
+                        lineHeight: "1.6",
+                        margin: "0",
+                        padding: "0",
                       }}
                     >
-                      {trace.reason} ({trace.migration_year})
+                      <div>
+                        <strong>{t("Network ID")}:</strong> {trace.network_id}-
+                        {networkName}
+                      </div>
+                      <div>
+                        <strong>{t("Place")}:</strong> {trace.location_name}
+                      </div>
+                      <div>
+                        <strong>{t("Migration Year")}:</strong>{" "}
+                        {trace.migration_year}
+                      </div>
+                      <div>
+                        <strong>{t("Reason")}:</strong> {trace.reason}
+                      </div>
                     </div>
-                  </Tooltip>
-                )}
-                <Popup>
-                  <div
-                    style={{
-                      fontSize: "14px",
-                      lineHeight: "1.6",
-                      margin: "0",
-                      padding: "0",
-                    }}
-                  >
-                    <div>
-                      <strong>{t("Network ID")}:</strong> {trace.network_id}-
-                      {networkName}
-                    </div>
-                    <div>
-                      <strong>{t("Place")}:</strong> {trace.location_name}
-                    </div>
-                    <div>
-                      <strong>{t("Migration Year")}:</strong>{" "}
-                      {trace.migration_year}
-                    </div>
-                    <div>
-                      <strong>{t("Reason")}:</strong> {trace.reason}
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            )
-          }),
-        )}
-        {migrationTraces.map((traces) =>
-          traces.slice(0, -1).map((trace, index) => {
-            const nextTrace = traces[index + 1]
-            // 같은 네트워크 아이디인지 확인
-            if (trace.network_id !== nextTrace.network_id) {
-              return null // 네트워크 아이디가 다르면 선을 그리지 않음
-            }
-            return (
-              <Polyline
-                key={`${trace.id}-${nextTrace.id}`}
-                positions={[
-                  [trace.latitude, trace.longitude],
-                  [nextTrace.latitude, nextTrace.longitude],
-                ]}
-                color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
-                weight={3}
-                opacity={0.7}
-                dashArray="5, 5"
-                lineCap="round"
-                lineJoin="round"
-                eventHandlers={{
-                  click: (e) => {
-                    L.popup()
-                      .setLatLng(e.latlng)
-                      .setContent(
-                        `<div>
+                  </Popup>
+                </Marker>
+              )
+            }),
+          )}
+          {migrationTraces.map((traces) =>
+            traces.slice(0, -1).map((trace, index) => {
+              const nextTrace = traces[index + 1]
+              // 같은 네트워크 아이디인지 확인
+              if (trace.network_id !== nextTrace.network_id) {
+                return null // 네트워크 아이디가 다르면 선을 그리지 않음
+              }
+              return (
+                <Polyline
+                  key={`${trace.id}-${nextTrace.id}`}
+                  positions={[
+                    [trace.latitude, trace.longitude],
+                    [nextTrace.latitude, nextTrace.longitude],
+                  ]}
+                  color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+                  weight={3}
+                  opacity={0.7}
+                  dashArray="5, 5"
+                  lineCap="round"
+                  lineJoin="round"
+                  eventHandlers={{
+                    click: (e) => {
+                      L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(
+                          `<div>
                       <strong>{t("Network ID")}:</strong> ${nextTrace.network_id}<br/>
                       <strong>{t("Migration Year")}:</strong> ${nextTrace.migration_year}<br/>
                       <strong>{t("Location")}:</strong> ${nextTrace.location_name}<br/>
                       <strong>{t("Reason")}:</strong> ${nextTrace.reason}
                     </div>`,
-                      )
-                      .openOn(e.target._map)
-                  },
-                }}
-              />
-            )
-          }),
-        )}
-        {migrationTraces.map((traces) =>
-          traces.slice(0, -1).map((trace, index) => {
-            const nextTrace = traces[index + 1]
-            // 데이터 검증: trace와 nextTrace가 유효한지 확인
-            if (
-              !trace ||
-              !nextTrace ||
-              !trace.latitude ||
-              !trace.longitude ||
-              !nextTrace.latitude ||
-              !nextTrace.longitude
-            ) {
-              console.warn("Invalid trace data:", { trace, nextTrace })
-              return null
-            }
-            return <MigrationTraceDecorator traces={migrationTraces.flat()} />
-          }),
-        )}
-      </MapContainer>
-    )}
-  </div>
-)
-
+                        )
+                        .openOn(e.target._map)
+                    },
+                  }}
+                />
+              )
+            }),
+          )}
+          {migrationTraces.map((traces) =>
+            traces.slice(0, -1).map((trace, index) => {
+              const nextTrace = traces[index + 1]
+              // 데이터 검증: trace와 nextTrace가 유효한지 확인
+              if (
+                !trace ||
+                !nextTrace ||
+                !trace.latitude ||
+                !trace.longitude ||
+                !nextTrace.latitude ||
+                !nextTrace.longitude
+              ) {
+                console.warn("Invalid trace data:", { trace, nextTrace })
+                return null
+              }
+              return <MigrationTraceDecorator traces={migrationTraces.flat()} />
+            }),
+          )}
+        </MapContainer>
+      )}
+    </div>
+  )
+}
 const LegendBox = styled.div`
   position: absolute;
   top: 0.5rem; /* 맵 상단에 더 가깝게 */
@@ -2596,22 +2582,4 @@ const CommentSectionWrapper = styled.div`
     padding: 5px;
   }
 `
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    height: "100vh",
-    backgroundColor: "#f9f9f9",
-  },
-  text: {
-    marginTop: "10px",
-    fontSize: "18px",
-    color: "#555",
-    fontWeight: "bold",
-  },
-}
-
 export default Map
