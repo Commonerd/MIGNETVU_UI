@@ -85,7 +85,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: "all",
-    yearRange: [1800, 1945], // 현재 연도로 자동 설정
+    yearRange: [1860, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
