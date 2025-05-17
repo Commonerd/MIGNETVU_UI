@@ -168,7 +168,6 @@ const Map: React.FC = () => {
   // 네트워크 필터링 워커로 요청
   useEffect(() => {
     if (!networks) return
-    setProgress(0) // 필터링 시작 시 진행률 초기화
     workerRef.current?.postMessage({
       type: "FILTER_NETWORKS",
       payload: {
@@ -179,13 +178,6 @@ const Map: React.FC = () => {
       },
     })
   }, [networks, filters, user.name, selectedEdgeId])
-
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      migrationYearRange,
-    }))
-  }, [migrationYearRange])
 
   // migrationYearRange가 바뀔 때 filters에도 반영
   // useEffect(() => {
