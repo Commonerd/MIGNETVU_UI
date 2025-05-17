@@ -51,6 +51,7 @@ import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
 import YearRangeInput from "./YearRangeInput"
+import MigrationYearRangeInput from "./MigrationYearRangeInput"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -84,7 +85,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: "all",
-    yearRange: [1800, 1945], // 현재 연도로 자동 설정
+    yearRange: [1860, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -107,7 +108,7 @@ const Map: React.FC = () => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[number, number]>([1800, 1945])
+  const [yearRange, setYearRange] = useState<[number, number]>([1860, 1945])
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -139,6 +140,9 @@ const Map: React.FC = () => {
   const [workerCentrality, setWorkerCentrality] = useState<
     Record<number, number>
   >({})
+  const [migrationYearRange, setMigrationYearRange] = useState<
+    [number, number]
+  >([1860, 1945])
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -1211,48 +1215,11 @@ const Map: React.FC = () => {
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
                 <label className="text-sm">{t("migrationTraceability")}</label>
-                <input
-                  type="number"
-                  value={yearRange[0] === 0 ? "" : yearRange[0]}
-                  placeholder="1800"
-                  onFocus={() => {
-                    if (yearRange[0] === 0) {
-                      setYearRange([0, yearRange[1]])
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (e.target.value === "") {
-                      setYearRange([0, yearRange[1]])
-                    }
-                  }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([value, yearRange[1]])
-                  }}
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-                <span className="text-sm">-</span>
-                <input
-                  type="number"
-                  placeholder="2024"
-                  value={yearRange[1] === 0 ? "" : yearRange[1]}
-                  onFocus={() => {
-                    if (yearRange[1] === 0) {
-                      setYearRange([yearRange[0], 0])
-                    }
-                  }}
-                  onBlur={(e) => {
-                    if (e.target.value === "") {
-                      setYearRange([yearRange[0], 0])
-                    }
-                  }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([yearRange[0], value])
-                  }}
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                <MigrationYearRangeInput
+                  value={migrationYearRange}
+                  onChange={setMigrationYearRange}
+                  placeholderStart="1800"
+                  placeholderEnd="2024"
                 />
               </div>
             </div>
@@ -1607,56 +1574,11 @@ const Map: React.FC = () => {
             {/* Migration Traceability */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
               <label className="text-sm">{t("migrationTraceability")}</label>
-              <input
-                type="number"
-                value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
-                placeholder="1800"
-                onFocus={() => {
-                  // 포커스 시 값이 0이면 빈 문자열로 변환
-                  if (yearRange[0] === 0) {
-                    setYearRange([0, yearRange[1]])
-                  }
-                }}
-                onBlur={(e) => {
-                  // 블러 시 빈 문자열이면 0으로 변환
-                  if (e.target.value === "") {
-                    setYearRange([0, yearRange[1]])
-                  }
-                }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([value, yearRange[1]])
-                }}
-                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  user.isLoggedIn ? "w-14" : "w-22"
-                }`}
-              />
-              <span className="text-sm">-</span>
-              <input
-                type="number"
-                placeholder="2024"
-                value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
-                onFocus={() => {
-                  // 포커스 시 값이 0이면 빈 문자열로 변환
-                  if (yearRange[1] === 0) {
-                    setYearRange([yearRange[0], 0])
-                  }
-                }}
-                onBlur={(e) => {
-                  // 블러 시 빈 문자열이면 0으로 변환
-                  if (e.target.value === "") {
-                    setYearRange([yearRange[0], 0])
-                  }
-                }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([yearRange[0], value])
-                }}
-                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  user.isLoggedIn ? "w-14" : "w-22"
-                }`}
+              <MigrationYearRangeInput
+                value={migrationYearRange}
+                onChange={setMigrationYearRange}
+                placeholderStart="1800"
+                placeholderEnd="2024"
               />
               <Select
                 options={migrationReasonOptions}
