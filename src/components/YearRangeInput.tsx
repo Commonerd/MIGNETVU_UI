@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 
 interface YearRangeInputProps {
   value: [number, number]
@@ -19,6 +19,7 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
 }) => {
   const [start, setStart] = useState(value[0])
   const [end, setEnd] = useState(value[1])
+  const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   // 외부 값이 바뀌면 내부 상태도 동기화
   useEffect(() => {
@@ -26,15 +27,25 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
     setEnd(value[1])
   }, [value])
 
+  // 디바운스 적용: 입력 후 2초 뒤에 onChange 호출
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      onChange([start, end])
+    }, 2000)
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [start, end])
+
   const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value === "" ? 0 : parseInt(e.target.value)
     setStart(val)
-    onChange([val, end])
   }
   const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value === "" ? 0 : parseInt(e.target.value)
     setEnd(val)
-    onChange([start, val])
   }
 
   return (
