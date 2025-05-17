@@ -50,6 +50,8 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
+import CanvasMarkers from "./CanvasMarkers"
+import "leaflet-canvas-marker"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -138,7 +140,20 @@ const Map: React.FC = () => {
   const [workerCentrality, setWorkerCentrality] = useState<
     Record<number, number>
   >({})
+  // Map 컴포넌트 내부
+  const [popupNetwork, setPopupNetwork] = useState<Network | null>(null)
+  const [tooltipNetwork, setTooltipNetwork] = useState<Network | null>(null)
 
+  // 마커 클릭 핸들러
+  const handleMarkerClick = (network) => {
+    setPopupNetwork(network)
+    setPopupPosition([network.latitude, network.longitude])
+  }
+
+  // 마커 호버 핸들러 (툴팁)
+  const handleMarkerHover = (network) => {
+    setTooltipNetwork(network)
+  }
   const workerRef = useRef<Worker | null>(null)
 
   // 워커 초기화 및 메시지 핸들러
@@ -2040,7 +2055,14 @@ const Map: React.FC = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
-          {/* 지도에 표시될 네트워크 데이터 */}
+          <CanvasMarkers
+            networks={workerFilteredNetworks}
+            onMarkerClick={handleMarkerClick}
+            highlightedNode={highlightedNode}
+            centralityValues={centralityValues}
+            centralityType={centralityType}
+          />{" "}
+          {/* 지도에 표시될 네트워크 데이터
           {workerFilteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
@@ -2073,117 +2095,111 @@ const Map: React.FC = () => {
                     })
                   },
                 }}
+              > */}
+          {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
+          {showNetworkNames && (
+            <Tooltip
+              permanent
+              direction="top"
+              offset={[0, -size / 2]} // Adjust tooltip position based on marker size
+              className="custom-tooltip"
+              opacity={0.7} //
+            >
+              <div
+                style={{
+                  textAlign: "center",
+                  fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                  fontWeight: "bold",
+                  color: "#3E2723",
+                }}
               >
-                {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
-                {showNetworkNames && (
-                  <Tooltip
-                    permanent
-                    direction="top"
-                    offset={[0, -size / 2]} // Adjust tooltip position based on marker size
-                    className="custom-tooltip"
-                    opacity={0.7} //
-                  >
-                    <div
-                      style={{
-                        textAlign: "center",
-                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
-                        fontWeight: "bold",
-                        color: "#3E2723",
-                      }}
-                    >
-                      {network.title}
-                    </div>
-                  </Tooltip>
-                )}
-                {popupPosition && highlightedNode?.id === network.id && (
-                  <ResizablePopup
-                    position={popupPosition}
-                    onClose={() => setPopupPosition(null)}
-                  >
-                    <PopupContent>
-                      <strong className="text-lg font-semibold block mb-2">
-                        No.{network.id} : {network.title}
-                      </strong>
-                      <div className="text-gray-700 text-sm space-y-1">
-                        {highlightedNode?.id === network.id &&
-                          highlightedNode.photo && (
-                            <div className="flex justify-center mb-2">
-                              <img
-                                src={highlightedNode.photo}
-                                alt="Network"
-                                className="w-24 h-24 object-cover rounded-lg shadow-md"
-                              />
-                            </div>
-                          )}
-                        <p>
-                          <span className="font-medium">
-                            {t("Creator Name")}:
-                          </span>{" "}
-                          {userNames[network.user_id]}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Type")}:</span>{" "}
-                          {network.type}
-                        </p>
-                        <p>
-                          {t("Centrality")}: {centralityValues[network.id] || 0}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {t("Nationality")}
-                          </span>{" "}
-                          {network.nationality}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Ethnicity")}:</span>{" "}
-                          {network.ethnicity}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Person"
-                              ? t("Birth Year")
-                              : t("Established Year")}
-                          </span>
-                          <span className="font-medium">
-                            : {network.migration_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Person"
-                              ? t("Death Year")
-                              : t("Dissolved Year")}
-                          </span>
-                          <span className="font-medium">
-                            : {network.end_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Latitude")}:</span>{" "}
-                          {network.latitude.toFixed(5)}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Longitude")}:</span>{" "}
-                          {network.longitude.toFixed(5)}
-                        </p>
+                {network.title}
+              </div>
+            </Tooltip>
+          )}
+          {popupPosition && highlightedNode?.id === network.id && (
+            <ResizablePopup
+              position={popupPosition}
+              onClose={() => setPopupPosition(null)}
+            >
+              <PopupContent>
+                <strong className="text-lg font-semibold block mb-2">
+                  No.{network.id} : {network.title}
+                </strong>
+                <div className="text-gray-700 text-sm space-y-1">
+                  {highlightedNode?.id === network.id &&
+                    highlightedNode.photo && (
+                      <div className="flex justify-center mb-2">
+                        <img
+                          src={highlightedNode.photo}
+                          alt="Network"
+                          className="w-24 h-24 object-cover rounded-lg shadow-md"
+                        />
                       </div>
-                    </PopupContent>
-                    <div
-                      className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
-                      style={{
-                        width: "100%",
-                        maxHeight: "200px",
-                        marginTop: "16px",
-                      }}
-                    >
-                      <CommentSection networkId={network.id} />
-                    </div>
-                  </ResizablePopup>
-                )}
-                <HandleMapClickForPopupSize />
-              </Marker>
+                    )}
+                  <p>
+                    <span className="font-medium">{t("Creator Name")}:</span>{" "}
+                    {userNames[network.user_id]}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Type")}:</span>{" "}
+                    {network.type}
+                  </p>
+                  <p>
+                    {t("Centrality")}: {centralityValues[network.id] || 0}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Nationality")}</span>{" "}
+                    {network.nationality}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Ethnicity")}:</span>{" "}
+                    {network.ethnicity}
+                  </p>
+                  <p>
+                    <span className="font-medium">
+                      {network.type === "Person"
+                        ? t("Birth Year")
+                        : t("Established Year")}
+                    </span>
+                    <span className="font-medium">
+                      : {network.migration_year}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium">
+                      {network.type === "Person"
+                        ? t("Death Year")
+                        : t("Dissolved Year")}
+                    </span>
+                    <span className="font-medium">: {network.end_year}</span>
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Latitude")}:</span>{" "}
+                    {network.latitude.toFixed(5)}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Longitude")}:</span>{" "}
+                    {network.longitude.toFixed(5)}
+                  </p>
+                </div>
+              </PopupContent>
+              <div
+                className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
+                style={{
+                  width: "100%",
+                  maxHeight: "200px",
+                  marginTop: "16px",
+                }}
+              >
+                <CommentSection networkId={network.id} />
+              </div>
+            </ResizablePopup>
+          )}
+          <HandleMapClickForPopupSize />
+          {/* </Marker>
             )
-          })}
+          })} */}
           <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
           {migrationTraces.map((traces) =>
             traces.map((trace) => {
