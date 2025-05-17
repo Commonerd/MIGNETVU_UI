@@ -138,6 +138,22 @@ const Map: React.FC = () => {
   const [workerCentrality, setWorkerCentrality] = useState<
     Record<number, number>
   >({})
+  const [yearInput, setYearInput] = useState<[number, number]>(
+    filters.yearRange,
+  )
+
+  useEffect(() => {
+    // 2초 뒤에 필터 적용
+    const handler = debounce((newRange) => {
+      handleFilterChange("yearRange", newRange)
+    }, 2000)
+    handler(yearInput)
+    return () => handler.cancel()
+  }, [yearInput])
+
+  useEffect(() => {
+    setYearInput(filters.yearRange)
+  }, [filters.yearRange])
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -1148,25 +1164,19 @@ const Map: React.FC = () => {
                 <input
                   type="number"
                   placeholder="1800"
-                  value={filters.yearRange[0]}
+                  value={yearInput[0]}
                   onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      parseInt(e.target.value),
-                      filters.yearRange[1],
-                    ])
+                    setYearInput([parseInt(e.target.value), yearInput[1]])
                   }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <span className="text-sm">-</span>
                 <input
                   type="number"
-                  placeholder="2024"
-                  value={filters.yearRange[1]}
+                  placeholder="2025"
+                  value={yearInput[1]}
                   onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      filters.yearRange[0],
-                      parseInt(e.target.value),
-                    ])
+                    setYearInput([yearInput[0], parseInt(e.target.value)])
                   }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
@@ -1231,7 +1241,7 @@ const Map: React.FC = () => {
                 <label className="text-sm">{t("migrationTraceability")}</label>
                 <input
                   type="number"
-                  value={yearRange[0] === 0 ? "" : yearRange[0]}
+                  value={yearInput[0]}
                   placeholder="1800"
                   onFocus={() => {
                     if (yearRange[0] === 0) {
@@ -1243,18 +1253,16 @@ const Map: React.FC = () => {
                       setYearRange([0, yearRange[1]])
                     }
                   }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([value, yearRange[1]])
-                  }}
+                  onChange={(e) =>
+                    setYearInput([parseInt(e.target.value), yearInput[1]])
+                  }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <span className="text-sm">-</span>
                 <input
                   type="number"
                   placeholder="2024"
-                  value={yearRange[1] === 0 ? "" : yearRange[1]}
+                  value={yearInput[1]}
                   onFocus={() => {
                     if (yearRange[1] === 0) {
                       setYearRange([yearRange[0], 0])
@@ -1265,11 +1273,9 @@ const Map: React.FC = () => {
                       setYearRange([yearRange[0], 0])
                     }
                   }}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === "" ? 0 : parseInt(e.target.value)
-                    setYearRange([yearRange[0], value])
-                  }}
+                  onChange={(e) =>
+                    setYearInput([yearInput[0], parseInt(e.target.value)])
+                  }
                   className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
@@ -1514,12 +1520,9 @@ const Map: React.FC = () => {
               <input
                 type="number"
                 placeholder="1800"
-                value={filters.yearRange[0]}
+                value={yearInput[0]}
                 onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    parseInt(e.target.value),
-                    filters.yearRange[1],
-                  ])
+                  setYearInput([parseInt(e.target.value), yearInput[1]])
                 }
                 className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                   user.isLoggedIn ? "w-14" : "w-22"
@@ -1529,12 +1532,9 @@ const Map: React.FC = () => {
               <input
                 type="number"
                 placeholder="2024"
-                value={filters.yearRange[1]}
+                value={yearInput[1]}
                 onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    filters.yearRange[0],
-                    parseInt(e.target.value),
-                  ])
+                  setYearInput([yearInput[0], parseInt(e.target.value)])
                 }
                 className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                   user.isLoggedIn ? "w-14" : "w-22"
@@ -1650,7 +1650,7 @@ const Map: React.FC = () => {
               <label className="text-sm">{t("migrationTraceability")}</label>
               <input
                 type="number"
-                value={yearRange[0] === 0 ? "" : yearRange[0]} // 0이면 빈 문자열로 표시
+                value={yearInput[0]}
                 placeholder="1800"
                 onFocus={() => {
                   // 포커스 시 값이 0이면 빈 문자열로 변환
@@ -1664,11 +1664,9 @@ const Map: React.FC = () => {
                     setYearRange([0, yearRange[1]])
                   }
                 }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([value, yearRange[1]])
-                }}
+                onChange={(e) =>
+                  setYearInput([parseInt(e.target.value), yearInput[1]])
+                }
                 className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                   user.isLoggedIn ? "w-14" : "w-22"
                 }`}
@@ -1677,7 +1675,7 @@ const Map: React.FC = () => {
               <input
                 type="number"
                 placeholder="2024"
-                value={yearRange[1] === 0 ? "" : yearRange[1]} // 0이면 빈 문자열로 표시
+                value={yearInput[1]}
                 onFocus={() => {
                   // 포커스 시 값이 0이면 빈 문자열로 변환
                   if (yearRange[1] === 0) {
@@ -1690,11 +1688,9 @@ const Map: React.FC = () => {
                     setYearRange([yearRange[0], 0])
                   }
                 }}
-                onChange={(e) => {
-                  const value =
-                    e.target.value === "" ? 0 : parseInt(e.target.value)
-                  setYearRange([yearRange[0], value])
-                }}
+                onChange={(e) =>
+                  setYearInput([yearInput[0], parseInt(e.target.value)])
+                }
                 className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
                   user.isLoggedIn ? "w-14" : "w-22"
                 }`}
