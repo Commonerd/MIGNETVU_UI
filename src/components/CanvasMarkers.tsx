@@ -70,7 +70,8 @@ const CanvasMarkers = ({
     map,
     networks,
     highlightedNode,
-    centralityValues,
+    centralityValues,npm install react-leaflet-markercluster
+    
     centralityType,
     getNodeSize,
   ])
