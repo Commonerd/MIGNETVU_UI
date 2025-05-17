@@ -19,6 +19,7 @@ export type FilterOptions = {
   edgeType: string[] | string
   entityType: string
   yearRange: [number, number]
+  migrationYearRange: [number, number] // 추가
   userNetworkFilter: boolean
   userNetworkTraceFilter: boolean
   userNetworkConnectionFilter: boolean
@@ -52,6 +53,16 @@ function filterNetworks(
       network.migration_year >= filters.yearRange[0] &&
       network.migration_year <= filters.yearRange[1]
 
+    // 이동연도(이주연도) 필터: migration_traces 중 하나라도 migrationYearRange에 포함되면 통과
+    const matchesMigrationYearRange =
+      !filters.migrationYearRange ||
+      filters.migrationYearRange.length !== 2 ||
+      network.migration_traces.some(
+        (trace: any) =>
+          trace.migration_year >= filters.migrationYearRange[0] &&
+          trace.migration_year <= filters.migrationYearRange[1],
+      )
+
     // 유저 네트워크 필터
     const matchesUserNetwork =
       !filters.userNetworkFilter || !userName || network.user_name === userName
@@ -77,6 +88,7 @@ function filterNetworks(
       matchesNationality &&
       matchesEthnicity &&
       matchesYearRange &&
+      matchesMigrationYearRange && // 추가
       matchesUserNetwork &&
       matchesEdge &&
       matchesEntityType &&

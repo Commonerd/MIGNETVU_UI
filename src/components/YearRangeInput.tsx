@@ -27,12 +27,12 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
     setEnd(value[1])
   }, [value])
 
-  // 디바운스 적용: 입력 후 2초 뒤에 onChange 호출
+  // 디바운스 적용: 입력 후 0.7초 뒤에 onChange 호출
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       onChange([start, end])
-    }, 1000)
+    }, 700)
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }

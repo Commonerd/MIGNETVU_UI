@@ -85,7 +85,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: "all",
-    yearRange: [1860, 1945], // 현재 연도로 자동 설정
+    yearRange: [1800, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -176,6 +176,14 @@ const Map: React.FC = () => {
       },
     })
   }, [networks, filters, user.name, selectedEdgeId])
+
+  // migrationYearRange가 바뀔 때 filters에도 반영
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      migrationYearRange,
+    }))
+  }, [migrationYearRange])
 
   // 중심성 계산 워커로 요청
   useEffect(() => {
@@ -335,8 +343,8 @@ const Map: React.FC = () => {
       network.migration_traces.filter((trace) => {
         // 기존 필터 조건: 이주 연도 범위
         const matchesYearRange =
-          trace.migration_year >= yearRange[0] &&
-          trace.migration_year <= yearRange[1]
+          trace.migration_year >= migrationYearRange[0] &&
+          trace.migration_year <= migrationYearRange[1]
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
@@ -1009,8 +1017,8 @@ const Map: React.FC = () => {
           }
           // 연도 및 필터 조건 적용
           if (
-            trace.migration_year >= yearRange[0] &&
-            trace.migration_year <= yearRange[1] &&
+            trace.migration_year >= migrationYearRange[0] &&
+            trace.migration_year <= migrationYearRange[1] &&
             (filters.migrationReasons.includes("all") ||
               filters.migrationReasons.includes(trace.reason)) &&
             (filters.entityType.includes("all") ||
@@ -1039,8 +1047,8 @@ const Map: React.FC = () => {
         // 기존 필터 조건 적용
         const matchesYearRange = traces.some(
           (trace) =>
-            trace.migration_year >= yearRange[0] &&
-            trace.migration_year <= yearRange[1],
+            trace.migration_year >= migrationYearRange[0] &&
+            trace.migration_year <= migrationYearRange[1],
         )
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
@@ -1068,7 +1076,13 @@ const Map: React.FC = () => {
   // migrationTraces를 useMemo로 메모이제이션
   const migrationTraces = useMemo(
     () => getMigrationTraces(),
-    [networks, filters, yearRange, selectedMigrationNetworkId, user.name],
+    [
+      networks,
+      filters,
+      migrationYearRange,
+      selectedMigrationNetworkId,
+      user.name,
+    ],
   )
 
   if (progress < 100) {
