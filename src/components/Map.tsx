@@ -50,7 +50,6 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
-import DeckGLOverlay from "./DeckGLOverlay"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -139,7 +138,6 @@ const Map: React.FC = () => {
   const [workerCentrality, setWorkerCentrality] = useState<
     Record<number, number>
   >({})
-  const [isWebGLMode, setIsWebGLMode] = useState(false)
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -277,9 +275,6 @@ const Map: React.FC = () => {
   }
   const toggle3DMode = () => {
     setIs3DMode(!is3DMode)
-  }
-  const toggleWebGLMode = () => {
-    setIsWebGLMode(!isWebGLMode)
   }
   useEffect(() => {
     if (!data) {
@@ -1397,9 +1392,6 @@ const Map: React.FC = () => {
             <ThreeDButton onClick={toggle3DMode}>
               {is3DMode ? "2D" : "3D"}
             </ThreeDButton>
-            <ThreeDButton onClick={toggleWebGLMode}>
-              {is3DMode ? "2D" : "WebGL"}
-            </ThreeDButton>
             {/* Entity Filters */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex flex-wrap gap-1 items-center border-2 border-[#9e9d89]">
               <FilterContainer>
@@ -1873,18 +1865,6 @@ const Map: React.FC = () => {
           filteredEdges={getEdgesFor3D()}
           handleEdgeClick={handleEdgeClick}
           handleNetworkEdgesToggle={handleNetworkEdgesToggle}
-        />
-      ) : isWebGLMode ? (
-        // WebGL 모드: DeckGLOverlay만 사용, React-Leaflet 훅/컴포넌트 사용 금지
-        <DeckGLOverlay
-          width="100%"
-          height="calc(100vh - 64px - 64px)"
-          networks={workerFilteredNetworks}
-          edges={getEdges()}
-          highlightedNode={highlightedNode}
-          centralityValues={centralityValues}
-          centralityType={centralityType}
-          onNodeClick={handleTooltipOpen}
         />
       ) : (
         <MapContainer
