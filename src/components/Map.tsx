@@ -50,6 +50,7 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
+import YearRangeInput from "./YearRangeInput"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -1145,30 +1146,11 @@ const Map: React.FC = () => {
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
                 <label className="text-sm">{t("yearRange")}</label>
-                <input
-                  type="number"
-                  placeholder="1800"
-                  value={filters.yearRange[0]}
-                  onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      parseInt(e.target.value),
-                      filters.yearRange[1],
-                    ])
-                  }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                />
-                <span className="text-sm">-</span>
-                <input
-                  type="number"
-                  placeholder="2024"
-                  value={filters.yearRange[1]}
-                  onChange={(e) =>
-                    handleFilterChange("yearRange", [
-                      filters.yearRange[0],
-                      parseInt(e.target.value),
-                    ])
-                  }
-                  className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                <YearRangeInput
+                  value={filters.yearRange}
+                  onChange={(range) => handleFilterChange("yearRange", range)}
+                  placeholderStart="1800"
+                  placeholderEnd="2024"
                 />
               </div>
             </div>
@@ -1511,34 +1493,11 @@ const Map: React.FC = () => {
             {/* Year Range */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
               <label className="text-sm">{t("yearRange")}</label>
-              <input
-                type="number"
-                placeholder="1800"
-                value={filters.yearRange[0]}
-                onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    parseInt(e.target.value),
-                    filters.yearRange[1],
-                  ])
-                }
-                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  user.isLoggedIn ? "w-14" : "w-22"
-                }`}
-              />
-              <span className="text-sm">-</span>
-              <input
-                type="number"
-                placeholder="2024"
-                value={filters.yearRange[1]}
-                onChange={(e) =>
-                  handleFilterChange("yearRange", [
-                    filters.yearRange[0],
-                    parseInt(e.target.value),
-                  ])
-                }
-                className={`w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 ${
-                  user.isLoggedIn ? "w-14" : "w-22"
-                }`}
+              <YearRangeInput
+                value={filters.yearRange}
+                onChange={(range) => handleFilterChange("yearRange", range)}
+                placeholderStart="1800"
+                placeholderEnd="2024"
               />
               <Select
                 options={edgeTypeOptions}
