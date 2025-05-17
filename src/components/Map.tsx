@@ -178,12 +178,12 @@ const Map: React.FC = () => {
   }, [networks, filters, user.name, selectedEdgeId])
 
   // migrationYearRange가 바뀔 때 filters에도 반영
-  useEffect(() => {
-    setFilters((prev) => ({
-      ...prev,
-      migrationYearRange,
-    }))
-  }, [migrationYearRange])
+  // useEffect(() => {
+  //   setFilters((prev) => ({
+  //     ...prev,
+  //     migrationYearRange,
+  //   }))
+  // }, [migrationYearRange])
 
   // 중심성 계산 워커로 요청
   useEffect(() => {

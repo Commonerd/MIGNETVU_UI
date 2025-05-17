@@ -127,6 +127,7 @@ export type FilterOptions = {
   edgeType: string[] | string
   entityType: string[] | string
   yearRange: [number, number]
+  migrationYearRange: [number, number]
   migrationReasons: string[] | string
   selectedMigrationNetworkId: any
   forceIncludeNetworkIds: any
