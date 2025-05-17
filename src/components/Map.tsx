@@ -50,6 +50,7 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
+
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
   const map = useMap()
@@ -131,6 +132,57 @@ const Map: React.FC = () => {
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [progress, setProgress] = useState(0)
+  const [workerFilteredNetworks, setWorkerFilteredNetworks] = useState<
+    Network[]
+  >([])
+  const [workerCentrality, setWorkerCentrality] = useState<
+    Record<number, number>
+  >({})
+
+  const workerRef = useRef<Worker | null>(null)
+
+  // 워커 초기화 및 메시지 핸들러
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL("../workers/networkWorker.ts", import.meta.url),
+    )
+    if (workerRef.current) {
+      workerRef.current.onmessage = (e) => {
+        const { type, payload } = e.data
+        if (type === "FILTERED_NETWORKS") setWorkerFilteredNetworks(payload)
+        if (type === "CENTRALITY_RESULT") setWorkerCentrality(payload)
+      }
+    }
+    return () => {
+      workerRef.current?.terminate()
+    }
+  }, [])
+
+  // 네트워크 필터링 워커로 요청
+  useEffect(() => {
+    if (!networks) return
+    workerRef.current?.postMessage({
+      type: "FILTER_NETWORKS",
+      payload: {
+        networks,
+        filters,
+        userName: user.name,
+        selectedEdgeId,
+      },
+    })
+  }, [networks, filters, user.name, selectedEdgeId])
+
+  // 중심성 계산 워커로 요청
+  useEffect(() => {
+    workerRef.current?.postMessage({
+      type: "CALCULATE_CENTRALITY",
+      payload: {
+        filteredNetworks: workerFilteredNetworks,
+        centralityType,
+      },
+    })
+  }, [workerFilteredNetworks, centralityType])
+
   // 디바운싱된 검색어 업데이트 함수
   const updateDebouncedSearchQuery = useMemo(
     () =>
@@ -557,52 +609,52 @@ const Map: React.FC = () => {
     })
   }
   // filteredNetworks를 useMemo로 메모이제이션
-  const filteredNetworks = useMemo(() => {
-    if (!networks) return []
-    return networks.filter((network) => {
-      // 선택된 엣지와 관련된 네트워크만 포함
-      if (selectedEdgeId) {
-        const isEdgeTarget = network.edges.some(
-          (edge) => edge.targetId === selectedEdgeId,
-        )
-        if (isEdgeTarget) {
-          return true
-        }
-      }
-      // 강제로 포함된 네트워크는 항상 포함
-      const isForcedIncluded = filters.forceIncludeNetworkIds?.includes(
-        network.id,
-      )
-      // 기존 필터 조건
-      const matchesNationality =
-        filters.nationality.includes("all") ||
-        filters.nationality.includes(network.nationality)
-      const matchesEthnicity =
-        filters.ethnicity.includes("all") ||
-        filters.ethnicity.includes(network.ethnicity)
-      const matchesYearRange =
-        network.migration_year >= filters.yearRange[0] &&
-        network.migration_year <= filters.yearRange[1]
-      // 새로 추가된 유저 이름 필터
-      const matchesUserNetwork =
-        !filters.userNetworkFilter ||
-        !user.name ||
-        network.user_name === user.name
-      // 엔티티 유형 필터 조건
-      const matchesEntityType =
-        filters.entityType.includes("all") ||
-        filters.entityType.includes(network.type)
-      // 모든 필터 조건을 종합적으로 확인
-      return (
-        isForcedIncluded || // 강제로 포함된 네트워크는 항상 포함
-        (matchesNationality &&
-          matchesEthnicity &&
-          matchesYearRange &&
-          matchesUserNetwork &&
-          matchesEntityType)
-      )
-    })
-  }, [networks, filters, selectedEdgeId, user.name])
+  // const workerFilteredNetworks = useMemo(() => {
+  //   if (!networks) return []
+  //   return networks.filter((network) => {
+  //     // 선택된 엣지와 관련된 네트워크만 포함
+  //     if (selectedEdgeId) {
+  //       const isEdgeTarget = network.edges.some(
+  //         (edge) => edge.targetId === selectedEdgeId,
+  //       )
+  //       if (isEdgeTarget) {
+  //         return true
+  //       }
+  //     }
+  //     // 강제로 포함된 네트워크는 항상 포함
+  //     const isForcedIncluded = filters.forceIncludeNetworkIds?.includes(
+  //       network.id,
+  //     )
+  //     // 기존 필터 조건
+  //     const matchesNationality =
+  //       filters.nationality.includes("all") ||
+  //       filters.nationality.includes(network.nationality)
+  //     const matchesEthnicity =
+  //       filters.ethnicity.includes("all") ||
+  //       filters.ethnicity.includes(network.ethnicity)
+  //     const matchesYearRange =
+  //       network.migration_year >= filters.yearRange[0] &&
+  //       network.migration_year <= filters.yearRange[1]
+  //     // 새로 추가된 유저 이름 필터
+  //     const matchesUserNetwork =
+  //       !filters.userNetworkFilter ||
+  //       !user.name ||
+  //       network.user_name === user.name
+  //     // 엔티티 유형 필터 조건
+  //     const matchesEntityType =
+  //       filters.entityType.includes("all") ||
+  //       filters.entityType.includes(network.type)
+  //     // 모든 필터 조건을 종합적으로 확인
+  //     return (
+  //       isForcedIncluded || // 강제로 포함된 네트워크는 항상 포함
+  //       (matchesNationality &&
+  //         matchesEthnicity &&
+  //         matchesYearRange &&
+  //         matchesUserNetwork &&
+  //         matchesEntityType)
+  //     )
+  //   })
+  // }, [networks, filters, selectedEdgeId, user.name])
   const filteredNetworkTraces = networks
     ? networks.filter((network) => {
         // 기존 필터 조건
@@ -629,10 +681,10 @@ const Map: React.FC = () => {
       })
     : []
   // const uniqueNationalities = Array.from(
-  //   new Set(filteredNetworks.map((m) => m.nationality)),
+  //   new Set(workerFilteredNetworks.map((m) => m.nationality)),
   // )
   // const uniqueEthnicities = Array.from(
-  //   new Set(filteredNetworks.map((m) => m.ethnicity)),
+  //   new Set(workerFilteredNetworks.map((m) => m.ethnicity)),
   // )
   // const uniqueConnectionTypes = Array.from(
   //   new Set(networks?.flatMap((m) => m.connections.map((c) => c.type))),
@@ -695,14 +747,14 @@ const Map: React.FC = () => {
   }
   // centralityValues를 useMemo로 메모이제이션
   const centralityValues = useMemo(() => {
-    return calculateCentrality(filteredNetworks, centralityType)
-  }, [filteredNetworks, centralityType])
+    return calculateCentrality(workerFilteredNetworks, centralityType)
+  }, [workerFilteredNetworks, centralityType])
   const topNetworks = Object.entries(centralityValues)
-    .filter(([id]) => filteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
+    .filter(([id]) => workerFilteredNetworks.some((m) => m.id === Number(id))) // 필터링된 네트워크에 해당하는 ID만 포함
     .sort(([, a], [, b]) => b - a)
     .slice(0, 5)
     .map(([id, centrality]) => {
-      const network = filteredNetworks.find((m) => m.id === Number(id)) // 필터링된 네트워크에서 찾기
+      const network = workerFilteredNetworks.find((m) => m.id === Number(id)) // 필터링된 네트워크에서 찾기
       return {
         id: Number(id),
         name: String(network ? network.title : "Unknown"),
@@ -846,13 +898,17 @@ const Map: React.FC = () => {
       // 이전 값 업데이트
       tracesRef.current = newTraces
       edgesRef.current = newEdges
-      if (filteredNetworks && filteredNetworks.length > 0) {
+      if (workerFilteredNetworks && workerFilteredNetworks.length > 0) {
         const traces = newTraces.flat() // 새로운 트레이스 가져오기
-        const analysis = analyzeNetworkType(filteredNetworks, newEdges, traces) // 분석 수행
+        const analysis = analyzeNetworkType(
+          workerFilteredNetworks,
+          newEdges,
+          traces,
+        ) // 분석 수행
         setNetworkAnalysis(analysis) // 분석 결과 업데이트
       }
     }
-  }, [filteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
+  }, [workerFilteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
   const CustomMapComponent = () => {
     const map = useMap()
     const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
@@ -1804,7 +1860,7 @@ const Map: React.FC = () => {
         <ThreeDMap
           networks={networks}
           filters={filters}
-          filteredNetworks={filteredNetworks}
+          filteredNetworks={workerFilteredNetworks}
           filteredTraces={filteredTraces}
           filteredEdges={getEdgesFor3D()}
           handleEdgeClick={handleEdgeClick}
@@ -1985,7 +2041,7 @@ const Map: React.FC = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {/* 지도에 표시될 네트워크 데이터 */}
-          {filteredNetworks.map((network) => {
+          {workerFilteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
               centralityType,
