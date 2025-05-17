@@ -52,6 +52,7 @@ import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
 import YearRangeInput from "./YearRangeInput"
 import MigrationYearRangeInput from "./MigrationYearRangeInput"
+import Spinner from "./Spinner"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -85,7 +86,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: "all",
-    yearRange: [1860, 1945], // 현재 연도로 자동 설정
+    yearRange: [1800, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -156,6 +157,7 @@ const Map: React.FC = () => {
         const { type, payload } = e.data
         if (type === "FILTERED_NETWORKS") setWorkerFilteredNetworks(payload)
         if (type === "CENTRALITY_RESULT") setWorkerCentrality(payload)
+        if (type === "PROGRESS") setProgress(payload) // 진행률 반영
       }
     }
     return () => {
@@ -305,19 +307,25 @@ const Map: React.FC = () => {
     return () => clearTimeout(timer)
   }, [])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          return 100
-        }
-        return prev + 10 // Adjust increment as needed
-      })
-    }, 200) // Adjust interval duration as needed
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setProgress((prev) => {
+  //       if (prev >= 100) {
+  //         clearInterval(interval)
+  //         return 100
+  //       }
+  //       return prev + 10 // Adjust increment as needed
+  //     })
+  //   }, 200) // Adjust interval duration as needed
 
-    return () => clearInterval(interval)
-  }, [])
+  //   return () => clearInterval(interval)
+  // }, [])
+
+  useEffect(() => {
+    if (workerFilteredNetworks.length > 0) {
+      setProgress(100)
+    }
+  }, [workerFilteredNetworks])
 
   useEffect(() => {
     const markersLayer = L.layerGroup()
@@ -1086,7 +1094,7 @@ const Map: React.FC = () => {
   )
 
   if (progress < 100) {
-    return <div className="spinner">Loading... {progress}%</div> // Replace with your spinner component or styling
+    return <Spinner progress={progress} />
   }
 
   return (

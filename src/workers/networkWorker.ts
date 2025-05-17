@@ -33,7 +33,10 @@ function filterNetworks(
   selectedEdgeId: number | null,
   userName: string,
 ) {
-  return networks.filter((network) => {
+  const total = networks.length
+  let filtered: Network[] = []
+
+  networks.forEach((network, idx) => {
     // 국적 필터
     const matchesNationality =
       filters.nationality.includes("all") ||
@@ -84,17 +87,26 @@ function filterNetworks(
         filters.migrationReasons.includes(trace.reason),
       )
 
-    return (
+    const matches =
       matchesNationality &&
       matchesEthnicity &&
       matchesYearRange &&
-      matchesMigrationYearRange && // 추가
+      matchesMigrationYearRange &&
       matchesUserNetwork &&
       matchesEdge &&
       matchesEntityType &&
       matchesMigrationReasons
-    )
+
+    if (matches) filtered.push(network)
+
+    // 5% 단위로 진행률 메시지 전송 (혹은 100개마다 등)
+    if (idx % Math.ceil(total / 20) === 0 || idx === total - 1) {
+      const percent = Math.round(((idx + 1) / total) * 100)
+      self.postMessage({ type: "PROGRESS", payload: percent })
+    }
   })
+
+  return filtered
 }
 
 // 중심성 계산 (예시: degree centrality)
