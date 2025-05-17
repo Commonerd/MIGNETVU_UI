@@ -23,7 +23,16 @@ const CanvasMarkers = ({
   const map = useMap()
   useEffect(() => {
     if (!map || !networks) return
-    let canvasLayer = (L as any).canvasIconLayer({}).addTo(map)
+    // canvasIconLayer가 함수인지 확인
+    const canvasIconLayerFn =
+      (L as any).canvasIconLayer || (window as any).L?.canvasIconLayer
+    if (typeof canvasIconLayerFn !== "function") {
+      console.error(
+        "canvasIconLayer is not a function. leaflet-canvas-marker 플러그인 import/설치 확인 필요",
+      )
+      return
+    }
+    let canvasLayer = canvasIconLayerFn({}).addTo(map)
     networks.forEach((network) => {
       const size = getNodeSize(
         centralityValues[network.id] || 0,
@@ -35,14 +44,19 @@ const CanvasMarkers = ({
           : network.type === "Organization"
             ? "blue"
             : "red"
-      const marker = (L as any).canvasMarker(
-        [network.latitude, network.longitude],
-        {
-          radius: size / 2,
-          color,
-          id: network.id,
-        },
-      )
+      const canvasMarkerFn =
+        (L as any).canvasMarker || (window as any).L?.canvasMarker
+      if (typeof canvasMarkerFn !== "function") {
+        console.error(
+          "canvasMarker is not a function. leaflet-canvas-marker 플러그인 import/설치 확인 필요",
+        )
+        return
+      }
+      const marker = canvasMarkerFn([network.latitude, network.longitude], {
+        radius: size / 2,
+        color,
+        id: network.id,
+      })
       marker.addTo(canvasLayer)
       marker.on("click", () => onMarkerClick(network))
     })
