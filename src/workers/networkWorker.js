@@ -30,9 +30,9 @@
 function filterNetworks(networks, filters, selectedEdgeId, userName) {
   const total = networks.length
   let filtered = []
+  self.postMessage({ type: "PROGRESS", payload: 0 })
 
   networks.forEach((network, idx) => {
-    self.postMessage({ type: "PROGRESS", payload: 0 })
     // 국적 필터
     const matchesNationality =
       filters.nationality.includes("all") ||
