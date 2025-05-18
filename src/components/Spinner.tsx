@@ -20,7 +20,8 @@ const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
     >
       <div className="loader" />
       <div style={{ marginTop: 16, fontSize: 18, color: "#3e2723" }}>
-        {progress !== undefined ? `Loading... ${progress}%` : "Loading..."}
+        {/* {progress !== undefined ? `Loading... ${progress}%` : "Loading..."} */}
+        {progress !== undefined ? `Loading...` : "Loading..."}
       </div>
       <style>
         {`
