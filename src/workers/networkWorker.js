@@ -2,39 +2,34 @@
 
 // 네트워크 필터링 및 중심성 계산 워커
 
-export type Network = {
-  id: number
-  nationality: string
-  ethnicity: string
-  migration_year: number
-  user_name: string
-  type: string
-  edges: { edgeType: string; targetId: number }[]
-  migration_traces: { reason: string }[]
-}
+// export type Network = {
+//   id: number
+//   nationality: string
+//   ethnicity: string
+//   migration_year: number
+//   user_name: string
+//   type: string
+//   edges: { edgeType: string; targetId: number }[]
+//   migration_traces: { reason: string }[]
+// }
 
-export type FilterOptions = {
-  nationality: string[] | string
-  ethnicity: string[] | string
-  edgeType: string[] | string
-  entityType: string
-  yearRange: [number, number]
-  migrationYearRange: [number, number] // 추가
-  userNetworkFilter: boolean
-  userNetworkTraceFilter: boolean
-  userNetworkConnectionFilter: boolean
-  migrationReasons: string[]
-  selectedMigrationNetworkId: number | null
-}
+// export type FilterOptions = {
+//   nationality: string[] | string
+//   ethnicity: string[] | string
+//   edgeType: string[] | string
+//   entityType: string
+//   yearRange: [number, number]
+//   migrationYearRange: [number, number] // 추가
+//   userNetworkFilter: boolean
+//   userNetworkTraceFilter: boolean
+//   userNetworkConnectionFilter: boolean
+//   migrationReasons: string[]
+//   selectedMigrationNetworkId: number | null
+// }
 
-function filterNetworks(
-  networks: Network[],
-  filters: FilterOptions,
-  selectedEdgeId: number | null,
-  userName: string,
-) {
+function filterNetworks(networks, filters, selectedEdgeId, userName) {
   const total = networks.length
-  let filtered: Network[] = []
+  let filtered = []
 
   networks.forEach((network, idx) => {
     // 국적 필터
@@ -61,7 +56,7 @@ function filterNetworks(
       !filters.migrationYearRange ||
       filters.migrationYearRange.length !== 2 ||
       network.migration_traces.some(
-        (trace: any) =>
+        (trace) =>
           trace.migration_year >= filters.migrationYearRange[0] &&
           trace.migration_year <= filters.migrationYearRange[1],
       )
@@ -102,6 +97,8 @@ function filterNetworks(
     // 5% 단위로 진행률 메시지 전송 (혹은 100개마다 등)
     if (idx % Math.ceil(total / 20) === 0 || idx === total - 1) {
       const percent = Math.round(((idx + 1) / total) * 100)
+      console.log("WORKER PROGRESS", percent)
+
       self.postMessage({ type: "PROGRESS", payload: percent })
     }
   })
@@ -110,11 +107,8 @@ function filterNetworks(
 }
 
 // 중심성 계산 (예시: degree centrality)
-function calculateCentrality(
-  filteredNetworks: Network[],
-  centralityType: string,
-) {
-  const centrality: Record<number, number> = {}
+function calculateCentrality(filteredNetworks, centralityType) {
+  const centrality = {}
   if (centralityType === "degree") {
     filteredNetworks.forEach((network) => {
       centrality[network.id] = network.edges.length

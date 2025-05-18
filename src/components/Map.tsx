@@ -86,7 +86,7 @@ const Map: React.FC = () => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: "all",
-    yearRange: [1800, 1945], // 현재 연도로 자동 설정
+    yearRange: [1860, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -150,14 +150,17 @@ const Map: React.FC = () => {
   // 워커 초기화 및 메시지 핸들러
   useEffect(() => {
     workerRef.current = new Worker(
-      new URL("../workers/networkWorker.ts", import.meta.url),
+      new URL("../workers/networkWorker.js", import.meta.url),
     )
     if (workerRef.current) {
       workerRef.current.onmessage = (e) => {
         const { type, payload } = e.data
         if (type === "FILTERED_NETWORKS") setWorkerFilteredNetworks(payload)
         if (type === "CENTRALITY_RESULT") setWorkerCentrality(payload)
-        if (type === "PROGRESS") setProgress(payload) // 진행률 반영
+        if (type === "PROGRESS") {
+          console.log("MAIN PROGRESS", payload)
+          setProgress(payload)
+        } // 진행률 반영
       }
     }
     return () => {
