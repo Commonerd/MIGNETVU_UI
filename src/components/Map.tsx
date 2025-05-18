@@ -160,7 +160,6 @@ const Map: React.FC = () => {
         if (type === "PROGRESS") {
           console.log("MAIN PROGRESS", payload)
           setProgress(payload)
-          console.log("setProgess", progress)
         } // 진행률 반영
       }
     }
@@ -168,6 +167,10 @@ const Map: React.FC = () => {
       workerRef.current?.terminate()
     }
   }, [])
+
+  useEffect(() => {
+    console.log("progress changed!", progress)
+  }, [progress])
 
   // 네트워크 필터링 워커로 요청
   useEffect(() => {
