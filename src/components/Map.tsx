@@ -168,6 +168,7 @@ const Map: React.FC = () => {
   // 네트워크 필터링 워커로 요청
   useEffect(() => {
     if (!networks) return
+    setProgress(0) // 필터링 시작 시 진행률 0으로 초기화
     workerRef.current?.postMessage({
       type: "FILTER_NETWORKS",
       payload: {
