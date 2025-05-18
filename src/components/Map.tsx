@@ -174,7 +174,7 @@ const Map: React.FC = () => {
 
   // 네트워크 필터링 워커로 요청
   useEffect(() => {
-    if (!networks) return
+    if (!networks || progress < 100) return
     workerRef.current?.postMessage({
       type: "FILTER_NETWORKS",
       payload: {
