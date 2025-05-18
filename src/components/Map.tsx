@@ -160,6 +160,7 @@ const Map: React.FC = () => {
         if (type === "PROGRESS") {
           console.log("MAIN PROGRESS", payload)
           setProgress(payload)
+          console.log("setProgess", progress)
         } // 진행률 반영
       }
     }
