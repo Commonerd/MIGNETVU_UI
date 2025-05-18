@@ -10,7 +10,7 @@ const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh", // 전체 화면 덮기
-        width: "100%",
+        width: "100vw", // 수정!
         zIndex: 99999, // zIndex를 충분히 높임
         background: "rgba(255,255,255,0.7)",
         position: "fixed",

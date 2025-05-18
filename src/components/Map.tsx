@@ -1100,6 +1100,7 @@ const Map: React.FC = () => {
       user.name,
     ],
   )
+  console.log("Map render, progress:", progress)
 
   if (progress < 100) {
     console.log("RENDER SPINNER", progress)
