@@ -1098,6 +1098,7 @@ const Map: React.FC = () => {
   )
 
   if (progress < 100) {
+    console.log("RENDER SPINNER", progress)
     return <Spinner progress={progress} />
   }
 

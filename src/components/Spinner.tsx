@@ -1,27 +1,29 @@
 import React from "react"
 
-const Spinner: React.FC<{ progress?: number }> = ({ progress }) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      height: "60vh",
-      width: "100%",
-      zIndex: 9999,
-      background: "rgba(255,255,255,0.7)",
-      position: "fixed",
-      top: 0,
-      left: 0,
-    }}
-  >
-    <div className="loader" />
-    <div style={{ marginTop: 16, fontSize: 18, color: "#3e2723" }}>
-      {progress !== undefined ? `Loading... ${progress}%` : "Loading..."}
-    </div>
-    <style>
-      {`
+const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
+  console.log("SPINNER RENDERED", progress)
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh", // 전체 화면 덮기
+        width: "100%",
+        zIndex: 99999, // zIndex를 충분히 높임
+        background: "rgba(255,255,255,0.7)",
+        position: "fixed",
+        top: 0,
+        left: 0,
+      }}
+    >
+      <div className="loader" />
+      <div style={{ marginTop: 16, fontSize: 18, color: "#3e2723" }}>
+        {progress !== undefined ? `Loading... ${progress}%` : "Loading..."}
+      </div>
+      <style>
+        {`
       .loader {
         border: 8px solid #f3f3f3;
         border-top: 8px solid #3e2723;
@@ -35,8 +37,8 @@ const Spinner: React.FC<{ progress?: number }> = ({ progress }) => (
         100% { transform: rotate(360deg);}
       }
       `}
-    </style>
-  </div>
-)
-
+      </style>
+    </div>
+  )
+}
 export default Spinner
