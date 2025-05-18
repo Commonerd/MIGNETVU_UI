@@ -328,11 +328,11 @@ const Map: React.FC = () => {
   //   return () => clearInterval(interval)
   // }, [])
 
-  useEffect(() => {
-    if (workerFilteredNetworks.length > 0) {
-      setProgress(100)
-    }
-  }, [workerFilteredNetworks])
+  // useEffect(() => {
+  //   if (workerFilteredNetworks.length > 0) {
+  //     setProgress(100)
+  //   }
+  // }, [workerFilteredNetworks])
 
   useEffect(() => {
     const markersLayer = L.layerGroup()

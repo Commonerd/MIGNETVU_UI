@@ -127,9 +127,15 @@ self.onmessage = function (e) {
   const { type, payload } = e.data
 
   if (type === "FILTER_NETWORKS") {
-    const { networks, filters, userName, selectedEdgeId } = payload
-    const filtered = filterNetworks(networks, filters, selectedEdgeId, userName)
+    self.postMessage({ type: "PROGRESS", payload: 0 }) // 반드시 0부터 시작!
+    const filtered = filterNetworks(
+      payload.networks,
+      payload.filters,
+      payload.selectedEdgeId,
+      payload.userName,
+    )
     self.postMessage({ type: "FILTERED_NETWORKS", payload: filtered })
+    self.postMessage({ type: "PROGRESS", payload: 100 }) // 마지막에 100!
   }
 
   if (type === "CALCULATE_CENTRALITY") {
