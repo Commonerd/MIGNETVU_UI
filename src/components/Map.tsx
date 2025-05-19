@@ -1101,15 +1101,13 @@ const Map: React.FC = () => {
   )
   console.log("Map render, progress:", progress)
 
-  // if (progress < 100) {
-  //   console.log("RENDER SPINNER", progress)
-  //   return <Spinner progress={progress} />
-  // }
+  if (progress < 100) {
+    console.log("RENDER SPINNER", progress)
+    return <Spinner progress={progress} />
+  }
 
   return (
     <div className="h-[calc(87vh-64px)] relative">
-      {progress < 100 && <Spinner progress={progress} />}
-
       <div className="p-2 bg-[#d1c6b1] relative w-full">
         {isMobile ? (
           <MobileCarousel {...sliderSettings}>

@@ -13,7 +13,7 @@ const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
         width: "100vw", // 수정!
         zIndex: 99999, // zIndex를 충분히 높임
         background: "rgba(255,255,255,0.7)",
-        position: "absolute", // fixed → absolute
+        position: "fixed",
         top: 0,
         left: 0,
       }}
@@ -27,7 +27,7 @@ const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
         {`
       .loader {
         border: 8px solid #f3f3f3;
-        border-top: 8px solidrgb(62, 35, 41);
+        border-top: 8px solid #3e2723;
         border-radius: 50%;
         width: 60px;
         height: 60px;
