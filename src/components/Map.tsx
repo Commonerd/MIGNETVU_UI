@@ -1185,7 +1185,7 @@ const Map: React.FC = () => {
                   value={filters.yearRange}
                   onChange={(range) => handleFilterChange("yearRange", range)}
                   placeholderStart="1800"
-                  placeholderEnd="2024"
+                  placeholderEnd="2025"
                 />
               </div>
             </div>
@@ -1250,7 +1250,7 @@ const Map: React.FC = () => {
                   value={migrationYearRange}
                   onChange={setMigrationYearRange}
                   placeholderStart="1800"
-                  placeholderEnd="2024"
+                  placeholderEnd="2025"
                 />
               </div>
             </div>
@@ -1495,7 +1495,7 @@ const Map: React.FC = () => {
                 value={filters.yearRange}
                 onChange={(range) => handleFilterChange("yearRange", range)}
                 placeholderStart="1800"
-                placeholderEnd="2024"
+                placeholderEnd="2025"
               />
               <Select
                 options={edgeTypeOptions}
@@ -1609,7 +1609,7 @@ const Map: React.FC = () => {
                 value={migrationYearRange}
                 onChange={setMigrationYearRange}
                 placeholderStart="1800"
-                placeholderEnd="2024"
+                placeholderEnd="2025"
               />
               <Select
                 options={migrationReasonOptions}
