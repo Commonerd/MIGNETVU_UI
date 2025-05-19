@@ -73,7 +73,11 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
 
     // 엔티티 타입 필터
     const matchesEntityType =
-      filters.entityType === "all" || network.type === filters.entityType
+      filters.entityType === "all" ||
+      (Array.isArray(filters.entityType)
+        ? filters.entityType.includes("all") ||
+          filters.entityType.includes(network.type)
+        : network.type === filters.entityType)
 
     // 이주 원인 필터
     const matchesMigrationReasons =
