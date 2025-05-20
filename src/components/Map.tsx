@@ -1116,8 +1116,6 @@ const Map: React.FC = () => {
     <div
       className="h-[calc(87vh-64px)] relative"
       style={{
-        width: "100vw",
-        maxWidth: "100vw",
         overflowX: "hidden",
         position: "relative",
       }}
@@ -1829,8 +1827,7 @@ const Map: React.FC = () => {
           zoomControl={false} // 확대/축소 컨트롤 제거
           style={{
             height: "calc(100vh - 64px - 64px)", // 64px for header and 64px for footer
-            width: "100vw",
-            maxWidth: "100vw",
+            width: "100%",
             position: "relative",
             zIndex: 0,
             overflowX: "hidden",
@@ -2465,7 +2462,6 @@ const SwipeableContainer = styled.div<{ isVisible: boolean }>`
   }
 `
 const MobileCarousel = styled(Slider)`
-  overflow-x: hidden !important;
   .slick-dots {
     bottom: -20px; /* 도트 위치를 아래로 조정 */
   }
