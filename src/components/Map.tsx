@@ -2465,17 +2465,7 @@ const SwipeableContainer = styled.div<{ isVisible: boolean }>`
   }
 `
 const MobileCarousel = styled(Slider)`
-  width: 100vw !important;
-  max-width: 100vw !important;
   overflow-x: hidden !important;
-  .slick-list,
-  .slick-track,
-  .slick-slide,
-  > div {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    overflow-x: hidden !important;
-  }
   .slick-dots {
     bottom: -20px; /* 도트 위치를 아래로 조정 */
   }
