@@ -1113,13 +1113,7 @@ const Map: React.FC = () => {
   }
 
   return (
-    <div
-      className="h-[calc(87vh-64px)] relative"
-      style={{
-        overflowX: "hidden",
-        position: "relative",
-      }}
-    >
+    <div className="h-[calc(87vh-64px)] relative">
       <div className="p-2 bg-[#d1c6b1] relative w-full">
         {isMobile ? (
           <MobileCarousel {...sliderSettings}>
@@ -1830,7 +1824,6 @@ const Map: React.FC = () => {
             width: "100%",
             position: "relative",
             zIndex: 0,
-            overflowX: "hidden",
           }}
           maxBounds={[
             [90, -360], // 최소 위도, 경도
