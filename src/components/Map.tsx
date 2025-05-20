@@ -1098,11 +1098,13 @@ const Map: React.FC = () => {
   useEffect(() => {
     if (data && data.length > 0) {
       setNetworks(data)
-      // 최초 로딩 시 민족만 Korean으로 필터링
-      setFilters((prev) => ({
-        ...prev,
-        ethnicity: ["Korean"],
-      }))
+      // networks 세팅 후에만 Korean 세팅
+      setTimeout(() => {
+        setFilters((prev) => ({
+          ...prev,
+          ethnicity: ["Korean"],
+        }))
+      }, 0)
     }
   }, [data])
 
@@ -1171,6 +1173,20 @@ const Map: React.FC = () => {
                       : ["all"],
                   )
                 }
+                value={
+                  Array.isArray(filters.ethnicity)
+                    ? filters.ethnicity
+                        .filter(
+                          (value) =>
+                            value !== "all" &&
+                            ethnicityOptions.some((opt) => opt.value === value),
+                        )
+                        .map((value) => ({
+                          value,
+                          label: value,
+                        }))
+                    : []
+                }
                 placeholder={t("allEthnicities")}
                 isClearable
                 isMulti
@@ -1189,7 +1205,7 @@ const Map: React.FC = () => {
                   value={filters.yearRange}
                   onChange={(range) => handleFilterChange("yearRange", range)}
                   placeholderStart="1800"
-                  placeholderEnd="2025"
+                  placeholderEnd="2024"
                 />
               </div>
             </div>
@@ -1254,7 +1270,7 @@ const Map: React.FC = () => {
                   value={migrationYearRange}
                   onChange={setMigrationYearRange}
                   placeholderStart="1800"
-                  placeholderEnd="2025"
+                  placeholderEnd="2024"
                 />
               </div>
             </div>
@@ -1463,6 +1479,22 @@ const Map: React.FC = () => {
                         : ["all"],
                     )
                   }
+                  value={
+                    Array.isArray(filters.ethnicity)
+                      ? filters.ethnicity
+                          .filter(
+                            (value) =>
+                              value !== "all" &&
+                              ethnicityOptions.some(
+                                (opt) => opt.value === value,
+                              ),
+                          )
+                          .map((value) => ({
+                            value,
+                            label: value,
+                          }))
+                      : []
+                  }
                   placeholder={t("allEthnicities")}
                   isClearable
                   isMulti
@@ -1499,7 +1531,7 @@ const Map: React.FC = () => {
                 value={filters.yearRange}
                 onChange={(range) => handleFilterChange("yearRange", range)}
                 placeholderStart="1800"
-                placeholderEnd="2025"
+                placeholderEnd="2024"
               />
               <Select
                 options={edgeTypeOptions}
@@ -1613,7 +1645,7 @@ const Map: React.FC = () => {
                 value={migrationYearRange}
                 onChange={setMigrationYearRange}
                 placeholderStart="1800"
-                placeholderEnd="2025"
+                placeholderEnd="2024"
               />
               <Select
                 options={migrationReasonOptions}
