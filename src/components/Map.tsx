@@ -158,7 +158,6 @@ const Map: React.FC = () => {
         if (type === "FILTERED_NETWORKS") setWorkerFilteredNetworks(payload)
         if (type === "CENTRALITY_RESULT") setWorkerCentrality(payload)
         if (type === "PROGRESS") {
-          console.log("MAIN PROGRESS", payload)
           setProgress(payload)
         } // 진행률 반영
       }
@@ -167,10 +166,6 @@ const Map: React.FC = () => {
       workerRef.current?.terminate()
     }
   }, [])
-
-  useEffect(() => {
-    console.log("progress changed!", progress)
-  }, [progress])
 
   // 네트워크 필터링 워커로 요청
   useEffect(() => {
@@ -1099,10 +1094,19 @@ const Map: React.FC = () => {
       user.name,
     ],
   )
-  console.log("Map render, progress:", progress)
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setNetworks(data)
+      // 최초 로딩 시 민족만 Korean으로 필터링
+      setFilters((prev) => ({
+        ...prev,
+        ethnicity: ["Korean"],
+      }))
+    }
+  }, [data])
 
   if (progress < 100) {
-    console.log("RENDER SPINNER", progress)
     return <Spinner progress={progress} />
   }
 

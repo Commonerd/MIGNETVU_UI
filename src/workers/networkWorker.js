@@ -102,7 +102,6 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
     // 5% 단위로 진행률 메시지 전송 (혹은 100개마다 등)
     if (idx % Math.ceil(total / 20) === 0 || idx === total - 1) {
       const percent = Math.round(((idx + 1) / total) * 100)
-      console.log("WORKER PROGRESS", percent)
 
       self.postMessage({ type: "PROGRESS", payload: percent })
     }

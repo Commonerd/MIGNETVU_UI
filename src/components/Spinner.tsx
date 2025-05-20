@@ -1,7 +1,6 @@
 import React from "react"
 
 const Spinner: React.FC<{ progress?: number }> = ({ progress }) => {
-  console.log("SPINNER RENDERED", progress)
   return (
     <div
       style={{
