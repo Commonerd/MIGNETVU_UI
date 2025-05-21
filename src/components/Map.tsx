@@ -2119,23 +2119,44 @@ const Map: React.FC = () => {
                       <div
                         className="mt-2 mb-2 border rounded text-xs"
                         style={{
-                          backgroundColor: "rgba(33, 150, 243, 0.18)", // 파란색 + 투명도
+                          backgroundColor: "rgba(33, 150, 243, 0.18)",
                           borderColor: "#90caf9",
                         }}
                       >
-                        <b>🧩 {t("Smilarity Insight")}</b>
-                        <ul>
+                        <b>💡 {t("Smilarity Insight")}</b>
+                        <SimilarityInsightList>
                           {recommendConnections(
                             network,
                             workerFilteredNetworks,
                             3,
                           ).map((rec) => (
-                            <li key={rec.id}>
-                              {rec.title} ({rec.type}, {rec.nationality},{" "}
-                              {rec.ethnicity})
-                            </li>
+                            <SimilarityInsightItem
+                              key={rec.id}
+                              title={rec.title}
+                              onClick={() => {
+                                handleTooltipOpen(rec.id)
+                                const entity = getEntityById(rec.id)
+                                if (entity) {
+                                  setFocusedNode({
+                                    id: rec.id,
+                                    lat: entity.latitude,
+                                    lng: entity.longitude,
+                                  })
+                                  setPopupPosition({
+                                    x: entity.latitude,
+                                    y: entity.longitude,
+                                  })
+                                }
+                              }}
+                              style={{ cursor: "pointer" }}
+                            >
+                              <span className="item-title">{rec.title}</span>
+                              <span className="item-meta">
+                                ({rec.type}, {rec.nationality}, {rec.ethnicity})
+                              </span>
+                            </SimilarityInsightItem>
                           ))}
-                        </ul>
+                        </SimilarityInsightList>
                       </div>
                     </PopupContent>
                     <div
@@ -2606,6 +2627,48 @@ const CommentSectionWrapper = styled.div`
     max-height: calc(100% - 1.5rem);
     font-size: 10px;
     padding: 5px;
+  }
+`
+
+const SimilarityInsightList = styled.ul`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0.2rem 0.2rem 0.2rem; // 상단, 좌우, 하단 패딩 추가
+  margin: 0;
+  list-style: none;
+`
+const SimilarityInsightItem = styled.li`
+  flex: 1 1 30%;
+  min-width: 180px;
+  max-width: 320px;
+  background: #fff8e1;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.2rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.98em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  .item-title {
+    flex: 1;
+    min-width: 0;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: #3e2723;
+    padding-right: 0.3em;
+  }
+  .item-meta {
+    margin-left: 0.5em;
+    font-size: 0.85em;
+    color: #8d6e63;
+    flex-shrink: 0;
   }
 `
 export default Map
