@@ -53,6 +53,7 @@ import SearchBar from "./SearchBar"
 import YearRangeInput from "./YearRangeInput"
 import MigrationYearRangeInput from "./MigrationYearRangeInput"
 import Spinner from "./Spinner"
+import { recommendConnections } from "../utils/recommendConnections"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
@@ -2114,6 +2115,27 @@ const Map: React.FC = () => {
                           <span className="font-medium">{t("Longitude")}:</span>{" "}
                           {network.longitude.toFixed(5)}
                         </p>
+                      </div>
+                      <div
+                        className="mt-2 mb-2 border rounded text-xs"
+                        style={{
+                          backgroundColor: "rgba(33, 150, 243, 0.18)", // 파란색 + 투명도
+                          borderColor: "#90caf9",
+                        }}
+                      >
+                        <b>🧩 {t("Smilarity Insight")}</b>
+                        <ul>
+                          {recommendConnections(
+                            network,
+                            workerFilteredNetworks,
+                            3,
+                          ).map((rec) => (
+                            <li key={rec.id}>
+                              {rec.title} ({rec.type}, {rec.nationality},{" "}
+                              {rec.ethnicity})
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     </PopupContent>
                     <div
