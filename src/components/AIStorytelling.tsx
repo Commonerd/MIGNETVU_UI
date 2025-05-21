@@ -57,21 +57,21 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
 
   return (
     <div style={{ margin: "1rem 0" }}>
-      {!isLoggedIn ? (
+      {/* {!isLoggedIn ? (
         <button onClick={handleLogin}>Puter AI 로그인</button>
       ) : (
-        <>
-          <button onClick={handleStoryClick} disabled={loading}>
-            인물 이주 스토리 생성
-          </button>
-          <button onClick={handleNetworkStoryClick} disabled={loading}>
-            네트워크 관계망 스토리 생성
-          </button>
-          {/* <button onClick={handleImageClick} disabled={loading}>
+        <> */}
+      <button onClick={handleStoryClick} disabled={loading}>
+        인물 이주 스토리 생성
+      </button>
+      <button onClick={handleNetworkStoryClick} disabled={loading}>
+        네트워크 관계망 스토리 생성
+      </button>
+      {/* <button onClick={handleImageClick} disabled={loading}>
             DALL·E 이주 경로 이미지 생성
           </button> */}
-        </>
-      )}
+      {/* </>
+      )} */}
       {loading && <div>AI 생성 중...</div>}
       {story && (
         <div style={{ margin: "1rem 0", whiteSpace: "pre-line" }}>{story}</div>
