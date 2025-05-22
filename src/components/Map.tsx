@@ -787,7 +787,7 @@ const Map: React.FC = () => {
       }
     })
   const getNodeSize = (centrality: number, centralityType: string) => {
-    let baseSize = 6
+    let baseSize = 9
     let scaleFactor = 1.5
     if (centralityType === "degree") {
       scaleFactor = 0.5
@@ -2183,8 +2183,8 @@ const Map: React.FC = () => {
               const network = networks?.find((n) => n.id === trace.network_id)
               const networkName = network ? network.title : "Unknown"
               // Calculate size dynamically based on trace number
-              const baseSize = 16 // Base size for the marker
-              const sizeIncrement = 1.5 // Smaller increment size for each trace number
+              const baseSize = 14 // Base size for the marker
+              const sizeIncrement = 1.3 // Smaller increment size for each trace number
               const size = baseSize + trace.traceNumber * sizeIncrement
               // Filter out duplicate markers at the same position
               const isDuplicate = traces.some(
