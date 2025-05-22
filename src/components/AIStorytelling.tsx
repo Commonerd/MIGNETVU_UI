@@ -141,7 +141,7 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
           <span
             style={{ fontWeight: 500, color: "#1976d2", fontSize: "0.93em" }}
           >
-            AI 생성 중...
+            HistoryBot 생성 중...
           </span>
           <style>
             {`@keyframes spin { 100% { transform: rotate(360deg); } }`}
@@ -192,9 +192,9 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
             }}
           >
             <span role="img" aria-label="story" style={{ fontSize: "1.1em" }}>
-              📖
+              🤖📚
             </span>
-            AI 스토리 결과
+            HistoryBot 스토리 결과
           </div>
           <div style={{ fontSize: "0.97em", color: "#222" }}>{story}</div>
         </div>
