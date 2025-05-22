@@ -56,7 +56,7 @@ const Header: React.FC = () => {
               className="w-5 h-5 sm:w-6 sm:h-6"
             />
             <span className="text-sm sm:text-base font-bold">HisNetVu</span>
-            <span className="text-[6px] sm:text-xs md:text-sm font-bold">
+            <span className="text-[9px] sm:text-xs md:text-sm font-bold">
               {"   "}-{"   "} {t("appSubName")}
             </span>
           </Link>
