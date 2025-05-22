@@ -2159,6 +2159,19 @@ const Map: React.FC = () => {
                           ))}
                         </SimilarityInsightList>
                       </div>
+                      <AIStorytelling
+                        migrationPath={network.migration_traces.map(
+                          (trace) => ({
+                            year: trace.migration_year,
+                            place: trace.location_name,
+                          }),
+                        )}
+                        networkSummary={`
+    이 네트워크의 주요 인물과 단체, 그리고 이들 사이의 관계는 다음과 같습니다:
+    ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
+    이 네트워크의 관계망 스토리를 3문장으로 요약해줘.
+  `}
+                      />{" "}
                     </PopupContent>
                     <div
                       className="max-h-32 max-w-full overflow-y-auto border-t pt-2"

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { askGpt, askDalle } from "../utils/puterAi"
+import { loadPuterScript } from "../utils/puterLoader"
 
 type Props = {
   migrationPath: { year: number; place: string }[]
@@ -24,14 +25,19 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
 
   const handleStoryClick = async () => {
     setLoading(true)
-    const prompt = `이 인물의 이주 경로는 다음과 같습니다: ${migrationPath
-      .map((p) => `${p.year}년 ${p.place}`)
-      .join(" → ")}. 이 인물의 이주 스토리를 3문장으로 요약해줘.`
-    const result = await askGpt([
-      { role: "system", content: "You are a migration story generator." },
-      { role: "user", content: prompt },
-    ])
-    setStory(result)
+    try {
+      await loadPuterScript() // Puter.js가 로드될 때까지 기다림
+      const prompt = `이 인물의 이주 경로는 다음과 같습니다: ${migrationPath.map((p) => `${p.year}년 ${p.place}`).join(" → ")}. 이 인물의 이주 스토리를 3문장으로 요약해줘.`
+      const result = await askGpt([
+        { role: "system", content: "You are a migration story generator." },
+        { role: "user", content: prompt },
+      ])
+      setStory(result)
+    } catch (e) {
+      alert(
+        "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
+      )
+    }
     setLoading(false)
   }
 
@@ -57,21 +63,16 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
 
   return (
     <div style={{ margin: "1rem 0" }}>
-      {!isLoggedIn ? (
-        <button onClick={handleLogin}>Puter AI 로그인</button>
-      ) : (
-        <>
-          <button onClick={handleStoryClick} disabled={loading}>
-            인물 이주 스토리 생성
-          </button>
-          <button onClick={handleNetworkStoryClick} disabled={loading}>
-            네트워크 관계망 스토리 생성
-          </button>
-          {/* <button onClick={handleImageClick} disabled={loading}>
+      <button onClick={handleStoryClick} disabled={loading}>
+        인물 이주 스토리 생성
+      </button>
+      <button onClick={handleNetworkStoryClick} disabled={loading}>
+        네트워크 관계망 스토리 생성
+      </button>
+      {/* <button onClick={handleImageClick} disabled={loading}>
             DALL·E 이주 경로 이미지 생성
           </button> */}
-        </>
-      )}
+
       {loading && <div>AI 생성 중...</div>}
       {story && (
         <div style={{ margin: "1rem 0", whiteSpace: "pre-line" }}>{story}</div>
