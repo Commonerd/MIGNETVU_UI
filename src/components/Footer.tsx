@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
             </a>
           </p>
           <p className="hidden sm:block">
-            &copy; {currentYear} Dr. Song Younghwa. {t("allRightsReserved")} |{" "}
+            &copy; {currentYear} Dr. Song Younghwa {t("allRightsReserved")} |{" "}
             {t("OperaionTime")}: 09:00-18:00 |{" "}
             <a
               href="https://docs.google.com/spreadsheets/d/1w7UqUIv3rfTncO6qTiujo7W_BgFBNVQkOf2BH4Xgkjs/edit?gid=0#gid=0"
