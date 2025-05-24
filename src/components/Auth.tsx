@@ -288,7 +288,7 @@ const Select = styled.select`
 `
 
 const Button = styled.button`
-  width: 100%;
+  width: 50%;
   padding: 12px;
   background-color: #800020;
   color: white;
@@ -316,6 +316,7 @@ const GoogleButtonWrapper = styled.div`
     width: 100% !important;
     min-width: 100% !important;
     height: 48px !important; // Button과 동일하게
+    display: flex;
     align-items: center;
     justify-content: center;
   }

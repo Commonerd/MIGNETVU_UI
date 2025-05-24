@@ -16,6 +16,7 @@ const GoogleLoginButton = ({
       alert("Google Login Failed")
     }}
     size="large"
+    logo_alignment="center"
   />
 )
 
