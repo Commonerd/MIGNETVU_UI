@@ -2164,6 +2164,7 @@ const Map: React.FC = () => {
                           (trace) => ({
                             year: trace.migration_year,
                             place: trace.location_name,
+                            reason: trace.reason,
                           }),
                         )}
                         networkSummary={`

@@ -3,7 +3,7 @@ import { askGpt } from "../utils/puterAi"
 import { loadPuterScript } from "../utils/puterLoader"
 
 type Props = {
-  migrationPath: { year: number; place: string }[]
+  migrationPath: { year: number; place: string; reason: string }[]
   networkSummary: string
 }
 
@@ -16,8 +16,13 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
     try {
       await loadPuterScript()
       const prompt = `이 인물의 이주 경로는 다음과 같습니다: ${migrationPath
-        .map((p) => `${p.year}년 ${p.place}`)
-        .join(" → ")}. 이 인물의 이주 스토리를 3문장으로 요약해줘.`
+        .map(
+          (p) =>
+            `${p.year}년 ${p.place} 이유: ${p.reason || "제시된 정보 없음"}`,
+        )
+        .join(
+          " → ",
+        )}. 이 인물의 이주 스토리를 논문에서 한 문단으로 쓸 수 있도록 3-4문장으로 요약제시, 제시된 이주 경로에 대해 따로 받은 게 없다면 "제시된 정보"가 없다고 해. 거짓말은 하면 안돼!`
       const result = await askGpt([
         { role: "system", content: "You are a migration story generator." },
         { role: "user", content: prompt },
@@ -32,20 +37,22 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
   }
 
   const handleNetworkStoryClick = async () => {
-    setLoading(true)
-    try {
-      await loadPuterScript()
-      const result = await askGpt([
-        { role: "system", content: "You are a network story summarizer." },
-        { role: "user", content: networkSummary },
-      ])
-      setStory(result)
-    } catch (e) {
-      alert(
-        "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
-      )
-    }
-    setLoading(false)
+    alert("이 기능은 아직 준비 중입니다.")
+    return
+    // setLoading(true)
+    // try {
+    //   await loadPuterScript()
+    //   const result = await askGpt([
+    //     { role: "system", content: "You are a network story summarizer." },
+    //     { role: "user", content: networkSummary },
+    //   ])
+    //   setStory(result)
+    // } catch (e) {
+    //   alert(
+    //     "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
+    //   )
+    // }
+    // setLoading(false)
   }
 
   return (
