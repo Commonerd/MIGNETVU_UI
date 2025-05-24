@@ -15,6 +15,7 @@ const GoogleLoginButton = ({
     onError={() => {
       alert("Google Login Failed")
     }}
+    size="large"
   />
 )
 

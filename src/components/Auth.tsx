@@ -310,15 +310,10 @@ const Button = styled.button`
 const GoogleButtonWrapper = styled.div`
   width: 100%;
   margin: 16px 0;
-
   // Google 버튼 내부 iframe에도 높이 적용
   > div {
     width: 100% !important;
     min-width: 100% !important;
-    height: 48px !important; // Button과 동일하게
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 `
 
