@@ -172,9 +172,9 @@ export const Auth = () => {
             {isLogin ? t("login") : t("register")}
           </Button>
         </form>
-        <div style={{ margin: "16px 0" }}>
+        <GoogleButtonWrapper>
           <GoogleLoginButton onSuccess={handleGoogleLogin} />
-        </div>
+        </GoogleButtonWrapper>
         <IconWrapper>
           <SwitchModeIcon onClick={() => setIsLogin(!isLogin)} />
         </IconWrapper>
@@ -304,6 +304,21 @@ const Button = styled.button`
   @media (max-width: 600px) {
     padding: 10px;
     font-size: 0.9rem;
+  }
+`
+
+const GoogleButtonWrapper = styled.div`
+  width: 100%;
+  margin: 16px 0;
+
+  // Google 버튼 내부 iframe에도 높이 적용
+  > div {
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 48px !important; // Button과 동일하게
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `
 
