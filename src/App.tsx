@@ -179,21 +179,21 @@ function App() {
                   {guideStep === 1 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("정재관의 생애 이동루트"),
+                        __html: t("한국 국적을 지닌 한국인의 관계와 이동"),
                       }}
                     />
                   )}
                   {guideStep === 2 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("정재관의 독립운동 관계망"),
+                        __html: t("러시아 국적을 지닌 한국인의 관계와 이동"),
                       }}
                     />
                   )}
                   {guideStep === 3 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("1860-1945년 한국계 러시아인의 이동"),
+                        __html: t("글로벌 코리안 정재관의 관계와 이동"),
                       }}
                     />
                   )}
