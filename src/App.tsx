@@ -19,6 +19,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import useStore from "./store"
 import EditProfile from "./components/EditProfile"
 import Modal from "react-modal"
+import { GoogleOAuthProvider } from "@react-oauth/google"
 
 Modal.setAppElement("#root") // 모달 접근성을 위한 설정
 function App() {
@@ -96,74 +97,79 @@ function App() {
   }, [setUser])
 
   return (
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <div className="flex flex-col min-h-screen bg-gray-100">
-          <Header />{" "}
-          <main className="flex-grow mb-16">
-            {" "}
-            {/* mb-16 to account for the fixed footer height */}
-            <Routes>
-              <Route path="/" element={<Map user={user} setUser={setUser} />} />
-              <Route path="/login" element={<Auth />} />
-              <Route path="/network" element={<Network />} />
-              <Route path="/editprofile" element={<EditProfile />} />
-              <Route path="/todo" element={<Todo />} />
-              {/* 잠정 */}
-              {/* <Route path="/add-network" element={<NetworkForm />} /> */}
-              {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
-              {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
-            </Routes>
-          </main>{" "}
-          <Footer />
-          {/* 모달 */}
-          <Modal
-            isOpen={isModalOpen}
-            onRequestClose={() => setIsModalOpen(false)}
-            className="bg-[#f5f5f5] bg-opacity-80 p-6 rounded-lg shadow-lg max-w-md mx-auto mt-20"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center"
-          >
-            <h2 className="text-lg font-bold mb-4 text-[#3E2723]">
-              {t("User Guide")}
-            </h2>
-            <p className="mb-4 text-sm text-[#5D4037]">
-              {t("Would you like to view the user guide?")}
-            </p>
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={handleDismiss}
-                  className="bg-[#D7CCC8] text-[#3E2723] px-4 py-2 rounded hover:bg-[#BCAAA4] transition"
-                >
-                  {t("No")}
-                </button>
-                <button
-                  onClick={handleViewGuide}
-                  className="bg-[#FFAB91] text-[#3E2723] px-4 py-2 rounded hover:bg-[#FF8A65] transition"
-                >
-                  {t("Yes")}
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="dontShowAgain"
-                  checked={dontShowAgain}
-                  onChange={(e) => setDontShowAgain(e.target.checked)}
-                  className="w-4 h-4 text-[#3E2723] border-gray-300 rounded focus:ring-[#795548]"
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <div className="flex flex-col min-h-screen bg-gray-100">
+            <Header />{" "}
+            <main className="flex-grow mb-16">
+              {" "}
+              {/* mb-16 to account for the fixed footer height */}
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Map user={user} setUser={setUser} />}
                 />
-                <label
-                  htmlFor="dontShowAgain"
-                  className="text-sm text-[#5D4037]"
-                >
-                  {t("Do not show again for 30 days")}
-                </label>
+                <Route path="/login" element={<Auth />} />
+                <Route path="/network" element={<Network />} />
+                <Route path="/editprofile" element={<EditProfile />} />
+                <Route path="/todo" element={<Todo />} />
+                {/* 잠정 */}
+                {/* <Route path="/add-network" element={<NetworkForm />} /> */}
+                {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
+                {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
+              </Routes>
+            </main>{" "}
+            <Footer />
+            {/* 모달 */}
+            <Modal
+              isOpen={isModalOpen}
+              onRequestClose={() => setIsModalOpen(false)}
+              className="bg-[#f5f5f5] bg-opacity-80 p-6 rounded-lg shadow-lg max-w-md mx-auto mt-20"
+              overlayClassName="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center"
+            >
+              <h2 className="text-lg font-bold mb-4 text-[#3E2723]">
+                {t("User Guide")}
+              </h2>
+              <p className="mb-4 text-sm text-[#5D4037]">
+                {t("Would you like to view the user guide?")}
+              </p>
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-end gap-2">
+                  <button
+                    onClick={handleDismiss}
+                    className="bg-[#D7CCC8] text-[#3E2723] px-4 py-2 rounded hover:bg-[#BCAAA4] transition"
+                  >
+                    {t("No")}
+                  </button>
+                  <button
+                    onClick={handleViewGuide}
+                    className="bg-[#FFAB91] text-[#3E2723] px-4 py-2 rounded hover:bg-[#FF8A65] transition"
+                  >
+                    {t("Yes")}
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="dontShowAgain"
+                    checked={dontShowAgain}
+                    onChange={(e) => setDontShowAgain(e.target.checked)}
+                    className="w-4 h-4 text-[#3E2723] border-gray-300 rounded focus:ring-[#795548]"
+                  />
+                  <label
+                    htmlFor="dontShowAgain"
+                    className="text-sm text-[#5D4037]"
+                  >
+                    {t("Do not show again for 30 days")}
+                  </label>
+                </div>
               </div>
-            </div>
-          </Modal>
-        </div>
-      </QueryClientProvider>
-    </BrowserRouter>
+            </Modal>
+          </div>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   )
 }
 

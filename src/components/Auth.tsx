@@ -6,6 +6,8 @@ import useStore from "../store"
 import styled from "styled-components"
 import { CsrfToken } from "../types"
 import axios from "axios"
+import GoogleLoginButton from "./GoogleLoginButton"
+import { useNavigate } from "react-router-dom"
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
@@ -17,6 +19,7 @@ export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
   const [csrfLoaded, setCsrfLoaded] = useState(false)
+  const navigate = useNavigate()
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -82,6 +85,38 @@ export const Auth = () => {
     }
   }
 
+  // 구글 로그인 성공 시 처리 함수
+  const handleGoogleLogin = async (token: string) => {
+    if (!csrfLoaded) {
+      alert(
+        "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
+      )
+      return
+    }
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/auth/google`,
+        { id_token: token },
+        { withCredentials: true },
+      )
+      // 로그인 성공 시 전역 상태에 사용자 정보 저장
+      console.log(res.data)
+      setUser({
+        id: res.data.user.id,
+        email: res.data.user.email,
+        isLoggedIn: true,
+        name: res.data.user.name,
+        role: res.data.user.role,
+      })
+      navigate("/") // 메인화면으로 이동
+    } catch (err) {
+      alert(
+        "로그인에 실패했습니다.\n" +
+          (err instanceof Error ? err.message : JSON.stringify(err)),
+      )
+    }
+  }
+
   return (
     <Container>
       <LoginBox>
@@ -137,6 +172,9 @@ export const Auth = () => {
             {isLogin ? t("login") : t("register")}
           </Button>
         </form>
+        <div style={{ margin: "16px 0" }}>
+          <GoogleLoginButton onSuccess={handleGoogleLogin} />
+        </div>
         <IconWrapper>
           <SwitchModeIcon onClick={() => setIsLogin(!isLogin)} />
         </IconWrapper>
