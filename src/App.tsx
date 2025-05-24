@@ -23,6 +23,8 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 
 Modal.setAppElement("#root") // 모달 접근성을 위한 설정
 function App() {
+  const [guideStep, setGuideStep] = useState(1)
+
   useEffect(() => {
     axios.defaults.withCredentials = true
     const getCsrfToken = async () => {
@@ -108,7 +110,9 @@ function App() {
               <Routes>
                 <Route
                   path="/"
-                  element={<Map user={user} setUser={setUser} />}
+                  element={
+                    <Map user={user} setUser={setUser} guideStep={guideStep} />
+                  }
                 />
                 <Route path="/login" element={<Auth />} />
                 <Route path="/network" element={<Network />} />
@@ -133,9 +137,68 @@ function App() {
               </h2>
               <p className="mb-4 text-sm text-[#5D4037]">
                 {t(
-                  "HisNetVu는 과거부터 현재까지 개체 간 관계와 이동 경로를 시각화하는 디지털 맵핑 프로젝트입니다. 인물·단체의 관계와 이동경로를 단계적으로 탐색할 수 있습니다.",
+                  "HisNetVu는 과거부터 현재까지 개체 간 관계와 이동 경로를 시각화하는 디지털 맵핑 프로젝트입니다. 인물·단체의 관계와 이동경로를 국적·민족·개인별로 탐색할 수 있습니다.",
                 )}
               </p>
+              {/* 단계별 안내 */}
+              <div className="p-2 bg-[#fffbe6] border-b border-[#9e9d89] text-sm mb-2 rounded">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-bold text-[#3E2723]">
+                    예시: {t("Step")} {guideStep} / 3
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() =>
+                        setGuideStep((prev) => Math.max(1, prev - 1))
+                      }
+                      disabled={guideStep === 1}
+                      className={`px-2 py-1 rounded ${guideStep === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#BCAAA4] text-[#3E2723] hover:bg-[#A1887F]"}`}
+                    >
+                      {t("Previous")}
+                    </button>
+                    {guideStep < 3 ? (
+                      <button
+                        onClick={() =>
+                          setGuideStep((prev) => Math.min(3, prev + 1))
+                        }
+                        className="px-2 py-1 rounded bg-[#FFAB91] text-[#3E2723] hover:bg-[#FF8A65]"
+                      >
+                        {t("Next")}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleDismiss}
+                        className="px-2 py-1 rounded bg-[#3e2723] text-white hover:bg-[#5d4037]"
+                      >
+                        {t("Finish Guide")}
+                      </button>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  {guideStep === 1 && (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: t("정재관의 생애 이동루트"),
+                      }}
+                    />
+                  )}
+                  {guideStep === 2 && (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: t("정재관의 독립운동 관계망"),
+                      }}
+                    />
+                  )}
+                  {guideStep === 3 && (
+                    <span
+                      dangerouslySetInnerHTML={{
+                        __html: t("1860-1945년 한국계 러시아인의 이동"),
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
               <p className="mb-4 text-sm text-[#5D4037]">
                 {t("Would you like to view the user guide?")}
               </p>

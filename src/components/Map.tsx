@@ -78,7 +78,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 })
-const Map: React.FC = () => {
+const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const isMobile = window.innerWidth <= 768
   const { t } = useTranslation()
   const [networks, setNetworks] = useState<Network[] | undefined>()
@@ -87,13 +87,15 @@ const Map: React.FC = () => {
     nationality: ["all"],
     ethnicity: ["all"],
     edgeType: ["all"],
-    entityType: "all",
+    entityType: ["all"],
     yearRange: [1860, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
     migrationReasons: ["all"],
     selectedMigrationNetworkId: null, // 선택된 네트워크 ID 추가
+    searchQuery: "", // searchQuery도 포함
+    forceIncludeNetworkIds: [], // 필요하다면 추가
   }) // Ensure this is closing a valid block or function
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -146,6 +148,7 @@ const Map: React.FC = () => {
   const [migrationYearRange, setMigrationYearRange] = useState<
     [number, number]
   >([1860, 1945])
+  const [step, setStep] = useState(1)
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -182,6 +185,38 @@ const Map: React.FC = () => {
       },
     })
   }, [networks, filters, user.name, selectedEdgeId])
+
+  // 단계별 필터 자동 적용
+  useEffect(() => {
+    if (guideStep === 1) {
+      setFilters((prev) => ({
+        ...prev,
+        entityType: ["Person"],
+        searchQuery: "정재관",
+        yearRange: [1860, 1945],
+        ethnicity: ["all"],
+        nationality: ["all"],
+      }))
+    } else if (guideStep === 2) {
+      setFilters((prev) => ({
+        ...prev,
+        entityType: ["all"],
+        searchQuery: "정재관",
+        yearRange: [1860, 1945],
+        ethnicity: ["all"],
+        nationality: ["all"],
+      }))
+    } else if (guideStep === 3) {
+      setFilters((prev) => ({
+        ...prev,
+        entityType: ["all"],
+        searchQuery: "",
+        yearRange: [1860, 1945],
+        ethnicity: ["Korean"],
+        nationality: ["all"],
+      }))
+    }
+  }, [guideStep])
 
   // migrationYearRange가 바뀔 때 filters에도 반영
   // useEffect(() => {
@@ -1131,6 +1166,15 @@ const Map: React.FC = () => {
                       : ["all"],
                   )
                 }
+                value={
+                  Array.isArray(filters.entityType)
+                    ? entityOptions.filter(
+                        (opt) =>
+                          filters.entityType.includes(opt.value) &&
+                          opt.value !== "all",
+                      )
+                    : []
+                }
                 placeholder={t("allEntityTypes")}
                 isClearable
                 isMulti
@@ -1152,6 +1196,15 @@ const Map: React.FC = () => {
                       ? selectedOptions.map((option) => option.value)
                       : ["all"],
                   )
+                }
+                value={
+                  Array.isArray(filters.nationality)
+                    ? nationalityOptions.filter(
+                        (opt) =>
+                          filters.nationality.includes(opt.value) &&
+                          opt.value !== "all",
+                      )
+                    : []
                 }
                 placeholder={t("allNationalities")}
                 isClearable
@@ -1407,6 +1460,15 @@ const Map: React.FC = () => {
                         : ["all"],
                     )
                   }
+                  value={
+                    Array.isArray(filters.entityType)
+                      ? entityOptions.filter(
+                          (opt) =>
+                            filters.entityType.includes(opt.value) &&
+                            opt.value !== "all",
+                        )
+                      : []
+                  }
                   placeholder={t("allEntityTypes")}
                   isClearable
                   isMulti
@@ -1443,6 +1505,15 @@ const Map: React.FC = () => {
                         ? selectedOptions.map((option) => option.value)
                         : ["all"],
                     )
+                  }
+                  value={
+                    Array.isArray(filters.nationality)
+                      ? nationalityOptions.filter(
+                          (opt) =>
+                            filters.nationality.includes(opt.value) &&
+                            opt.value !== "all",
+                        )
+                      : []
                   }
                   placeholder={t("allNationalities")}
                   isClearable

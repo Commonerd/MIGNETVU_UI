@@ -130,6 +130,7 @@ export type FilterOptions = {
   migrationYearRange: [number, number]
   migrationReasons: string[] | string
   selectedMigrationNetworkId: any
+  searchQuery: string
   forceIncludeNetworkIds: any
 }
 
