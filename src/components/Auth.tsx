@@ -25,21 +25,21 @@ export const Auth = () => {
     i18n.changeLanguage(lng)
   }
 
-  // useEffect(() => {
-  //   const getCsrfToken = async () => {
-  //     try {
-  //       const { data } = await axios.get<CsrfToken>(
-  //         `${process.env.REACT_APP_API_URL}/csrf`,
-  //       )
-  //       axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-  //       setCsrfLoaded(true)
-  //     } catch (err) {
-  //       alert(err)
-  //     }
-  //   }
-  //   axios.defaults.withCredentials = true
-  //   getCsrfToken()
-  // }, [])
+  useEffect(() => {
+    const getCsrfToken = async () => {
+      try {
+        const { data } = await axios.get<CsrfToken>(
+          `${process.env.REACT_APP_API_URL}/csrf`,
+        )
+        axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+        setCsrfLoaded(true)
+      } catch (err) {
+        alert(err)
+      }
+    }
+    axios.defaults.withCredentials = true
+    getCsrfToken()
+  }, [])
 
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
     // e.preventDefault()
