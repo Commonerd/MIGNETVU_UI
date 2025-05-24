@@ -8,21 +8,21 @@ export const useMutateProfile = () => {
   const { switchErrorHandling } = useError()
   const [csrfLoaded, setCsrfLoaded] = useState(false)
 
-  useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-        const { data } = await axios.get<CsrfToken>(
-          `${process.env.REACT_APP_API_URL}/csrf`,
-        )
-        axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-        setCsrfLoaded(true)
-      } catch (err) {
-        switchErrorHandling("Failed to load CSRF token. Please try again.")
-      }
-    }
-    axios.defaults.withCredentials = true
-    getCsrfToken()
-  }, [])
+  // useEffect(() => {
+  //   const getCsrfToken = async () => {
+  //     try {
+  //       const { data } = await axios.get<CsrfToken>(
+  //         `${process.env.REACT_APP_API_URL}/csrf`,
+  //       )
+  //       axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+  //       setCsrfLoaded(true)
+  //     } catch (err) {
+  //       switchErrorHandling("Failed to load CSRF token. Please try again.")
+  //     }
+  //   }
+  //   axios.defaults.withCredentials = true
+  //   getCsrfToken()
+  // }, [])
 
   const updateProfileMutation = useMutation(
     (profileData: ProfileUpdateData) =>

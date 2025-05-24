@@ -23,16 +23,16 @@ import { GoogleOAuthProvider } from "@react-oauth/google"
 
 Modal.setAppElement("#root") // 모달 접근성을 위한 설정
 function App() {
-  useEffect(() => {
-    axios.defaults.withCredentials = true
-    const getCsrfToken = async () => {
-      const { data } = await axios.get<CsrfToken>(
-        `${process.env.REACT_APP_API_URL}/csrf`,
-      )
-      axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-    }
-    getCsrfToken()
-  }, [])
+  // useEffect(() => {
+  //   axios.defaults.withCredentials = true
+  //   const getCsrfToken = async () => {
+  //     const { data } = await axios.get<CsrfToken>(
+  //       `${process.env.REACT_APP_API_URL}/csrf`,
+  //     )
+  //     axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+  //   }
+  //   getCsrfToken()
+  // }, [])
 
   const { t } = useTranslation()
   const { i18n } = useTranslation()

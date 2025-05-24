@@ -25,30 +25,30 @@ export const Auth = () => {
     i18n.changeLanguage(lng)
   }
 
-  useEffect(() => {
-    const getCsrfToken = async () => {
-      try {
-        const { data } = await axios.get<CsrfToken>(
-          `${process.env.REACT_APP_API_URL}/csrf`,
-        )
-        axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
-        setCsrfLoaded(true)
-      } catch (err) {
-        alert(err)
-      }
-    }
-    axios.defaults.withCredentials = true
-    getCsrfToken()
-  }, [])
+  // useEffect(() => {
+  //   const getCsrfToken = async () => {
+  //     try {
+  //       const { data } = await axios.get<CsrfToken>(
+  //         `${process.env.REACT_APP_API_URL}/csrf`,
+  //       )
+  //       axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
+  //       setCsrfLoaded(true)
+  //     } catch (err) {
+  //       alert(err)
+  //     }
+  //   }
+  //   axios.defaults.withCredentials = true
+  //   getCsrfToken()
+  // }, [])
 
   const submitAuthHandler = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!csrfLoaded) {
-      alert(
-        "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
-      )
-      return
-    }
+    // e.preventDefault()
+    // if (!csrfLoaded) {
+    //   alert(
+    //     "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
+    //   )
+    //   return
+    // }
     if (isLogin) {
       loginMutation.mutate(
         { id: 0, email, password: pw, role: "", name: "" },
@@ -87,12 +87,12 @@ export const Auth = () => {
 
   // 구글 로그인 성공 시 처리 함수
   const handleGoogleLogin = async (token: string) => {
-    if (!csrfLoaded) {
-      alert(
-        "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
-      )
-      return
-    }
+    // if (!csrfLoaded) {
+    //   alert(
+    //     "The CSRF token hasn't loaded yet. Please wait for just 30 seconds!",
+    //   )
+    //   return
+    // }
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API_URL}/auth/google`,
