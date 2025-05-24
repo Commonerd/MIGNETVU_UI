@@ -198,49 +198,49 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         entityType: ["Person"],
         nationality: ["Korea"],
         ethnicity: ["Korean"],
-        searchQuery: "정재관",
+        // searchQuery: "정재관",
       }))
       // 정재관 포커스
-      const jeong = networks.find(
-        (n) =>
-          n.type === "Person" &&
-          n.nationality === "Korea" &&
-          n.ethnicity === "Korean" &&
-          n.title.includes("정재관"),
-      )
-      if (jeong) {
-        setFocusedNode({
-          id: jeong.id,
-          lat: jeong.latitude,
-          lng: jeong.longitude,
-        })
-      }
+      // const jeong = networks.find(
+      //   (n) =>
+      //     n.type === "Person" &&
+      //     n.nationality === "Korea" &&
+      //     n.ethnicity === "Korean" &&
+      //     n.title.includes("정재관"),
+      // )
+      // if (jeong) {
+      //   setFocusedNode({
+      //     id: jeong.id,
+      //     lat: jeong.latitude,
+      //     lng: jeong.longitude,
+      //   })
+      // }
     } else if (guideStep === 2) {
       // 2단계: Person, Korea+Russia, Korean
       setFilters((prev) => ({
         ...prev,
         entityType: ["Person"],
-        nationality: ["Korea", "Russia"],
+        nationality: ["Russia"],
         ethnicity: ["Korean"],
-        searchQuery: "정재관",
+        // searchQuery: "정재관",
       }))
       // 정재관 포커스
-      const jeong = networks.find(
-        (n) =>
-          n.type === "Person" &&
-          ["Korea", "Russia"].includes(n.nationality) &&
-          n.ethnicity === "Korean" &&
-          n.title.includes("정재관"),
-      )
-      if (jeong) {
-        setFocusedNode({
-          id: jeong.id,
-          lat: jeong.latitude,
-          lng: jeong.longitude,
-        })
-      }
+      // const jeong = networks.find(
+      //   (n) =>
+      //     n.type === "Person" &&
+      //     ["Korea", "Russia"].includes(n.nationality) &&
+      //     n.ethnicity === "Korean" &&
+      //     n.title.includes("정재관"),
+      // )
+      // if (jeong) {
+      //   setFocusedNode({
+      //     id: jeong.id,
+      //     lat: jeong.latitude,
+      //     lng: jeong.longitude,
+      //   })
+      // }
     } else if (guideStep === 3) {
-      // 3단계: Person, all, Korean, 정재관의 관계/이동만 남기고 정재관에 포커싱
+      // 3단계: Person, all, Korean, 정재관에 포커싱
       setFilters((prev) => ({
         ...prev,
         entityType: ["Person"],
@@ -257,6 +257,14 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           id: jeong.id,
           lat: jeong.latitude,
           lng: jeong.longitude,
+        })
+        setHighlightedNode({
+          id: jeong.id,
+          photo: jeong.photo || "", // photo 필드가 없으면 빈 문자열
+        })
+        setPopupPosition({
+          x: jeong.latitude,
+          y: jeong.longitude,
         })
       }
     }
