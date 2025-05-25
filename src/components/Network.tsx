@@ -304,7 +304,9 @@ export const Network = () => {
         comment.user_name,
         comment.user_role,
         comment.content,
-        comment.created_at,
+        comment.created_at
+          ? new Date(comment.created_at).toISOString().slice(0, 10)
+          : "", // 연-월-일만
       ]),
     ]
     const workbook = XLSX.utils.book_new()
