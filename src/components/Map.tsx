@@ -57,15 +57,23 @@ import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
 
 // 중심 노드로 포커스 이동
-const FocusMap = ({ lat, lng }: { lat: number; lng: number }) => {
+const FocusMap = ({
+  lat,
+  lng,
+  zoom,
+}: {
+  lat: number
+  lng: number
+  zoom?: number
+}) => {
   const map = useMap()
   useEffect(() => {
     if (lat && lng) {
-      map.setView([lat, lng], 8, {
+      map.setView([lat, lng], zoom ?? map.getZoom(), {
         animate: true,
       })
     }
-  }, [lat, lng, map])
+  }, [lat, lng, zoom, map])
   return null
 }
 // Fix Leaflet icon issue
@@ -150,6 +158,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   >([1860, 1945])
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
+  const [mapZoom, setMapZoom] = useState(5) // 기본 줌
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -159,6 +168,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     setTimeout(() => {
       // MapContainer의 zoom을 직접 변경할 수 없으므로, useMap 훅을 활용한 컴포넌트로 처리
       setMapZoom(pacificCenter.zoom)
+      setMapZoom(3) // 최대 줌아웃
     }, 200)
   }
 
@@ -240,6 +250,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           ],
         }))
         handleEntityClick(jeong.id) // 정재관 엔티티 클릭
+        handleNetworkEdgesToggle(jeong.id) // 정재관 네트워크 엣지 토글
         handleMigrationTraceClick(jeong.id) // 정재관 이주 트레이스 클릭
 
         // 이동경로 표시 후 약간의 딜레이 후 태평양 포커싱
@@ -1976,7 +1987,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             </Marker>
           )}
           {focusedNode && (
-            <FocusMap lat={focusedNode.lat} lng={focusedNode.lng} />
+            <FocusMap
+              lat={focusedNode.lat}
+              lng={focusedNode.lng}
+              zoom={mapZoom}
+            />
           )}
           {/* 기여자 랭킹 토글 버튼 */}
           <button
