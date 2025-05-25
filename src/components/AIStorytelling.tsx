@@ -11,6 +11,7 @@ type EdgeInfo = {
 
 type Props = {
   originId: number // 원점 네트워크 id 추가
+  originTitle: string
   migrationPath: { year: number; place: string; reason?: string }[]
   networkSummary: string
   edges?: EdgeInfo[]
@@ -18,6 +19,7 @@ type Props = {
 
 const AIStorytelling: React.FC<Props> = ({
   originId,
+  originTitle,
   migrationPath,
   networkSummary,
   edges,
@@ -65,12 +67,6 @@ const AIStorytelling: React.FC<Props> = ({
       .join("\n")
     return `${originTitle}(${originId})는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 논문 한 문단(4~5문장)으로 요약해줘. 그리고 이 네트워크의 특징을 인사이트로 한 문장으로 말해줘. 정보가 없으면 "제시된 정보가 없다"고 해.`
   }
-
-  // originTitle 추출 (edges가 있을 때만)
-  const originTitle =
-    edges && edges.length > 0
-      ? edges[0].targetTitle // fallback: edges에서 첫 타깃의 타이틀 사용
-      : ""
 
   const handleNetworkStoryClick = async () => {
     setLoading(true)
