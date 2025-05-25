@@ -2257,15 +2257,13 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                                 handleTooltipOpen(rec.id)
                                 const entity = getEntityById(rec.id)
                                 if (entity) {
-                                  setFocusedNode({
-                                    id: rec.id,
-                                    lat: entity.latitude,
-                                    lng: entity.longitude,
-                                  })
-                                  setPopupPosition({
-                                    x: entity.latitude,
-                                    y: entity.longitude,
-                                  })
+                                  handleEntityClick(rec.id)
+                                  handleEntityClick(rec.id)
+                                  handleNetworkEdgesToggle(rec.id)
+                                  handleNetworkEdgesToggle(rec.id)
+
+                                  handleMigrationTraceClick(rec.id)
+                                  handleMigrationTraceClick(rec.id)
                                 }
                               }}
                               style={{ cursor: "pointer" }}
