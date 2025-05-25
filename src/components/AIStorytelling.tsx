@@ -50,17 +50,27 @@ const AIStorytelling: React.FC<Props> = ({
     setLoading(false)
   }
 
-  const makeNetworkEdgePrompt = (edges: EdgeInfo[], originId: number) => {
+  const makeNetworkEdgePrompt = (
+    edges: EdgeInfo[],
+    originId: number,
+    originTitle: string,
+  ) => {
     if (!edges || edges.length === 0)
-      return `네트워크(ID:${originId})는 다른 네트워크와 연결된 관계가 없습니다.`
+      return `네트워크 ${originTitle}(${originId})는 다른 네트워크와 연결된 관계가 없습니다.`
     const edgeLines = edges
       .map(
         (e) =>
-          `- 네트워크(ID:${originId})와 "${e.targetTitle}"(ID:${e.targetId})는 ${e.year}년에 "${e.edgeType}" 관계를 맺음`,
+          `- ${originTitle}(${originId})와 ${e.targetTitle}(${e.targetId})는 ${e.year}년에 "${e.edgeType}" 관계를 맺음`,
       )
       .join("\n")
-    return `네트워크(ID:${originId})는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 논문 한 문단(4~5문장)으로 요약해줘. 그리고 이 네트워크의 특징을 인사이트로 한 문장으로 말해줘. 정보가 없으면 "제시된 정보가 없다"고 해.`
+    return `${originTitle}(${originId})는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 논문 한 문단(4~5문장)으로 요약해줘. 그리고 이 네트워크의 특징을 인사이트로 한 문장으로 말해줘. 정보가 없으면 "제시된 정보가 없다"고 해.`
   }
+
+  // originTitle 추출 (edges가 있을 때만)
+  const originTitle =
+    edges && edges.length > 0
+      ? edges[0].targetTitle // fallback: edges에서 첫 타깃의 타이틀 사용
+      : ""
 
   const handleNetworkStoryClick = async () => {
     setLoading(true)
@@ -68,7 +78,11 @@ const AIStorytelling: React.FC<Props> = ({
       await loadPuterScript()
       const prompt =
         edges && edges.length > 0
-          ? makeNetworkEdgePrompt(edges, originId)
+          ? makeNetworkEdgePrompt(
+              edges,
+              originId,
+              originTitle || `ID:${originId}`,
+            )
           : networkSummary
       const result = await askGpt([
         {

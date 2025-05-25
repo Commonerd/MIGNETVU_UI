@@ -2271,6 +2271,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                       </div>
                       <AIStorytelling
                         originId={network.id}
+                        originTitle={network.title}
                         migrationPath={network.migration_traces.map(
                           (trace) => ({
                             year: trace.migration_year,
@@ -2810,4 +2811,4 @@ const SimilarityInsightItem = styled.li`
     flex-shrink: 0;
   }
 `
-export default Map
+export default Ma
