@@ -149,8 +149,18 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     [number, number]
   >([1860, 1945])
   const [step, setStep] = useState(1)
+  const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
 
   const workerRef = useRef<Worker | null>(null)
+
+  // 중심 이동 함수
+  const focusPacific = () => {
+    setFocusedNode({ id: null, lat: pacificCenter.lat, lng: pacificCenter.lng })
+    setTimeout(() => {
+      // MapContainer의 zoom을 직접 변경할 수 없으므로, useMap 훅을 활용한 컴포넌트로 처리
+      setMapZoom(pacificCenter.zoom)
+    }, 200)
+  }
 
   // 워커 초기화 및 메시지 핸들러
   useEffect(() => {
@@ -231,6 +241,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         }))
         handleEntityClick(jeong.id) // 정재관 엔티티 클릭
         handleMigrationTraceClick(jeong.id) // 정재관 이주 트레이스 클릭
+
+        // 이동경로 표시 후 약간의 딜레이 후 태평양 포커싱
+        setTimeout(() => {
+          focusPacific()
+        }, 1200) // 1.2초 후 포커싱 (이동경로 표시 후)
       }
     }
   }, [guideStep, networks])
