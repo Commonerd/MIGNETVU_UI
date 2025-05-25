@@ -10,12 +10,14 @@ type EdgeInfo = {
 }
 
 type Props = {
+  originId: number // 원점 네트워크 id 추가
   migrationPath: { year: number; place: string; reason?: string }[]
   networkSummary: string
   edges?: EdgeInfo[]
 }
 
 const AIStorytelling: React.FC<Props> = ({
+  originId,
   migrationPath,
   networkSummary,
   edges,
@@ -48,16 +50,16 @@ const AIStorytelling: React.FC<Props> = ({
     setLoading(false)
   }
 
-  const makeNetworkEdgePrompt = (edges: EdgeInfo[]) => {
+  const makeNetworkEdgePrompt = (edges: EdgeInfo[], originId: number) => {
     if (!edges || edges.length === 0)
-      return "이 네트워크는 다른 네트워크와 연결된 관계가 없습니다."
+      return `네트워크(ID:${originId})는 다른 네트워크와 연결된 관계가 없습니다.`
     const edgeLines = edges
       .map(
         (e) =>
-          `- ${e.year}년, "${e.targetTitle}"(ID:${e.targetId})와 "${e.edgeType}" 관계`,
+          `- 네트워크(ID:${originId})와 "${e.targetTitle}"(ID:${e.targetId})는 ${e.year}년에 "${e.edgeType}" 관계를 맺음`,
       )
       .join("\n")
-    return `이 네트워크는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 기술적으로 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해줘. 그 다음에 이 네트워크의 특징을 인사이트로서 한 문장으로 말해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
+    return `네트워크(ID:${originId})는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 논문 한 문단(4~5문장)으로 요약해줘. 그리고 이 네트워크의 특징을 인사이트로 한 문장으로 말해줘. 정보가 없으면 "제시된 정보가 없다"고 해.`
   }
 
   const handleNetworkStoryClick = async () => {
@@ -66,11 +68,13 @@ const AIStorytelling: React.FC<Props> = ({
       await loadPuterScript()
       const prompt =
         edges && edges.length > 0
-          ? makeNetworkEdgePrompt(edges)
+          ? makeNetworkEdgePrompt(edges, originId)
           : networkSummary
       const result = await askGpt([
-        { role: "system", content: "You are a network story summarizer." },
-        { role: "user", content: prompt },
+        {
+          role: "user",
+          content: prompt,
+        },
       ])
       setStory(result)
     } catch (e) {

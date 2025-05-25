@@ -2270,6 +2270,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                         </SimilarityInsightList>
                       </div>
                       <AIStorytelling
+                        originId={network.id}
                         migrationPath={network.migration_traces.map(
                           (trace) => ({
                             year: trace.migration_year,
