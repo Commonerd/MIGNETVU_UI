@@ -2811,4 +2811,4 @@ const SimilarityInsightItem = styled.li`
     flex-shrink: 0;
   }
 `
-export default Ma
+export default Map
