@@ -200,21 +200,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ethnicity: ["Korean"],
         // searchQuery: "정재관",
       }))
-      // 정재관 포커스
-      // const jeong = networks.find(
-      //   (n) =>
-      //     n.type === "Person" &&
-      //     n.nationality === "Korea" &&
-      //     n.ethnicity === "Korean" &&
-      //     n.title.includes("정재관"),
-      // )
-      // if (jeong) {
-      //   setFocusedNode({
-      //     id: jeong.id,
-      //     lat: jeong.latitude,
-      //     lng: jeong.longitude,
-      //   })
-      // }
     } else if (guideStep === 2) {
       // 2단계: Person, Korea+Russia, Korean
       setFilters((prev) => ({
@@ -224,48 +209,29 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ethnicity: ["Korean"],
         // searchQuery: "정재관",
       }))
-      // 정재관 포커스
-      // const jeong = networks.find(
-      //   (n) =>
-      //     n.type === "Person" &&
-      //     ["Korea", "Russia"].includes(n.nationality) &&
-      //     n.ethnicity === "Korean" &&
-      //     n.title.includes("정재관"),
-      // )
-      // if (jeong) {
-      //   setFocusedNode({
-      //     id: jeong.id,
-      //     lat: jeong.latitude,
-      //     lng: jeong.longitude,
-      //   })
-      // }
     } else if (guideStep === 3) {
       // 3단계: Person, all, Korean, 정재관에 포커싱
-      setFilters((prev) => ({
-        ...prev,
-        entityType: ["Person"],
-        nationality: ["all"],
-        ethnicity: ["Korean"],
-        searchQuery: "정재관",
-      }))
-      // 정재관 포커스
       const jeong = networks.find(
-        (n) => n.type === "Person" && n.title.includes("정재관"),
+        (n) =>
+          n.type === "Person" &&
+          n.ethnicity === "Korean" &&
+          n.title.includes("정재관"),
       )
       if (jeong) {
-        setFocusedNode({
-          id: jeong.id,
-          lat: jeong.latitude,
-          lng: jeong.longitude,
-        })
-        setHighlightedNode({
-          id: jeong.id,
-          photo: jeong.photo || "", // photo 필드가 없으면 빈 문자열
-        })
-        setPopupPosition({
-          x: jeong.latitude,
-          y: jeong.longitude,
-        })
+        setFilters((prev) => ({
+          ...prev,
+          entityType: ["Person"],
+          nationality: ["all"],
+          ethnicity: ["Korean"],
+          searchQuery: "",
+          forceIncludeNetworkIds: [
+            jeong.id,
+            ...(jeong.edges?.map((e) => e.targetId) || []),
+          ],
+        }))
+        handleEntityClick(jeong.id) // 정재관 엔티티 클릭
+        handleNetworkEdgesToggle(jeong.id) // 정재관 네트워크 엣지 토글
+        handleMigrationTraceClick(jeong.id) // 정재관 이주 트레이스 클릭
       }
     }
   }, [guideStep, networks])
@@ -308,6 +274,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     })
     return null
   }
+
   const toggleEdgeDetails = () => {
     setShowEdgeDetails((prev) => !prev) // 엣지 세부정보 표시/비표시 토글 함수
   }
