@@ -256,7 +256,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         // 이동경로 표시 후 약간의 딜레이 후 태평양 포커싱
         setTimeout(() => {
           focusPacific()
-        }, 1200) // 1.2초 후 포커싱 (이동경로 표시 후)
+        }, 500) // 0.5초 후 포커싱 (이동경로 표시 후)
       }
     }
   }, [guideStep, networks])
