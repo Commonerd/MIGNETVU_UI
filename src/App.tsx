@@ -136,9 +136,7 @@ function App() {
                 {t("User Guide")}
               </h2>
               <p className="mb-4 text-sm text-[#5D4037]">
-                {t(
-                  "HisNetVu는 과거부터 현재까지 개체 간 관계와 이동 경로를 시각화하는 디지털 맵핑 프로젝트입니다. 인물·단체의 관계와 이동경로를 국적·민족·개인별로 탐색할 수 있습니다.",
-                )}
+                {t("Product Description")}
               </p>
               {/* 단계별 안내 */}
               <div className="p-2 bg-[#fffbe6] border-b border-[#9e9d89] text-sm mb-2 rounded">
