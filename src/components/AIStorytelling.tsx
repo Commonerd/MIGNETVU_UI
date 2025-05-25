@@ -34,7 +34,7 @@ const AIStorytelling: React.FC<Props> = ({
         )
         .join(
           " → ",
-        )}. 이 인물의 이주 스토리를 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해주고, 마지막에 이동방식의 특징과 의미, 그리고  한마디 인사이트(한 문장)도 추가해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
+        )}. 이 인물의 이주 스토리를 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해주고, 마지막에 이동방식의 특징에 대한 인사이트(한 문장)도 추가해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
       const result = await askGpt([
         { role: "system", content: "You are a migration story generator." },
         { role: "user", content: prompt },
@@ -57,7 +57,7 @@ const AIStorytelling: React.FC<Props> = ({
           `- ${e.year}년, "${e.targetTitle}"(ID:${e.targetId})와 "${e.edgeType}" 관계`,
       )
       .join("\n")
-    return `이 네트워크는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 네트워크의 특징과 의미를 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해주고, 마지막에 한마디 인사이트(한 문장)도 추가해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
+    return `이 네트워크는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 기술적으로 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해줘. 그 다음에 이 네트워크의 특징을 인사이트로서 한 문장으로 말해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
   }
 
   const handleNetworkStoryClick = async () => {
