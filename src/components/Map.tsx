@@ -2258,11 +2258,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                                 const entity = getEntityById(rec.id)
                                 if (entity) {
                                   handleEntityClick(rec.id)
-                                  handleEntityClick(rec.id)
                                   handleNetworkEdgesToggle(rec.id)
-                                  handleNetworkEdgesToggle(rec.id)
-
-                                  handleMigrationTraceClick(rec.id)
                                   handleMigrationTraceClick(rec.id)
                                 }
                               }}
