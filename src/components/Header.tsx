@@ -40,7 +40,8 @@ const Header: React.FC = () => {
           <a
             href={
               i18n.language === "ja"
-                ? "https://url.kr/y2rua7"
+                ? // ? "https://url.kr/y2rua7"
+                  "https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
                 : "https://docs.google.com/presentation/d/1PsSqYVnro9UOiiBeI-IvzCQpc5Vx57MKyte-UP90myY/edit?usp=sharing"
             }
             target="_blank"
