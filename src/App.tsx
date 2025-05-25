@@ -154,7 +154,7 @@ function App() {
                       disabled={guideStep === 1}
                       className={`px-2 py-1 rounded ${guideStep === 1 ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#BCAAA4] text-[#3E2723] hover:bg-[#A1887F]"}`}
                     >
-                      {t("Previous")}
+                      {t("Prev")}
                     </button>
                     {guideStep < 3 ? (
                       <button
@@ -170,7 +170,7 @@ function App() {
                         onClick={handleDismiss}
                         className="px-2 py-1 rounded bg-[#3e2723] text-white hover:bg-[#5d4037]"
                       >
-                        {t("Finish Guide")}
+                        {t("Finish")}
                       </button>
                     )}
                   </div>
@@ -179,21 +179,21 @@ function App() {
                   {guideStep === 1 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("한국 국적을 지닌 한국인의 관계와 이동"),
+                        __html: t("한국 국적을 지닌 한인의 관계와 이동"),
                       }}
                     />
                   )}
                   {guideStep === 2 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("러시아 국적을 지닌 한국인의 관계와 이동"),
+                        __html: t("러시아 국적을 지닌 한인의 관계와 이동"),
                       }}
                     />
                   )}
                   {guideStep === 3 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("글로벌 코리안 정재관의 관계와 이동"),
+                        __html: t("한국계 러시아인 정재관의 이동"),
                       }}
                     />
                   )}

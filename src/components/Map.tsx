@@ -230,7 +230,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           ],
         }))
         handleEntityClick(jeong.id) // 정재관 엔티티 클릭
-        handleNetworkEdgesToggle(jeong.id) // 정재관 네트워크 엣지 토글
         handleMigrationTraceClick(jeong.id) // 정재관 이주 트레이스 클릭
       }
     }
