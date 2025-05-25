@@ -2,12 +2,24 @@ import React, { useState } from "react"
 import { askGpt } from "../utils/puterAi"
 import { loadPuterScript } from "../utils/puterLoader"
 
-type Props = {
-  migrationPath: { year: number; place: string; reason: string }[]
-  networkSummary: string
+type EdgeInfo = {
+  targetId: number
+  targetTitle: string
+  year: number
+  edgeType: string
 }
 
-const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
+type Props = {
+  migrationPath: { year: number; place: string; reason?: string }[]
+  networkSummary: string
+  edges?: EdgeInfo[]
+}
+
+const AIStorytelling: React.FC<Props> = ({
+  migrationPath,
+  networkSummary,
+  edges,
+}) => {
   const [story, setStory] = useState("")
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +34,7 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
         )
         .join(
           " → ",
-        )}. 이 인물의 이주 스토리를 논문에서 한 문단으로 쓸 수 있도록 3-4문장으로 요약제시, 제시된 이주 경로에 대해 따로 받은 게 없다면 "제시된 정보"가 없다고 해. 거짓말은 하면 안돼!`
+        )}. 이 인물의 이주 스토리를 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해주고, 마지막에 이동방식의 특징과 의미, 그리고  한마디 인사이트(한 문장)도 추가해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
       const result = await askGpt([
         { role: "system", content: "You are a migration story generator." },
         { role: "user", content: prompt },
@@ -36,23 +48,37 @@ const AIStorytelling: React.FC<Props> = ({ migrationPath, networkSummary }) => {
     setLoading(false)
   }
 
+  const makeNetworkEdgePrompt = (edges: EdgeInfo[]) => {
+    if (!edges || edges.length === 0)
+      return "이 네트워크는 다른 네트워크와 연결된 관계가 없습니다."
+    const edgeLines = edges
+      .map(
+        (e) =>
+          `- ${e.year}년, "${e.targetTitle}"(ID:${e.targetId})와 "${e.edgeType}" 관계`,
+      )
+      .join("\n")
+    return `이 네트워크는 다음과 같은 관계를 맺고 있습니다:\n${edgeLines}\n위 관계들을 바탕으로 네트워크의 특징과 의미를 논문에 한 문단(4~5문장)으로 쓸 수 있도록 요약해주고, 마지막에 한마디 인사이트(한 문장)도 추가해줘. 만약에 제시된 정보가 없다면 "제시된 정보가 없다"고 해. 거짓말은 안돼!`
+  }
+
   const handleNetworkStoryClick = async () => {
-    alert("이 기능은 아직 준비 중입니다.")
-    return
-    // setLoading(true)
-    // try {
-    //   await loadPuterScript()
-    //   const result = await askGpt([
-    //     { role: "system", content: "You are a network story summarizer." },
-    //     { role: "user", content: networkSummary },
-    //   ])
-    //   setStory(result)
-    // } catch (e) {
-    //   alert(
-    //     "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
-    //   )
-    // }
-    // setLoading(false)
+    setLoading(true)
+    try {
+      await loadPuterScript()
+      const prompt =
+        edges && edges.length > 0
+          ? makeNetworkEdgePrompt(edges)
+          : networkSummary
+      const result = await askGpt([
+        { role: "system", content: "You are a network story summarizer." },
+        { role: "user", content: prompt },
+      ])
+      setStory(result)
+    } catch (e) {
+      alert(
+        "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
+      )
+    }
+    setLoading(false)
   }
 
   return (

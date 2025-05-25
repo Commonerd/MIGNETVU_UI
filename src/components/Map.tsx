@@ -2291,6 +2291,19 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
     이 네트워크의 관계망 스토리를 3문장으로 요약해줘.
   `}
+                        edges={
+                          network.edges?.map((edge) => {
+                            const target = networks?.find(
+                              (n) => n.id === edge.targetId,
+                            )
+                            return {
+                              targetId: edge.targetId,
+                              targetTitle: target ? target.title : "",
+                              year: edge.year,
+                              edgeType: edge.edgeType,
+                            }
+                          }) ?? []
+                        }
                       />{" "}
                     </PopupContent>
                     <div
