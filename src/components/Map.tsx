@@ -2254,13 +2254,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                               key={rec.id}
                               title={rec.title}
                               onClick={() => {
+                                // handleTooltipOpen(rec.id) 만 호출 (중복 상태 변경 방지)
                                 handleTooltipOpen(rec.id)
-                                const entity = getEntityById(rec.id)
-                                if (entity) {
-                                  handleEntityClick(rec.id)
-                                  handleNetworkEdgesToggle(rec.id)
-                                  handleMigrationTraceClick(rec.id)
-                                }
+                                handleNetworkEdgesToggle(rec.id)
+                                handleMigrationTraceClick(rec.id)
                               }}
                               style={{ cursor: "pointer" }}
                             >
