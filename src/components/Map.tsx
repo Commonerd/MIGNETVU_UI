@@ -173,6 +173,16 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }, 200)
   }
 
+  // 노드로 포커스 이동 함수
+  const focusNode = (node: {
+    id: number
+    latitude: number
+    longitude: number
+  }) => {
+    setFocusedNode({ id: node.id, lat: node.latitude, lng: node.longitude })
+    setMapZoom(7)
+  }
+
   // 워커 초기화 및 메시지 핸들러
   useEffect(() => {
     workerRef.current = new Worker(
@@ -208,6 +218,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   }, [networks, filters, user.name, selectedEdgeId])
 
   // 단계별 필터 자동 적용
+  // 단계별 필터 자동 적용 useEffect에서만 태평양 포커싱
   useEffect(() => {
     if (!networks) return
     if (appliedGuideStep === guideStep) return // 이미 적용된 단계면 무시
@@ -251,7 +262,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         handleNetworkEdgesToggle(jeong.id)
         handleMigrationTraceClick(jeong.id)
         setTimeout(() => {
-          focusPacific()
+          focusPacific() // guideStep 3에서만 태평양 포커싱
         }, 500)
         setAppliedGuideStep(3)
       }
@@ -529,7 +540,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       )
       const imageUrl = response.data.photo
       // 지도 중심을 클릭된 엔티티의 위치로 이동
-      setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
+      // setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
+      // guideStep이 3이 아니면 해당 노드로 포커스
+      if (guideStep !== 3) {
+        focusNode(entity)
+      }
       setHighlightedNode((prev) => {
         if (prev && prev.id === id) {
           return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
