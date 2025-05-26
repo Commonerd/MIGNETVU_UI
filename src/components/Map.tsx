@@ -2266,10 +2266,14 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                               key={rec.id}
                               title={rec.title}
                               onClick={() => {
-                                // handleTooltipOpen(rec.id) 만 호출 (중복 상태 변경 방지)
                                 handleTooltipOpen(rec.id)
                                 handleNetworkEdgesToggle(rec.id)
                                 handleMigrationTraceClick(rec.id)
+                                // Zoom to the node when clicking a similarity insight
+                                const entity = getEntityById(rec.id)
+                                if (entity && guideStep !== 3) {
+                                  focusNode(entity)
+                                }
                               }}
                               style={{ cursor: "pointer" }}
                             >
