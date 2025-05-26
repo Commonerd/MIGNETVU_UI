@@ -105,15 +105,7 @@ function App() {
     <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID!}>
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
-          <div
-            className="flex flex-col min-h-screen bg-gray-100"
-            onClick={() => {
-              if (isModalOpen) {
-                setIsModalOpen(false)
-                setGuideStep(0) // Set guideStep to 0 when modal is closed by clicking map
-              }
-            }}
-          >
+          <div className="flex flex-col min-h-screen bg-gray-100">
             <Header />{" "}
             <main className="flex-grow mb-16">
               {" "}
