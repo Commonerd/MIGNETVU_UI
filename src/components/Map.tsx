@@ -159,6 +159,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
+  const [appliedGuideStep, setAppliedGuideStep] = useState<number | null>(null)
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -207,30 +208,27 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   }, [networks, filters, user.name, selectedEdgeId])
 
   // 단계별 필터 자동 적용
-  // 단계별 자동 필터 & 포커스 적용
   useEffect(() => {
     if (!networks) return
+    if (appliedGuideStep === guideStep) return // 이미 적용된 단계면 무시
 
     if (guideStep === 1) {
-      // 1단계: Person, Korea, Korean
       setFilters((prev) => ({
         ...prev,
         entityType: ["Person"],
         nationality: ["Korea"],
         ethnicity: ["Korean"],
-        // searchQuery: "정재관",
       }))
+      setAppliedGuideStep(1)
     } else if (guideStep === 2) {
-      // 2단계: Person, Korea+Russia, Korean
       setFilters((prev) => ({
         ...prev,
         entityType: ["Person"],
         nationality: ["Russia"],
         ethnicity: ["Korean"],
-        // searchQuery: "정재관",
       }))
+      setAppliedGuideStep(2)
     } else if (guideStep === 3) {
-      // 3단계: Person, all, Korean, 정재관에 포커싱
       const jeong = networks.find(
         (n) =>
           n.type === "Person" &&
@@ -249,17 +247,16 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             ...(jeong.edges?.map((e) => e.targetId) || []),
           ],
         }))
-        handleEntityClick(jeong.id) // 정재관 엔티티 클릭
-        handleNetworkEdgesToggle(jeong.id) // 정재관 네트워크 엣지 토글
-        handleMigrationTraceClick(jeong.id) // 정재관 이주 트레이스 클릭
-
-        // 이동경로 표시 후 약간의 딜레이 후 태평양 포커싱
+        handleEntityClick(jeong.id)
+        handleNetworkEdgesToggle(jeong.id)
+        handleMigrationTraceClick(jeong.id)
         setTimeout(() => {
           focusPacific()
-        }, 500) // 0.5초 후 포커싱 (이동경로 표시 후)
+        }, 500)
+        setAppliedGuideStep(3)
       }
     }
-  }, [guideStep, networks])
+  }, [guideStep, networks, appliedGuideStep])
 
   // migrationYearRange가 바뀔 때 filters에도 반영
   // useEffect(() => {
