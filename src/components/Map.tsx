@@ -96,7 +96,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: ["all"],
-    yearRange: [1800, 1945], // 현재 연도로 자동 설정
+    yearRange: [1860, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -121,7 +121,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[number, number]>([1800, 1945])
+  const [yearRange, setYearRange] = useState<[number, number]>([1860, 1945])
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -155,7 +155,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   >({})
   const [migrationYearRange, setMigrationYearRange] = useState<
     [number, number]
-  >([1800, 1945])
+  >([1860, 1945])
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
@@ -892,54 +892,32 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }
     return Math.max(baseSize, centrality * scaleFactor + baseSize)
   }
-  // 등록자별 네트워크, 엣지, 마이그레이션 트레이스 수 및 총점 계산
-  const registrantStats =
+  // 등록자별 노드 수 계산
+  const registrantNodeCounts =
     networks?.reduce(
       (acc, entity) => {
-        const userId = entity.user_id
-        if (!acc[userId]) {
-          acc[userId] = {
-            userName: entity.user_name,
-            networkCount: 0,
-            edgeCount: 0,
-            traceCount: 0,
-            totalScore: 0,
-          }
-        }
-        acc[userId].networkCount += 1
-        acc[userId].edgeCount += entity.edges?.length || 0
-        acc[userId].traceCount += entity.migration_traces?.length || 0
-        acc[userId].totalScore =
-          acc[userId].networkCount +
-          acc[userId].edgeCount +
-          acc[userId].traceCount
+        acc[entity.user_id] = (acc[entity.user_id] || 0) + 1
         return acc
       },
-      {} as {
-        [userId: number]: {
-          userName: string
-          networkCount: number
-          edgeCount: number
-          traceCount: number
-          totalScore: number
-        }
-      },
+      {} as { [registrantId: number]: number },
     ) || {}
-
-  // 상위 3명의 등록자 추출 및 정렬 (총점 기준)
-  const topRegistrants = Object.entries(registrantStats)
-    .sort(([, a], [, b]) => b.totalScore - a.totalScore)
+  // 유저 이름을 가져오기 위한 사용자 정보 맵핑
+  const userNames = networks?.reduce(
+    (acc, entity) => {
+      acc[entity.user_id] = entity.user_name // 유저 ID와 유저 이름을 매핑
+      return acc
+    },
+    {} as { [userId: number]: string },
+  )
+  // 상위 3명의 등록자 추출 및 정렬
+  const topRegistrants = Object.entries(registrantNodeCounts)
+    .sort(([, a], [, b]) => b - a)
     .slice(0, 3)
-    .map(([registrantId, stats], index) => ({
+    .map(([registrantId, count], index) => ({
       registrantId: Number(registrantId),
-      userName: stats.userName,
-      totalScore: stats.totalScore,
-      networkCount: stats.networkCount,
-      edgeCount: stats.edgeCount,
-      traceCount: stats.traceCount,
+      userName: userNames[Number(registrantId)], // 유저 이름을 가져옴
+      count,
       medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
-      // 표시용 문자열
-      display: `${stats.totalScore} (${stats.networkCount}/${stats.edgeCount}/${stats.traceCount})`,
     }))
   // 마우스 우클릭 시 위도와 경도 표시
   const HandleRightClick = () => {
@@ -2067,20 +2045,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           {isTopContributorsVisible && (
             <LegendBox>
               <h2>{t("topRegistrants")}</h2>
-              <div
-                style={{
-                  fontSize: "0.7rem",
-                  color: "#3e2723",
-                  marginBottom: "0.2rem",
-                }}
-              >
-                Score(node/edge/trace)
-              </div>
               <ul>
-                {topRegistrants.map((r) => (
-                  <div key={r.registrantId}>
-                    {r.medal} {r.userName} : {r.display}
-                  </div>
+                {topRegistrants.map((registrant) => (
+                  <li key={registrant.registrantId}>
+                    {registrant.medal} {registrant.userName} :{" "}
+                    {registrant.count} {t("nodeCount")}
+                  </li>
                 ))}
               </ul>
             </LegendBox>
