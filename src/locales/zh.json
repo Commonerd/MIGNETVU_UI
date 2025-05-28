@@ -64,7 +64,7 @@
   "logout": "退出",
   "welcome": "，欢迎来到 HisNetVu！",
   "registrantId": "注册人",
-  "topRegistrants": "贡献者前3名",
+  "topRegistrants": "贡献者前5名",
   "nodeCount": "节点",
   "topEntities": "中心性前五",
   "migrationTraceability": "迁徙",

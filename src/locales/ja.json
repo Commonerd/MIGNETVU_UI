@@ -64,7 +64,7 @@
   "logout": "ログアウト",
   "welcome": "様、HisNetVuへようこそ！",
   "registrantId": "登録者",
-  "topRegistrants": "貢献者TOP3",
+  "topRegistrants": "貢献者TOP5",
   "nodeCount": "ノード",
   "topEntities": "上位5位中心性",
   "migrationTraceability": "移動",

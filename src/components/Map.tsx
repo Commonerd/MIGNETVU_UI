@@ -929,7 +929,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   // 상위 3명의 등록자 추출 및 정렬 (총점 기준)
   const topRegistrants = Object.entries(registrantStats)
     .sort(([, a], [, b]) => b.totalScore - a.totalScore)
-    .slice(0, 3)
+    .slice(0, 5)
     .map(([registrantId, stats], index) => ({
       registrantId: Number(registrantId),
       userName: stats.userName,
@@ -937,8 +937,16 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       networkCount: stats.networkCount,
       edgeCount: stats.edgeCount,
       traceCount: stats.traceCount,
-      medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
-      // 표시용 문자열
+      medal:
+        index === 0
+          ? "🥇"
+          : index === 1
+            ? "🥈"
+            : index === 2
+              ? "🥉"
+              : index === 3
+                ? "4️⃣"
+                : "5️⃣", // 표시용 문자열
       display: `${stats.totalScore} ${t("Points")}`,
     }))
   // 마우스 우클릭 시 위도와 경도 표시

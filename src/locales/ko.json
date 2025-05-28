@@ -64,7 +64,7 @@
   "logout": "로그아웃",
   "welcome": "님, 히스넷뷰에 오신 것을 환영합니다!",
   "registrantId": "등록자",
-  "topRegistrants": "기여자 Top3",
+  "topRegistrants": "기여자 Top5",
   "nodeCount": "노드",
   "topEntities": "상위 5위 중심성",
   "migrationTraceability": "이동",

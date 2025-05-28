@@ -64,7 +64,7 @@
   "logout": "Выйти",
   "welcome": "Добро пожаловать в HisNetVu!",
   "registrantId": "Регистратор",
-  "topRegistrants": "Топ-3 участника",
+  "topRegistrants": "Топ-5 участника",
   "nodeCount": "Узлы",
   "topEntities": "Топ-5 по центральности (все)",
   "migrationTraceability": "Миграции",

@@ -64,7 +64,7 @@
   "logout": "Cerrar sesión",
   "welcome": "¡Bienvenido a HisNetVu!",
   "registrantId": "Registrante",
-  "topRegistrants": "Top 3 contribuyentes",
+  "topRegistrants": "Top 5 contribuyentes",
   "nodeCount": "Nodos",
   "topEntities": "Top 5 por centralidad (todos)",
   "migrationTraceability": "Migraciones",

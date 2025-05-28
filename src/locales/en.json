@@ -64,7 +64,7 @@
   "logout": "Logout",
   "welcome": "Welcome to HisNetVu!",
   "registrantId": "Registrant",
-  "topRegistrants": "Top 3 Contributors",
+  "topRegistrants": "Top 5 Contributors",
   "nodeCount": "Nodes",
   "topEntities": "Top 5 by Centrality",
   "migrationTraceability": "Migration",
