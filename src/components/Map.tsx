@@ -96,7 +96,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     ethnicity: ["all"],
     edgeType: ["all"],
     entityType: ["all"],
-    yearRange: [1860, 1945], // 현재 연도로 자동 설정
+    yearRange: [1800, 1945], // 현재 연도로 자동 설정
     userNetworkFilter: false,
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
@@ -121,7 +121,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[number, number]>([1860, 1945])
+  const [yearRange, setYearRange] = useState<[number, number]>([1800, 1945])
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -155,7 +155,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   >({})
   const [migrationYearRange, setMigrationYearRange] = useState<
     [number, number]
-  >([1860, 1945])
+  >([1800, 1945])
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
