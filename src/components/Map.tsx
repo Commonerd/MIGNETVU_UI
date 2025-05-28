@@ -244,7 +244,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         (n) =>
           n.type === "Person" &&
           n.ethnicity === "Korean" &&
-          n.title.includes("정재관"),
+          n.title.includes("유길준"),
       )
       if (jeong) {
         setFilters((prev) => ({
@@ -892,32 +892,54 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }
     return Math.max(baseSize, centrality * scaleFactor + baseSize)
   }
-  // 등록자별 노드 수 계산
-  const registrantNodeCounts =
+  // 등록자별 네트워크, 엣지, 마이그레이션 트레이스 수 및 총점 계산
+  const registrantStats =
     networks?.reduce(
       (acc, entity) => {
-        acc[entity.user_id] = (acc[entity.user_id] || 0) + 1
+        const userId = entity.user_id
+        if (!acc[userId]) {
+          acc[userId] = {
+            userName: entity.user_name,
+            networkCount: 0,
+            edgeCount: 0,
+            traceCount: 0,
+            totalScore: 0,
+          }
+        }
+        acc[userId].networkCount += 1
+        acc[userId].edgeCount += entity.edges?.length || 0
+        acc[userId].traceCount += entity.migration_traces?.length || 0
+        acc[userId].totalScore =
+          acc[userId].networkCount +
+          acc[userId].edgeCount +
+          acc[userId].traceCount
         return acc
       },
-      {} as { [registrantId: number]: number },
+      {} as {
+        [userId: number]: {
+          userName: string
+          networkCount: number
+          edgeCount: number
+          traceCount: number
+          totalScore: number
+        }
+      },
     ) || {}
-  // 유저 이름을 가져오기 위한 사용자 정보 맵핑
-  const userNames = networks?.reduce(
-    (acc, entity) => {
-      acc[entity.user_id] = entity.user_name // 유저 ID와 유저 이름을 매핑
-      return acc
-    },
-    {} as { [userId: number]: string },
-  )
-  // 상위 3명의 등록자 추출 및 정렬
-  const topRegistrants = Object.entries(registrantNodeCounts)
-    .sort(([, a], [, b]) => b - a)
+
+  // 상위 3명의 등록자 추출 및 정렬 (총점 기준)
+  const topRegistrants = Object.entries(registrantStats)
+    .sort(([, a], [, b]) => b.totalScore - a.totalScore)
     .slice(0, 3)
-    .map(([registrantId, count], index) => ({
+    .map(([registrantId, stats], index) => ({
       registrantId: Number(registrantId),
-      userName: userNames[Number(registrantId)], // 유저 이름을 가져옴
-      count,
+      userName: stats.userName,
+      totalScore: stats.totalScore,
+      networkCount: stats.networkCount,
+      edgeCount: stats.edgeCount,
+      traceCount: stats.traceCount,
       medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
+      // 표시용 문자열
+      display: `${stats.totalScore} (${stats.networkCount}/${stats.edgeCount}/${stats.traceCount})`,
     }))
   // 마우스 우클릭 시 위도와 경도 표시
   const HandleRightClick = () => {
@@ -2045,12 +2067,20 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           {isTopContributorsVisible && (
             <LegendBox>
               <h2>{t("topRegistrants")}</h2>
+              <div
+                style={{
+                  fontSize: "0.7rem",
+                  color: "#3e2723",
+                  marginBottom: "0.2rem",
+                }}
+              >
+                Score(node/edge/trace)
+              </div>
               <ul>
-                {topRegistrants.map((registrant) => (
-                  <li key={registrant.registrantId}>
-                    {registrant.medal} {registrant.userName} :{" "}
-                    {registrant.count} {t("nodeCount")}
-                  </li>
+                {topRegistrants.map((r) => (
+                  <div key={r.registrantId}>
+                    {r.medal} {r.userName} : {r.display}
+                  </div>
                 ))}
               </ul>
             </LegendBox>
