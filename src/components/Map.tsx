@@ -2230,7 +2230,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                           <span className="font-medium">
                             {t("Creator Name")}:
                           </span>{" "}
-                          {userNames[network.user_id]}
+                          {network.user_name}
                         </p>
                         <p>
                           <span className="font-medium">{t("Type")}:</span>{" "}
