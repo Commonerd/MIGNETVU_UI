@@ -244,7 +244,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         (n) =>
           n.type === "Person" &&
           n.ethnicity === "Korean" &&
-          n.title.includes("유길준"),
+          n.title.includes("정재관"),
       )
       if (jeong) {
         setFilters((prev) => ({
@@ -939,7 +939,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       traceCount: stats.traceCount,
       medal: index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉",
       // 표시용 문자열
-      display: `${stats.totalScore} (${stats.networkCount}/${stats.edgeCount}/${stats.traceCount})`,
+      display: `${stats.totalScore} ${t("Points")}`,
     }))
   // 마우스 우클릭 시 위도와 경도 표시
   const HandleRightClick = () => {
@@ -2070,11 +2070,13 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <div
                 style={{
                   fontSize: "0.7rem",
-                  color: "#3e2723",
+                  color: "#4b1e22", // 더 어두운 버건디
                   marginBottom: "0.2rem",
+                  fontWeight: "bold", // 폰트 굵게
+                  textAlign: "center", // 중앙 정렬
                 }}
               >
-                Score(node/edge/trace)
+                {t("Score")}({t("Node")}+{t("Edge")}+{t("Mobility")})
               </div>
               <ul>
                 {topRegistrants.map((r) => (

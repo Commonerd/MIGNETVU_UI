@@ -154,5 +154,10 @@
   "Analysis Results": "분석결과",
   "Smilarity Insight": "유사도 인사이트",
   "Finish": "완료",
-  "Product Description": "HisNetVu는 과거부터 현재까지 개체 간 관계와 이동 경로를 보여주는 디지털 맵핑 역사시각화 프로젝트입니다. 인물·단체의 관계와 이동경로를 국적·민족·개인별로 탐색할 수 있습니다."
+  "Product Description": "HisNetVu는 과거부터 현재까지 개체 간 관계와 이동 경로를 보여주는 디지털 맵핑 역사시각화 프로젝트입니다. 인물·단체의 관계와 이동경로를 국적·민족·개인별로 탐색할 수 있습니다.",
+  "Score": "점수",
+  "Node": "노드",
+  "Edge": "엣지",
+  "Mobility": "이동",
+  "Points": "포인트"
 }

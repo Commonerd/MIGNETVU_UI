@@ -152,5 +152,10 @@
   "Dissolved Year": "解散年份",
   "Established Year": "成立年份",
   "Analysis Results": "分析结果",
-  "Product Description": "HisNetVu 是一个数字地图和历史可视化项目，展示了从过去到现在人物和组织之间的关系以及移动路径。用户可以按国籍、民族或个人身份探索这些关系与迁移轨迹。"
+  "Product Description": "HisNetVu 是一个数字地图和历史可视化项目，展示了从过去到现在人物和组织之间的关系以及移动路径。用户可以按国籍、民族或个人身份探索这些关系与迁移轨迹。",
+  "Score": "分数",
+  "Node": "实体",
+  "Edge": "关系",
+  "Mobility": "移动",
+  "Points": "积分"
 }

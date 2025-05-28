@@ -154,5 +154,10 @@
   "Analysis Results": "Analysis Results",
   "Smilarity Insight": "Smilarity Insight",
   "Finish": "Finish",
-  "Product Description": "HisNetVu is a digital mapping and historical visualization project that illustrates relationships and movement paths between individuals and organizations from the past to the present. It allows users to explore these connections and trajectories by nationality, ethnicity, or individual identity."
+  "Product Description": "HisNetVu is a digital mapping and historical visualization project that illustrates relationships and movement paths between individuals and organizations from the past to the present. It allows users to explore these connections and trajectories by nationality, ethnicity, or individual identity.",
+  "Score": "Score",
+  "Node": "Node",
+  "Edge": "Edge",
+  "Mobility": "Mobility",
+  "Points": "Points"
 }
