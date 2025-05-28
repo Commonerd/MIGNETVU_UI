@@ -244,7 +244,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         (n) =>
           n.type === "Person" &&
           n.ethnicity === "Korean" &&
-          n.title.includes("유길준"),
+          n.title.includes("정재관"),
       )
       if (jeong) {
         setFilters((prev) => ({
