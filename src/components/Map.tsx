@@ -568,37 +568,34 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const handleEntityClick = async (id: number) => {
     const entity = getEntityById(id)
     if (entity) {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
-      )
-      const imageUrl = response.data.photo
-      // 지도 중심을 클릭된 엔티티의 위치로 이동
-      // setFocusedNode({ id: id, lat: entity.latitude, lng: entity.longitude })
-      // guideStep이 3이 아니면 해당 노드로 포커스
+      let imageUrl = entity.photo || ""
+      if (!imageUrl) {
+        try {
+          const response = await axios.get(
+            `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
+          )
+          imageUrl = response.data.photo
+        } catch (e) {
+          imageUrl = ""
+        }
+      }
       if (guideStep !== 3) {
         focusNode(entity)
       }
       setHighlightedNode((prev) => {
         if (prev && prev.id === id) {
-          return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
+          return null
         }
         return { id: id, photo: imageUrl }
       })
-      setPopupPosition({ x: entity.latitude, y: entity.longitude }) // 팝업 위치 설정
+      setPopupPosition({ x: entity.latitude, y: entity.longitude })
       setOpenPopups((prev) => {
-        // 이미 열려있으면 중복 추가 방지
         if (prev.some((p) => p.id === id)) return prev
-        return [...prev, { id, network: entity }]
+        return [...prev, { id, network: entity, photo: imageUrl }]
       })
     } else {
       console.warn(`Entity with ID ${id} not found.`)
     }
-    // setHighlightedNode((prev) => {
-    //   if (prev && prev.id === id) {
-    //     return null // 이미 선택된 항목을 다시 클릭하면 선택 해제
-    //   }
-    //   return { id, photo: "" }
-    // })
   }
   const handleMigrationTraceClick = (networkId: number) => {
     setSelectedMigrationNetworkIds((prev) =>
@@ -2940,21 +2937,24 @@ const PopupFilterButtonRow = styled.div`
 `
 
 const PopupFilterButton = styled.button<{ active?: boolean }>`
-  padding: 0.25rem 0.8rem;
-  font-size: 0.85em;
-  border-radius: 6px;
-  border: 1px solid ${({ active }) => (active ? "#3e2723" : "#bdbdbd")};
-  background: ${({ active }) => (active ? "#ffe0b2" : "#f5f5f5")};
-  color: ${({ active }) => (active ? "#3e2723" : "#333")};
-  font-weight: 500;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.92em;
+  border-radius: 7px;
+  border: none;
+  font-weight: 600;
   cursor: pointer;
+  margin-right: 0.3rem;
   transition:
     background 0.2s,
-    border 0.2s;
+    color 0.2s;
+  background: ${({ active }) => (active ? "#e3f2fd" : "#fff3e0")};
+  color: ${({ active }) => (active ? "#1976d2" : "#e65100")};
+  box-shadow: 0 1px 3px
+    ${({ active }) =>
+      active ? "rgba(33,150,243,0.07)" : "rgba(255,152,0,0.07)"};
   &:hover {
-    background: #ffe0b2;
-    border-color: #3e2723;
-    color: #3e2723;
+    background: ${({ active }) => (active ? "#bbdefb" : "#ffe0b2")};
+    color: ${({ active }) => (active ? "#1565c0" : "#ff9800")};
   }
 `
 export default Map
