@@ -2273,8 +2273,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     title={t("Show only this network's connections")}
                   >
                     {selectedNetworkId === popup.network.id
-                      ? t("All Connections")
-                      : ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`}
+                      ? ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`
+                      : t("All Connections")}
                   </PopupFilterButton>
                   <PopupFilterButton
                     onClick={() => handleMigrationTraceClick(popup.network.id)}
@@ -2284,8 +2284,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     title={t("Show only this network's migrations")}
                   >
                     {selectedMigrationNetworkIds.includes(popup.network.id)
-                      ? t("All Mobility")
-                      : `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `}
+                      ? `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `
+                      : t("All Mobility")}
                   </PopupFilterButton>
                 </PopupFilterButtonRow>
                 <div className="text-gray-700 text-sm space-y-1">
