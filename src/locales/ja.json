@@ -157,5 +157,8 @@
   "Node": "実体",
   "Edge": "関係",
   "Mobility": "移動",
-  "Points": "ポイント"
+  "Points": "ポイント",
+  "All Connections": "すべての関係",
+  "Connections": "関係",
+  "All Mobility": "すべての移動"
 }

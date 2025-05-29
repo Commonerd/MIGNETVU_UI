@@ -159,5 +159,8 @@
   "Node": "개체",
   "Edge": "관계",
   "Mobility": "이동",
-  "Points": "포인트"
+  "Points": "포인트",
+  "All Connections": "모든 관계",
+  "Connections": "관계",
+  "All Mobility": "모든 이동"
 }

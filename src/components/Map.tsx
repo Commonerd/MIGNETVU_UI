@@ -2256,7 +2256,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               </Marker>
             )
           })}
-          // 여러 개의 팝업을 동시에 렌더링
           {openPopups.map((popup) => (
             <ResizablePopup
               key={popup.id}
@@ -2267,6 +2266,28 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <strong className="text-lg font-semibold block mb-2">
                   No.{popup.network.id} : {popup.network.title}
                 </strong>
+                <PopupFilterButtonRow>
+                  <PopupFilterButton
+                    onClick={() => handleNetworkEdgesToggle(popup.network.id)}
+                    active={selectedNetworkId === popup.network.id}
+                    title={t("Show only this network's connections")}
+                  >
+                    {selectedNetworkId === popup.network.id
+                      ? t("All Connections")
+                      : ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`}
+                  </PopupFilterButton>
+                  <PopupFilterButton
+                    onClick={() => handleMigrationTraceClick(popup.network.id)}
+                    active={selectedMigrationNetworkIds.includes(
+                      popup.network.id,
+                    )}
+                    title={t("Show only this network's migrations")}
+                  >
+                    {selectedMigrationNetworkIds.includes(popup.network.id)
+                      ? t("All Mobility")
+                      : `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `}
+                  </PopupFilterButton>
+                </PopupFilterButtonRow>
                 <div className="text-gray-700 text-sm space-y-1">
                   {popup.photo && (
                     <div className="flex justify-center mb-2">
@@ -2898,6 +2919,32 @@ const SimilarityInsightItem = styled.li`
     font-size: 0.85em;
     color: #8d6e63;
     flex-shrink: 0;
+  }
+`
+
+const PopupFilterButtonRow = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.7rem 0 0.5rem 0;
+  justify-content: flex-end;
+`
+
+const PopupFilterButton = styled.button<{ active?: boolean }>`
+  padding: 0.25rem 0.8rem;
+  font-size: 0.85em;
+  border-radius: 6px;
+  border: 1px solid ${({ active }) => (active ? "#3e2723" : "#bdbdbd")};
+  background: ${({ active }) => (active ? "#ffe0b2" : "#f5f5f5")};
+  color: ${({ active }) => (active ? "#3e2723" : "#333")};
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border 0.2s;
+  &:hover {
+    background: #ffe0b2;
+    border-color: #3e2723;
+    color: #3e2723;
   }
 `
 export default Map

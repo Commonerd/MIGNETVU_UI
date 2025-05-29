@@ -157,5 +157,8 @@
   "Node": "Узел",
   "Edge": "Связь",
   "Mobility": "Мобильность",
-  "Points": "Баллы"
+  "Points": "Баллы",
+  "All Connections": "Все связи",
+  "Connections": "Связи",
+  "All Mobility": "Все перемещения"
 }

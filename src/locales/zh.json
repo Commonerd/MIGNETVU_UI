@@ -157,5 +157,8 @@
   "Node": "实体",
   "Edge": "关系",
   "Mobility": "移动",
-  "Points": "积分"
+  "Points": "积分",
+  "All Connections": "所有关系",
+  "Connections": "关系",
+  "All Mobility": "所有迁徙"
 }

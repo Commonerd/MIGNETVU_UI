@@ -159,5 +159,8 @@
   "Node": "Node",
   "Edge": "Edge",
   "Mobility": "Mobility",
-  "Points": "Points"
+  "Points": "Points",
+  "All Connections": "All Connections",
+  "Connections": "Connections",
+  "All Mobility": "All Mobility"
 }
