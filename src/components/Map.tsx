@@ -160,6 +160,37 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
   const [appliedGuideStep, setAppliedGuideStep] = useState<number | null>(null)
+  const [openPopups, setOpenPopups] = useState<
+    {
+      id: number
+      position: { x: number; y: number }
+      network: Network
+      photo: string
+    }[]
+  >([])
+
+  const handleOpenPopup = async (
+    network: Network,
+    position: { x: number; y: number },
+  ) => {
+    // 이미 열려있는지 확인
+    if (openPopups.some((p) => p.id === network.id)) return
+    let photo = ""
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/networks/photo/${network.id}`,
+      )
+      photo = response.data.photo
+    } catch (e) {}
+    setOpenPopups((prev) => [
+      ...prev,
+      { id: network.id, position, network, photo },
+    ])
+  }
+
+  const handleClosePopup = (id: number) => {
+    setOpenPopups((prev) => prev.filter((p) => p.id !== id))
+  }
 
   const workerRef = useRef<Worker | null>(null)
 
@@ -2179,10 +2210,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             )
             const isHighlighted =
               highlightedNode && highlightedNode.id === network.id
-            // Determine color: Organization is blue, highlighted is yellow, default is red
-            let color = network.type === "Organization" ? "blue" : "red" // is red by default
+            let color = network.type === "Organization" ? "blue" : "red"
             if (isHighlighted) {
-              // Highlighted nodes are yellow regardless of type
               color = "orange"
             }
             return (
@@ -2194,30 +2223,28 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   html: `<div style="width: ${size}px; height: ${size}px; background-color: ${color}; border-radius: 50%;"></div>`,
                   iconSize: [size, size],
                 })}
-                zIndexOffset={1000} // 네트워크 노드의 zIndex를 높게 설정
+                zIndexOffset={1000}
                 eventHandlers={{
                   click: (e) => {
-                    handleTooltipOpen(network.id)
-                    setPopupPosition({
-                      x: e.latlng.lat, // 노드 바로 위에 팝업 위치 설정
+                    handleOpenPopup(network, {
+                      x: e.latlng.lat,
                       y: e.latlng.lng,
                     })
                   },
                 }}
               >
-                {/* 네트워크 이름 표시 여부에 따라 Tooltip 렌더링 */}
                 {showNetworkNames && (
                   <Tooltip
                     permanent
                     direction="top"
-                    offset={[0, -size / 2]} // Adjust tooltip position based on marker size
+                    offset={[0, -size / 2]}
                     className="custom-tooltip"
-                    opacity={0.7} //
+                    opacity={0.7}
                   >
                     <div
                       style={{
                         textAlign: "center",
-                        fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                        fontSize: isMobile ? "14px" : "16px",
                         fontWeight: "bold",
                         color: "#3E2723",
                       }}
@@ -2226,161 +2253,157 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     </div>
                   </Tooltip>
                 )}
-                {popupPosition && highlightedNode?.id === network.id && (
-                  <ResizablePopup
-                    position={popupPosition}
-                    onClose={() => setPopupPosition(null)}
-                  >
-                    <PopupContent>
-                      <strong className="text-lg font-semibold block mb-2">
-                        No.{network.id} : {network.title}
-                      </strong>
-                      <div className="text-gray-700 text-sm space-y-1">
-                        {highlightedNode?.id === network.id &&
-                          highlightedNode.photo && (
-                            <div className="flex justify-center mb-2">
-                              <img
-                                src={highlightedNode.photo}
-                                alt="Network"
-                                className="w-24 h-24 object-cover rounded-lg shadow-md"
-                              />
-                            </div>
-                          )}
-                        <p>
-                          <span className="font-medium">
-                            {t("Creator Name")}:
-                          </span>{" "}
-                          {network.user_name}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Type")}:</span>{" "}
-                          {network.type}
-                        </p>
-                        <p>
-                          {t("Centrality")}: {centralityValues[network.id] || 0}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {t("Nationality")}
-                          </span>{" "}
-                          {network.nationality}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Ethnicity")}:</span>{" "}
-                          {network.ethnicity}
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Person"
-                              ? t("Birth Year")
-                              : t("Established Year")}
-                          </span>
-                          <span className="font-medium">
-                            : {network.migration_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">
-                            {network.type === "Person"
-                              ? t("Death Year")
-                              : t("Dissolved Year")}
-                          </span>
-                          <span className="font-medium">
-                            : {network.end_year}
-                          </span>
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Latitude")}:</span>{" "}
-                          {network.latitude.toFixed(5)}
-                        </p>
-                        <p>
-                          <span className="font-medium">{t("Longitude")}:</span>{" "}
-                          {network.longitude.toFixed(5)}
-                        </p>
-                      </div>
-                      <div
-                        className="mt-2 mb-2 border rounded text-xs"
-                        style={{
-                          backgroundColor: "rgba(33, 150, 243, 0.18)",
-                          borderColor: "#90caf9",
-                        }}
-                      >
-                        <b>💡 {t("Smilarity Insight")}</b>
-                        <SimilarityInsightList>
-                          {recommendConnections(
-                            network,
-                            workerFilteredNetworks,
-                            3,
-                          ).map((rec) => (
-                            <SimilarityInsightItem
-                              key={rec.id}
-                              title={rec.title}
-                              onClick={() => {
-                                handleTooltipOpen(rec.id)
-                                handleNetworkEdgesToggle(rec.id)
-                                handleMigrationTraceClick(rec.id)
-                                // Zoom to the node when clicking a similarity insight
-                                const entity = getEntityById(rec.id)
-                                if (entity && guideStep !== 3) {
-                                  focusNode(entity)
-                                }
-                              }}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <span className="item-title">{rec.title}</span>
-                              <span className="item-meta">
-                                ({rec.type}, {rec.nationality}, {rec.ethnicity})
-                              </span>
-                            </SimilarityInsightItem>
-                          ))}
-                        </SimilarityInsightList>
-                      </div>
-                      <AIStorytelling
-                        originId={network.id}
-                        originTitle={network.title}
-                        migrationPath={network.migration_traces.map(
-                          (trace) => ({
-                            year: trace.migration_year,
-                            place: trace.location_name,
-                            reason: trace.reason,
-                          }),
-                        )}
-                        networkSummary={`
-    이 네트워크의 주요 인물과 단체, 그리고 이들 사이의 관계는 다음과 같습니다:
-    ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
-    이 네트워크의 관계망 스토리를 3문장으로 요약해줘.
-  `}
-                        edges={
-                          network.edges?.map((edge) => {
-                            const target = networks?.find(
-                              (n) => n.id === edge.targetId,
-                            )
-                            return {
-                              targetId: edge.targetId,
-                              targetTitle: target ? target.title : "",
-                              year: edge.year,
-                              edgeType: edge.edgeType,
-                            }
-                          }) ?? []
-                        }
-                      />{" "}
-                    </PopupContent>
-                    <div
-                      className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
-                      style={{
-                        width: "100%",
-                        maxHeight: "200px",
-                        marginTop: "16px",
-                      }}
-                    >
-                      <CommentSection networkId={network.id} />
-                    </div>
-                  </ResizablePopup>
-                )}
-                <HandleMapClickForPopupSize />
               </Marker>
             )
           })}
+          // 여러 개의 팝업을 동시에 렌더링
+          {openPopups.map((popup) => (
+            <ResizablePopup
+              key={popup.id}
+              position={popup.position}
+              onClose={() => handleClosePopup(popup.id)}
+            >
+              <PopupContent>
+                <strong className="text-lg font-semibold block mb-2">
+                  No.{popup.network.id} : {popup.network.title}
+                </strong>
+                <div className="text-gray-700 text-sm space-y-1">
+                  {popup.photo && (
+                    <div className="flex justify-center mb-2">
+                      <img
+                        src={popup.photo}
+                        alt="Network"
+                        className="w-24 h-24 object-cover rounded-lg shadow-md"
+                      />
+                    </div>
+                  )}
+                  <p>
+                    <span className="font-medium">{t("Creator Name")}:</span>{" "}
+                    {popup.network.user_name}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Type")}:</span>{" "}
+                    {popup.network.type}
+                  </p>
+                  <p>
+                    {t("Centrality")}: {centralityValues[popup.network.id] || 0}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Nationality")}</span>{" "}
+                    {popup.network.nationality}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Ethnicity")}:</span>{" "}
+                    {popup.network.ethnicity}
+                  </p>
+                  <p>
+                    <span className="font-medium">
+                      {popup.network.type === "Person"
+                        ? t("Birth Year")
+                        : t("Established Year")}
+                    </span>
+                    <span className="font-medium">
+                      : {popup.network.migration_year}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium">
+                      {popup.network.type === "Person"
+                        ? t("Death Year")
+                        : t("Dissolved Year")}
+                    </span>
+                    <span className="font-medium">
+                      : {popup.network.end_year}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Latitude")}:</span>{" "}
+                    {popup.network.latitude.toFixed(5)}
+                  </p>
+                  <p>
+                    <span className="font-medium">{t("Longitude")}:</span>{" "}
+                    {popup.network.longitude.toFixed(5)}
+                  </p>
+                </div>
+                <div
+                  className="mt-2 mb-2 border rounded text-xs"
+                  style={{
+                    backgroundColor: "rgba(33, 150, 243, 0.18)",
+                    borderColor: "#90caf9",
+                  }}
+                >
+                  <b>💡 {t("Smilarity Insight")}</b>
+                  <SimilarityInsightList>
+                    {recommendConnections(
+                      popup.network,
+                      workerFilteredNetworks,
+                      3,
+                    ).map((rec) => (
+                      <SimilarityInsightItem
+                        key={rec.id}
+                        title={rec.title}
+                        onClick={() => {
+                          handleTooltipOpen(rec.id)
+                          handleNetworkEdgesToggle(rec.id)
+                          handleMigrationTraceClick(rec.id)
+                          const entity = getEntityById(rec.id)
+                          if (entity && guideStep !== 3) {
+                            focusNode(entity)
+                          }
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <span className="item-title">{rec.title}</span>
+                        <span className="item-meta">
+                          ({rec.type}, {rec.nationality}, {rec.ethnicity})
+                        </span>
+                      </SimilarityInsightItem>
+                    ))}
+                  </SimilarityInsightList>
+                </div>
+                <AIStorytelling
+                  originId={popup.network.id}
+                  originTitle={popup.network.title}
+                  migrationPath={popup.network.migration_traces.map(
+                    (trace) => ({
+                      year: trace.migration_year,
+                      place: trace.location_name,
+                      reason: trace.reason,
+                    }),
+                  )}
+                  networkSummary={`
+이 네트워크의 주요 인물과 단체, 그리고 이들 사이의 관계는 다음과 같습니다:
+${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
+이 네트워크의 관계망 스토리를 3문장으로 요약해줘.
+`}
+                  edges={
+                    popup.network.edges?.map((edge) => {
+                      const target = networks?.find(
+                        (n) => n.id === edge.targetId,
+                      )
+                      return {
+                        targetId: edge.targetId,
+                        targetTitle: target ? target.title : "",
+                        year: edge.year,
+                        edgeType: edge.edgeType,
+                      }
+                    }) ?? []
+                  }
+                />
+              </PopupContent>
+              <div
+                className="max-h-32 max-w-full overflow-y-auto border-t pt-2"
+                style={{
+                  width: "100%",
+                  maxHeight: "200px",
+                  marginTop: "16px",
+                }}
+              >
+                <CommentSection networkId={popup.network.id} />
+              </div>
+            </ResizablePopup>
+          ))}
+          <HandleMapClickForPopupSize />
           <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
           {migrationTraces.map((traces) =>
             traces.map((trace) => {
