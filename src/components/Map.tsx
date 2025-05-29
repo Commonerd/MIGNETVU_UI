@@ -292,6 +292,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         handleEntityClick(jeong.id)
         handleNetworkEdgesToggle(jeong.id)
         handleMigrationTraceClick(jeong.id)
+        // 팝업 자동 오픈 추가
+        handleOpenPopup(jeong, { x: jeong.latitude, y: jeong.longitude })
         setTimeout(() => {
           focusPacific() // guideStep 3에서만 태평양 포커싱
         }, 500)
@@ -2266,28 +2268,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <strong className="text-lg font-semibold block mb-2">
                   No.{popup.network.id} : {popup.network.title}
                 </strong>
-                <PopupFilterButtonRow>
-                  <PopupFilterButton
-                    onClick={() => handleNetworkEdgesToggle(popup.network.id)}
-                    active={selectedNetworkId === popup.network.id}
-                    title={t("Show only this network's connections")}
-                  >
-                    {selectedNetworkId === popup.network.id
-                      ? ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`
-                      : t("All Connections")}
-                  </PopupFilterButton>
-                  <PopupFilterButton
-                    onClick={() => handleMigrationTraceClick(popup.network.id)}
-                    active={selectedMigrationNetworkIds.includes(
-                      popup.network.id,
-                    )}
-                    title={t("Show only this network's migrations")}
-                  >
-                    {selectedMigrationNetworkIds.includes(popup.network.id)
-                      ? `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `
-                      : t("All Mobility")}
-                  </PopupFilterButton>
-                </PopupFilterButtonRow>
+
                 <div className="text-gray-700 text-sm space-y-1">
                   {popup.photo && (
                     <div className="flex justify-center mb-2">
@@ -2298,6 +2279,30 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                       />
                     </div>
                   )}
+                  <PopupFilterButtonRow>
+                    <PopupFilterButton
+                      onClick={() => handleNetworkEdgesToggle(popup.network.id)}
+                      active={selectedNetworkId === popup.network.id}
+                      title={t("Show only this network's connections")}
+                    >
+                      {selectedNetworkId === popup.network.id
+                        ? ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`
+                        : t("All Connections")}
+                    </PopupFilterButton>
+                    <PopupFilterButton
+                      onClick={() =>
+                        handleMigrationTraceClick(popup.network.id)
+                      }
+                      active={selectedMigrationNetworkIds.includes(
+                        popup.network.id,
+                      )}
+                      title={t("Show only this network's migrations")}
+                    >
+                      {selectedMigrationNetworkIds.includes(popup.network.id)
+                        ? `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `
+                        : t("All Mobility")}
+                    </PopupFilterButton>
+                  </PopupFilterButtonRow>
                   <p>
                     <span className="font-medium">{t("Creator Name")}:</span>{" "}
                     {popup.network.user_name}
