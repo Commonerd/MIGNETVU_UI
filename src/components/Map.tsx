@@ -101,7 +101,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     userNetworkTraceFilter: false,
     userNetworkConnectionFilter: false,
     migrationReasons: ["all"],
-    selectedMigrationNetworkId: null, // 선택된 네트워크 ID 추가
+    selectedMigrationNetworkIds: [], // 배열로 변경
     searchQuery: "", // searchQuery도 포함
     forceIncludeNetworkIds: [], // 필요하다면 추가
   }) // Ensure this is closing a valid block or function
@@ -125,9 +125,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
-  const [selectedMigrationNetworkId, setSelectedMigrationNetworkId] = useState<
-    number | null
-  >(null)
+  const [selectedMigrationNetworkIds, setSelectedMigrationNetworkIds] =
+    useState<number[]>([])
+
   const [selectedEdgeId, setSelectedEdgeId] = useState<number | null>(null)
   const [selectedNetworkId, setSelectedNetworkId] = useState<number | null>(
     null,
@@ -563,9 +563,19 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     // })
   }
   const handleMigrationTraceClick = (networkId: number) => {
-    setSelectedMigrationNetworkId(
-      (prev) => (prev === networkId ? null : networkId), // 같은 네트워크를 클릭하면 원상복귀
+    setSelectedMigrationNetworkIds((prev) =>
+      prev.includes(networkId)
+        ? prev.filter((id) => id !== networkId)
+        : [...prev, networkId],
     )
+    setFilters((prev) => ({
+      ...prev,
+      selectedMigrationNetworkIds: prev.selectedMigrationNetworkIds.includes(
+        networkId,
+      )
+        ? prev.selectedMigrationNetworkIds.filter((id) => id !== networkId)
+        : [...prev.selectedMigrationNetworkIds, networkId],
+    }))
   }
   const handleEdgeClick = (edgeId: number) => {
     setSelectedEdgeId((prev) => (prev === edgeId ? null : edgeId)) // 엣지 토글
@@ -1141,8 +1151,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       }
       // 특정 네트워크가 선택된 경우, 해당 네트워크의 마이그레이션 트레이스만 추가
       if (
-        !selectedMigrationNetworkId || // 선택된 네트워크가 없거나
-        network.id === selectedMigrationNetworkId // 선택된 네트워크와 일치하는 경우
+        !filters.selectedMigrationNetworkIds.length || // 선택 없으면 전체
+        filters.selectedMigrationNetworkIds.includes(network.id)
       ) {
         network.migration_traces.forEach((trace) => {
           if (!tracesByNetwork[network.id]) {
@@ -1213,7 +1223,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       networks,
       filters,
       migrationYearRange,
-      selectedMigrationNetworkId,
+      selectedMigrationNetworkIds,
       user.name,
     ],
   )

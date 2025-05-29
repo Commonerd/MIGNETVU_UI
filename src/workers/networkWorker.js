@@ -87,6 +87,12 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
         filters.migrationReasons.includes(trace.reason),
       )
 
+    // 여러 네트워크 필터
+    const matchesSelectedMigrationNetworks =
+      !filters.selectedMigrationNetworkIds ||
+      filters.selectedMigrationNetworkIds.length === 0 ||
+      filters.selectedMigrationNetworkIds.includes(network.id)
+
     const matches =
       matchesNationality &&
       matchesEthnicity &&
@@ -95,7 +101,8 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
       matchesUserNetwork &&
       matchesEdge &&
       matchesEntityType &&
-      matchesMigrationReasons
+      matchesMigrationReasons &&
+      matchesSelectedMigrationNetworks
 
     if (matches) filtered.push(network)
 
