@@ -79,6 +79,20 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
           filters.entityType.includes(network.type)
         : network.type === filters.entityType)
 
+    // 엣지 타입 필터 (멀티 지원)
+    let matchesEdgeType = true
+    if (
+      filters.edgeType &&
+      filters.edgeType.length > 0 &&
+      !filters.edgeType.includes("all")
+    ) {
+      matchesEdgeType = network.edges.some((edge) =>
+        Array.isArray(filters.edgeType)
+          ? filters.edgeType.includes(edge.edgeType)
+          : filters.edgeType === edge.edgeType,
+      )
+    }
+
     // 이주 원인 필터
     const matchesMigrationReasons =
       filters.migrationReasons.includes("all") ||
@@ -102,7 +116,8 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
       matchesEdge &&
       matchesEntityType &&
       matchesMigrationReasons &&
-      matchesSelectedMigrationNetworks
+      matchesSelectedMigrationNetworks &&
+      matchesEdgeType // 추가
 
     if (matches) filtered.push(network)
 

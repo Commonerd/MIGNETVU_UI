@@ -585,6 +585,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         return { id: id, photo: imageUrl }
       })
       setPopupPosition({ x: entity.latitude, y: entity.longitude }) // 팝업 위치 설정
+      setOpenPopups((prev) => {
+        // 이미 열려있으면 중복 추가 방지
+        if (prev.some((p) => p.id === id)) return prev
+        return [...prev, { id, network: entity }]
+      })
     } else {
       console.warn(`Entity with ID ${id} not found.`)
     }
