@@ -2664,7 +2664,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                     [trace.latitude, trace.longitude],
                     [nextTrace.latitude, nextTrace.longitude],
                   ]}
-                  color="#3E2723" // 이주 추적성을 구분하기 위해 색상을 다르게 설정
+                  color="#1976d2" // 파란색 계열로 변경
                   weight={3}
                   opacity={0.7}
                   dashArray="5, 5"
@@ -2729,7 +2729,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                     [sourceTrace.latitude, sourceTrace.longitude],
                     [targetTrace.latitude, targetTrace.longitude],
                   ]}
-                  color="#1976d2"
+                  color="#ff9800" // 주황색 계열로 변경
                   weight={2}
                   dashArray="4, 4"
                   eventHandlers={{

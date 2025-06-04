@@ -48,7 +48,7 @@ const MigrationTraceDecorator = ({ traces }: { traces: any[] }) => {
         ],
 
         {
-          color: "#795548",
+          color: "#1976d2",
 
           weight: 3,
 
