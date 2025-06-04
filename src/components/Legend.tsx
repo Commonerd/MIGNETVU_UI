@@ -68,34 +68,15 @@ export const Legend = ({
       const div = L.DomUtil.create("div", "legend-container")
       div.style.cssText = legendStyles // 스타일 적용
       div.innerHTML = `
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: red; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("migrant")}
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: blue; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; background-color: #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid #DAA520; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("organization")}
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;">
-          <div style="display: inline-block; width: 15px; height: 15px; background-color: #FF5722; border: 2px solid #BF360C; border-radius: 50%; margin-right: 5px;"></div>
-          <div style="display: flex; align-items: center; margin-left: 5px;">
-            <div style="width: 25px; height: 2px; border-top: 3px dashed #8B4513; position: relative;">
-              <div style="position: absolute; top: -4px; right: 6px; width: 0; height: 0; border-left: 10px solid red; border-top: 5px solid transparent; border-bottom: 5px solid transparent;"></div>
-            </div>
-          </div>
-          ${t("migrationTrace")}
-        </div>
-      `
+      <div style="display: flex; align-items: center; margin-bottom: 7px;">
+        <div style="width: 28px; height: 0; border-top: 4px solid #ff9800; margin: 0 8px; vertical-align: middle;"></div>
+        <span style="color:#e65100; font-weight:600;">${t("Connections")}</span>
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom: 7px;">
+        <div style="width: 28px; height: 0; border-top: 4px solid #1976d2; margin: 0 8px; vertical-align: middle;"></div>
+        <span style="color:#1976d2; font-weight:600;">${t("Mobility")}</span>
+      </div>
+    `
       if (centralityType !== "none") {
         const topEntitiesHtml = topNetworks
           .map(
