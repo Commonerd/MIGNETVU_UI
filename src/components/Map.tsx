@@ -2749,18 +2749,15 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                         .openOn(e.target._map)
                     },
                   }}
-                />
-                        {showEdgeDetails && (
-          <Tooltip
-            permanent
-            direction="center"
-            opacity={0.7}
-          >
-            <span>
-              {t(edge.edgeType)} ({edge.strength}, {edge.year})
-            </span>
-          </Tooltip>
-        )}
+                >
+                  {showEdgeDetails && (
+                    <Tooltip permanent direction="center" opacity={0.7}>
+                      <span>
+                        {t(edge.edgeType)} ({edge.strength}, {edge.year})
+                      </span>
+                    </Tooltip>
+                  )}
+                </Polyline>
               )
             }),
           )}
