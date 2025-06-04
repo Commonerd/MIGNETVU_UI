@@ -2738,18 +2738,29 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                         .setLatLng(e.latlng)
                         .setContent(
                           `<div>
-                  <strong>Edge Info</strong><br/>
-                  Source: ${network.title}<br/>
-                  Target: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
-                  Year: ${edge.year}<br/>
-                  Type: ${edge.edgeType}<br/>
-                  Strength: ${edge.strength}
+                  <strong>{t("Connections")}</strong><br/>
+                  {t("Source")}: ${network.title}<br/>
+                  {t("Target")}: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
+                  {t("Year")}: ${edge.year}<br/>
+                  {t("Type")}: ${edge.edgeType}<br/>
+                  {t("Strength")}: ${edge.strength}
                 </div>`,
                         )
                         .openOn(e.target._map)
                     },
                   }}
                 />
+                        {showEdgeDetails && (
+          <Tooltip
+            permanent
+            direction="center"
+            opacity={0.7}
+          >
+            <span>
+              {t(edge.edgeType)} ({edge.strength}, {edge.year})
+            </span>
+          </Tooltip>
+        )}
               )
             }),
           )}
