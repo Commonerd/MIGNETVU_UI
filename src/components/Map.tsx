@@ -168,6 +168,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       photo: string
     }[]
   >([])
+  const [showMigrationTable, setShowMigrationTable] = useState(false)
+  const [showEdgeTable, setShowEdgeTable] = useState(false)
 
   const handleOpenPopup = async (
     network: Network,
@@ -2323,6 +2325,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                       onClick={() => handleNetworkEdgesToggle(popup.network.id)}
                       active={selectedNetworkId === popup.network.id}
                       title={t("Show only this network's connections")}
+                      style={{
+                        background: "#fff3e0", // 주황색 계열
+                        color: "#e65100",
+                        border: "1.5px solid #ffe0b2",
+                      }}
                     >
                       {selectedNetworkId === popup.network.id
                         ? ` ${t("Connections")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title}`
@@ -2336,6 +2343,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                         popup.network.id,
                       )}
                       title={t("Show only this network's migrations")}
+                      style={{
+                        background: "#e3f2fd", // 파란색 계열
+                        color: "#1976d2",
+                        border: "1.5px solid #bbdefb",
+                      }}
                     >
                       {selectedMigrationNetworkIds.includes(popup.network.id)
                         ? `${t("Mobility")}-${popup.network.title.length > 8 ? popup.network.title.slice(0, 8) + "…" : popup.network.title} `
@@ -2392,81 +2404,95 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 </div>
                 {/* === 마이그레이션 트레이스 테이블 추가 === */}
                 <div style={{ margin: "1rem 0" }}>
-                  <strong>{t("Migration Traces")}</strong>
-                  <table
+                  <button
+                    onClick={() => setShowMigrationTable((v) => !v)}
                     style={{
-                      width: "100%",
-                      fontSize: "12px",
-                      marginTop: "0.5rem",
-                      borderCollapse: "collapse",
+                      background: "#e3f2fd",
+                      color: "#1976d2",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "0.5em 1.2em",
+                      fontWeight: 600,
+                      fontSize: "1.05em",
+                      cursor: "pointer",
+                      marginBottom: "0.3em",
+                      boxShadow: "0 1px 3px rgba(33,150,243,0.07)",
+                      transition: "background 0.2s, color 0.2s",
                     }}
                   >
-                    <thead>
-                      <tr>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>
-                          {t("No")}
-                        </th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>
-                          {t("Year")}
-                        </th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>
-                          {t("Place")}
-                        </th>
-                        <th style={{ borderBottom: "1px solid #ccc" }}>
-                          {t("Reason")}
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {popup.network.migration_traces
-                        .sort((a, b) => a.migration_year - b.migration_year)
-                        .map((trace, idx) => (
-                          <tr key={trace.id}>
-                            <td style={{ textAlign: "center" }}>{idx + 1}</td>
-                            <td style={{ textAlign: "center" }}>
-                              {trace.migration_year}
-                            </td>
-                            <td>{trace.location_name}</td>
-                            <td>{trace.reason}</td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+                    {showMigrationTable ? t("Mobility") : t("Mobility")}
+                  </button>
+                  <CollapsibleSection open={showMigrationTable}>
+                    <MigrationStyledTable>
+                      <thead>
+                        <tr>
+                          <th>{t("No.")}</th>
+                          <th>{t("Year")}</th>
+                          <th>{t("Place")}</th>
+                          <th>{t("Reason")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {popup.network.migration_traces
+                          .sort((a, b) => a.migration_year - b.migration_year)
+                          .map((trace, idx) => (
+                            <tr key={trace.id}>
+                              <td>{idx + 1}</td>
+                              <td>{trace.migration_year}</td>
+                              <td>{trace.location_name}</td>
+                              <td>{trace.reason}</td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </MigrationStyledTable>
+                  </CollapsibleSection>
                 </div>
                 <div style={{ margin: "1rem 0" }}>
-                  <strong>{t("Edges")}</strong>
-                  <table
+                  <button
+                    onClick={() => setShowEdgeTable((v) => !v)}
                     style={{
-                      width: "100%",
-                      fontSize: "12px",
-                      marginTop: "0.5rem",
-                      borderCollapse: "collapse",
+                      background: "#fff3e0",
+                      color: "#e65100",
+                      border: "none",
+                      borderRadius: "6px",
+                      padding: "0.5em 1.2em",
+                      fontWeight: 600,
+                      fontSize: "1.05em",
+                      cursor: "pointer",
+                      marginBottom: "0.3em",
+                      boxShadow: "0 1px 3px rgba(255,152,0,0.07)",
+                      transition: "background 0.2s, color 0.2s",
                     }}
                   >
-                    <thead>
-                      <tr>
-                        <th>{t("Type")}</th>
-                        <th>{t("Target")}</th>
-                        <th>{t("Year")}</th>
-                        <th>{t("Strength")}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {popup.network.edges?.map((edge, idx) => {
-                        const target = networks?.find(
-                          (n) => n.id === edge.targetId,
-                        )
-                        return (
-                          <tr key={idx}>
-                            <td>{edge.edgeType}</td>
-                            <td>{target ? target.title : edge.targetId}</td>
-                            <td>{edge.year}</td>
-                            <td>{edge.strength}</td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                    {showEdgeTable ? t("Connections") : t("Connections")}
+                  </button>
+                  <CollapsibleSection open={showEdgeTable}>
+                    <EdgeStyledTable>
+                      <thead>
+                        <tr>
+                          <th>{t("Type")}</th>
+                          <th>{t("Target")}</th>
+                          <th>{t("Year")}</th>
+                          <th>{t("Strength")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {popup.network.edges?.map((edge, idx) => {
+                          const target = networks?.find(
+                            (n) => n.id === edge.targetId,
+                          )
+                          return (
+                            <tr key={idx}>
+                              <td>{edge.edgeType}</td>
+                              <td>{target ? target.title : edge.targetId}</td>
+                              <td>{edge.year}</td>
+                              <td>{edge.strength}</td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </EdgeStyledTable>
+                  </CollapsibleSection>
                 </div>
                 <div
                   className="mt-2 mb-2 border rounded text-xs"
@@ -3083,6 +3109,78 @@ const PopupFilterButton = styled.button<{ active?: boolean }>`
   &:hover {
     background: ${({ active }) => (active ? "#bbdefb" : "#ffe0b2")};
     color: ${({ active }) => (active ? "#1565c0" : "#ff9800")};
+  }
+`
+
+// Add this styled component for the collapsible section
+const CollapsibleSection = styled.div<{ open: boolean }>`
+  max-height: ${({ open }) => (open ? "600px" : "0")};
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: ${({ open }) => (open ? 1 : 0)};
+  transform: translateY(${({ open }) => (open ? "0" : "-10px")});
+  transition-property: max-height, opacity, transform;
+  margin-bottom: ${({ open }) => (open ? "1rem" : "0")};
+`
+// Table style for better readability
+const MigrationStyledTable = styled.table`
+  width: 100%;
+  font-size: 1rem;
+  margin-top: 0.7rem;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.93);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.07);
+  th,
+  td {
+    padding: 0.7em 0.6em;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: center;
+  }
+  th {
+    background: #e3f2fd;
+    color: #1976d2;
+    font-size: 1.08em;
+    font-weight: 600;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  td {
+    color: #3e2723;
+    font-size: 0.98em;
+  }
+`
+
+// 관계(엣지) 테이블은 주황색 계열로 스타일링
+const EdgeStyledTable = styled.table`
+  width: 100%;
+  font-size: 1rem;
+  margin-top: 0.7rem;
+  border-collapse: collapse;
+  background: #fff8e1;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(255, 152, 0, 0.08);
+  th,
+  td {
+    padding: 0.7em 0.6em;
+    border-bottom: 1px solid #ffe0b2;
+    text-align: center;
+  }
+  th {
+    background: #ffe0b2;
+    color: #e65100;
+    font-size: 1.08em;
+    font-weight: 600;
+  }
+  tr:last-child td {
+    border-bottom: none;
+  }
+  td {
+    color: #e65100;
+    font-size: 0.98em;
   }
 `
 export default Map
