@@ -1100,69 +1100,69 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       }
     }
   }, [workerFilteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
-  const CustomMapComponent = () => {
-    const map = useMap()
-    const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
-    const [clickedEdge, setClickedEdge] = useState<number | null>(null) // 클릭된 엣지 ID 상태 추가
-    const edges = useMemo(() => getEdges(), [filters, networks])
-    useEffect(() => {
-      if (edgeLayer) {
-        edgeLayer.clearLayers()
-        edgeLayer.remove()
-      }
-      const newEdgeLayer = L.layerGroup().addTo(map)
-      setEdgeLayer(newEdgeLayer)
-      edges.forEach((edge, index) => {
-        const positions = edge.slice(0, 2) as LatLngExpression[]
-        const color = "#8B4513" // 선 색상 (SaddleBrown)
-        const arrowColor = "#DAA520" // 화살표 색상 (GoldenRod)
-        const opacity = (edge[3] as number) * 0.16 + 0.2
-        const edgeType = edge[4] as string
-        const connectionStrength = edge[3] as number
-        const connectionYear = edge[5] as number
-        const leafletPolyline = L.polyline(positions, {
-          color: color,
-          weight: 2,
-          opacity: opacity,
-        }).addTo(newEdgeLayer)
-        const decorator = L.polylineDecorator(leafletPolyline, {
-          patterns: [
-            {
-              offset: "50%", // 화살표 위치
-              repeat: 0, // 반복 없음
-              symbol: L.Symbol.arrowHead({
-                pixelSize: 10, // 화살표 크기
-                polygon: true,
-                pathOptions: { color: arrowColor, fillOpacity: 1, weight: 0 },
-              }),
-            },
-          ],
-        }).addTo(newEdgeLayer)
-        // 툴팁 내용 설정
-        const tooltipContent =
-          clickedEdge === index
-            ? `<span>${t("connectionType")}: ${t(edgeType)}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t("connectionYear")}: ${connectionYear}</span>`
-            : `<span>${t(edgeType)} (${connectionStrength}, ${connectionYear})</span>`
-        // 툴팁 바인딩
-        leafletPolyline.bindTooltip(tooltipContent, {
-          permanent: showEdgeDetails, // 토글 상태에 따라 항상 표시
-          direction: "center",
-          opacity: 0.7,
-        })
-        // 클릭 이벤트 핸들러 추가
-        leafletPolyline.on("click", () => {
-          setClickedEdge(index) // 클릭된 엣지 ID 설정
-        })
-      })
-      return () => {
-        if (newEdgeLayer) {
-          newEdgeLayer.clearLayers()
-          newEdgeLayer.remove()
-        }
-      }
-    }, [map, edges, showEdgeDetails, clickedEdge]) // clickedEdge 상태를 의존성에 추가
-    return null
-  }
+  // const CustomMapComponent = () => {
+  //   const map = useMap()
+  //   const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
+  //   const [clickedEdge, setClickedEdge] = useState<number | null>(null) // 클릭된 엣지 ID 상태 추가
+  //   const edges = useMemo(() => getEdges(), [filters, networks])
+  //   useEffect(() => {
+  //     if (edgeLayer) {
+  //       edgeLayer.clearLayers()
+  //       edgeLayer.remove()
+  //     }
+  //     const newEdgeLayer = L.layerGroup().addTo(map)
+  //     setEdgeLayer(newEdgeLayer)
+  //     edges.forEach((edge, index) => {
+  //       const positions = edge.slice(0, 2) as LatLngExpression[]
+  //       const color = "#8B4513" // 선 색상 (SaddleBrown)
+  //       const arrowColor = "#DAA520" // 화살표 색상 (GoldenRod)
+  //       const opacity = (edge[3] as number) * 0.16 + 0.2
+  //       const edgeType = edge[4] as string
+  //       const connectionStrength = edge[3] as number
+  //       const connectionYear = edge[5] as number
+  //       const leafletPolyline = L.polyline(positions, {
+  //         color: color,
+  //         weight: 2,
+  //         opacity: opacity,
+  //       }).addTo(newEdgeLayer)
+  //       const decorator = L.polylineDecorator(leafletPolyline, {
+  //         patterns: [
+  //           {
+  //             offset: "50%", // 화살표 위치
+  //             repeat: 0, // 반복 없음
+  //             symbol: L.Symbol.arrowHead({
+  //               pixelSize: 10, // 화살표 크기
+  //               polygon: true,
+  //               pathOptions: { color: arrowColor, fillOpacity: 1, weight: 0 },
+  //             }),
+  //           },
+  //         ],
+  //       }).addTo(newEdgeLayer)
+  //       // 툴팁 내용 설정
+  //       const tooltipContent =
+  //         clickedEdge === index
+  //           ? `<span>${t("connectionType")}: ${t(edgeType)}<br/>${t("connectionStrength")}: ${connectionStrength}<br/>${t("connectionYear")}: ${connectionYear}</span>`
+  //           : `<span>${t(edgeType)} (${connectionStrength}, ${connectionYear})</span>`
+  //       // 툴팁 바인딩
+  //       leafletPolyline.bindTooltip(tooltipContent, {
+  //         permanent: showEdgeDetails, // 토글 상태에 따라 항상 표시
+  //         direction: "center",
+  //         opacity: 0.7,
+  //       })
+  //       // 클릭 이벤트 핸들러 추가
+  //       leafletPolyline.on("click", () => {
+  //         setClickedEdge(index) // 클릭된 엣지 ID 설정
+  //       })
+  //     })
+  //     return () => {
+  //       if (newEdgeLayer) {
+  //         newEdgeLayer.clearLayers()
+  //         newEdgeLayer.remove()
+  //       }
+  //     }
+  //   }, [map, edges, showEdgeDetails, clickedEdge]) // clickedEdge 상태를 의존성에 추가
+  //   return null
+  // }
   const HandleMapClick = () => {
     useMapEvents({
       click: (e) => {
@@ -1177,6 +1177,43 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       },
     })
     return null
+  }
+  //  가장 가까운 트레이스 찾기 함수
+  const findClosestTrace = (network, traces) => {
+    if (!traces.length) return null
+    let minDist = Infinity
+    let closest = null
+    traces.forEach((trace) => {
+      const dist = Math.sqrt(
+        Math.pow(network.latitude - trace.latitude, 2) +
+          Math.pow(network.longitude - trace.longitude, 2),
+      )
+      if (dist < minDist) {
+        minDist = dist
+        closest = trace
+      }
+    })
+    return closest
+  }
+
+  // 네트워크 id와 연도 기준으로 가장 가까운 마이그레이션 트레이스 찾기
+  const findClosestTraceByYear = (
+    networkId: number,
+    year: number,
+    allTraces: any[],
+  ) => {
+    const traces = allTraces.filter((t) => t.network_id === networkId)
+    if (!traces.length) return null
+    let minDiff = Infinity
+    let closest = traces[0]
+    traces.forEach((trace) => {
+      const diff = Math.abs(trace.migration_year - year)
+      if (diff < minDiff) {
+        minDiff = diff
+        closest = trace
+      }
+    })
+    return closest
   }
   const getMigrationTraces = () => {
     const tracesByNetwork: { [key: number]: any[] } = {}
@@ -2207,7 +2244,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
           {/* 지도에 표시될 네트워크 데이터 */}
-          {workerFilteredNetworks.map((network) => {
+          {/* {workerFilteredNetworks.map((network) => {
             const size = getNodeSize(
               centralityValues[network.id] || 0,
               centralityType,
@@ -2259,7 +2296,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 )}
               </Marker>
             )
-          })}
+          })} */}
           {openPopups.map((popup) => (
             <ResizablePopup
               key={popup.id}
@@ -2353,6 +2390,84 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     {popup.network.longitude.toFixed(5)}
                   </p>
                 </div>
+                {/* === 마이그레이션 트레이스 테이블 추가 === */}
+                <div style={{ margin: "1rem 0" }}>
+                  <strong>{t("Migration Traces")}</strong>
+                  <table
+                    style={{
+                      width: "100%",
+                      fontSize: "12px",
+                      marginTop: "0.5rem",
+                      borderCollapse: "collapse",
+                    }}
+                  >
+                    <thead>
+                      <tr>
+                        <th style={{ borderBottom: "1px solid #ccc" }}>
+                          {t("No")}
+                        </th>
+                        <th style={{ borderBottom: "1px solid #ccc" }}>
+                          {t("Year")}
+                        </th>
+                        <th style={{ borderBottom: "1px solid #ccc" }}>
+                          {t("Place")}
+                        </th>
+                        <th style={{ borderBottom: "1px solid #ccc" }}>
+                          {t("Reason")}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {popup.network.migration_traces
+                        .sort((a, b) => a.migration_year - b.migration_year)
+                        .map((trace, idx) => (
+                          <tr key={trace.id}>
+                            <td style={{ textAlign: "center" }}>{idx + 1}</td>
+                            <td style={{ textAlign: "center" }}>
+                              {trace.migration_year}
+                            </td>
+                            <td>{trace.location_name}</td>
+                            <td>{trace.reason}</td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div style={{ margin: "1rem 0" }}>
+                  <strong>{t("Edges")}</strong>
+                  <table
+                    style={{
+                      width: "100%",
+                      fontSize: "12px",
+                      marginTop: "0.5rem",
+                      borderCollapse: "collapse",
+                    }}
+                  >
+                    <thead>
+                      <tr>
+                        <th>{t("Type")}</th>
+                        <th>{t("Target")}</th>
+                        <th>{t("Year")}</th>
+                        <th>{t("Strength")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {popup.network.edges?.map((edge, idx) => {
+                        const target = networks?.find(
+                          (n) => n.id === edge.targetId,
+                        )
+                        return (
+                          <tr key={idx}>
+                            <td>{edge.edgeType}</td>
+                            <td>{target ? target.title : edge.targetId}</td>
+                            <td>{edge.year}</td>
+                            <td>{edge.strength}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
                 <div
                   className="mt-2 mb-2 border rounded text-xs"
                   style={{
@@ -2432,17 +2547,14 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
             </ResizablePopup>
           ))}
           <HandleMapClickForPopupSize />
-          <CustomMapComponent /> {/* MapContainer 내부에 위치시킴 */}
+          {/* <CustomMapComponent /> MapContainer 내부에 위치시킴 */}
           {migrationTraces.map((traces) =>
             traces.map((trace) => {
-              // 네트워크 이름 가져오기
               const network = networks?.find((n) => n.id === trace.network_id)
               const networkName = network ? network.title : "Unknown"
-              // Calculate size dynamically based on trace number
-              const baseSize = 14 // Base size for the marker
-              const sizeIncrement = 1.3 // Smaller increment size for each trace number
+              const baseSize = 14
+              const sizeIncrement = 1.3
               const size = baseSize + trace.traceNumber * sizeIncrement
-              // Filter out duplicate markers at the same position
               const isDuplicate = traces.some(
                 (t) =>
                   t.id !== trace.id &&
@@ -2450,7 +2562,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                   t.longitude === trace.longitude,
               )
               if (isDuplicate) {
-                return null // Skip rendering duplicate markers
+                return null
               }
               return (
                 <Marker
@@ -2468,43 +2580,38 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
             background-color: #FF5722;
             color: white;
             border-radius: 50%;
-            font-size: ${size / 1.2}px; /* Adjust font size dynamically */
+            font-size: ${size / 1.2}px;
             font-weight: bold;
             border: 2px solid #BF360C;">
             ${trace.traceNumber}
           </div>`,
                   })}
                   eventHandlers={{
-                    click: (e) => {
-                      L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(
-                          `
-          <div>
-            <strong>${t("Network ID")}:</strong> ${trace.network_id}-${networkName}<br/>
-            <strong>${t("Place")}:</strong> ${trace.location_name}<br/>
-            <strong>${t("Migration Year")}:</strong> ${trace.migration_year}<br/>
-            <strong>${t("Reason")}:</strong> ${trace.reason}
-          </div>
-        `,
-                        )
-                        .openOn(e.target._map)
+                    click: () => {
+                      const network = networks?.find(
+                        (n) => n.id === trace.network_id,
+                      )
+                      if (network) {
+                        handleOpenPopup(network, {
+                          x: trace.latitude,
+                          y: trace.longitude,
+                        })
+                      }
                     },
                   }}
                 >
-                  {/* 이주 원인 표시 여부에 따라 Tooltip 렌더링 */}
                   {showMigrationReasons && (
                     <Tooltip
                       permanent
                       direction="top"
-                      offset={[0, -12]} // Adjust tooltip position
+                      offset={[0, -12]}
                       className="custom-tooltip"
-                      opacity={0.7} // 투명도를 1로 설정하여 완전히 불투명하게 만듦
+                      opacity={0.7}
                     >
                       <div
                         style={{
                           textAlign: "center",
-                          fontSize: isMobile ? "14px" : "16px", // 모바일과 데스크톱에 따라 글자 크기 조정
+                          fontSize: isMobile ? "14px" : "16px",
                           fontWeight: "bold",
                           color: "#3E2723",
                         }}
@@ -2513,31 +2620,6 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                       </div>
                     </Tooltip>
                   )}
-                  <Popup>
-                    <div
-                      style={{
-                        fontSize: "14px",
-                        lineHeight: "1.6",
-                        margin: "0",
-                        padding: "0",
-                      }}
-                    >
-                      <div>
-                        <strong>{t("Network ID")}:</strong> {trace.network_id}-
-                        {networkName}
-                      </div>
-                      <div>
-                        <strong>{t("Place")}:</strong> {trace.location_name}
-                      </div>
-                      <div>
-                        <strong>{t("Migration Year")}:</strong>{" "}
-                        {trace.migration_year}
-                      </div>
-                      <div>
-                        <strong>{t("Reason")}:</strong> {trace.reason}
-                      </div>
-                    </div>
-                  </Popup>
                 </Marker>
               )
             }),
@@ -2597,6 +2679,52 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                 return null
               }
               return <MigrationTraceDecorator traces={migrationTraces.flat()} />
+            }),
+          )}
+          {workerFilteredNetworks.flatMap((network) =>
+            (network.edges || []).map((edge, idx) => {
+              const allTraces = migrationTraces.flat()
+              const sourceTrace = findClosestTraceByYear(
+                network.id,
+                edge.year,
+                allTraces,
+              )
+              const targetTrace = findClosestTraceByYear(
+                edge.targetId,
+                edge.year,
+                allTraces,
+              )
+              if (!sourceTrace || !targetTrace) return null
+
+              return (
+                <Polyline
+                  key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
+                  positions={[
+                    [sourceTrace.latitude, sourceTrace.longitude],
+                    [targetTrace.latitude, targetTrace.longitude],
+                  ]}
+                  color="#1976d2"
+                  weight={2}
+                  dashArray="4, 4"
+                  eventHandlers={{
+                    click: (e) => {
+                      L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(
+                          `<div>
+                  <strong>Edge Info</strong><br/>
+                  Source: ${network.title}<br/>
+                  Target: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
+                  Year: ${edge.year}<br/>
+                  Type: ${edge.edgeType}<br/>
+                  Strength: ${edge.strength}
+                </div>`,
+                        )
+                        .openOn(e.target._map)
+                    },
+                  }}
+                />
+              )
             }),
           )}
         </MapContainer>
