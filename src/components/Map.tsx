@@ -2747,7 +2747,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                           ]}
                           color="#e65100" // 더 진한 주황색
                           weight={edgeWeight}
-                          dashArray="4, 4"
+                          dashArray="5, 5"
                           eventHandlers={{
                             click: (e) => {
                               L.popup()
