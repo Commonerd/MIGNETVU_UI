@@ -55,6 +55,7 @@ import MigrationYearRangeInput from "./MigrationYearRangeInput"
 import Spinner from "./Spinner"
 import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
+import PolylineDecoratorWrapper from "./PolylineDecoratorWrapper"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({
@@ -2713,36 +2714,46 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                 !selectedNetworkId || network.id === selectedNetworkId,
             )
             .flatMap((network) =>
-              (network.edges || []).map((edge, idx) => {
-                const allTraces = migrationTraces.flat()
-                const sourceTrace = findClosestTraceByYear(
-                  network.id,
-                  edge.year,
-                  allTraces,
-                )
-                const targetTrace = findClosestTraceByYear(
-                  edge.targetId,
-                  edge.year,
-                  allTraces,
-                )
-                if (!sourceTrace || !targetTrace) return null
-
-                return (
-                  <Polyline
-                    key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
-                    positions={[
+              Array.isArray(network.edges)
+                ? network.edges.map((edge, idx) => {
+                    const allTraces = migrationTraces.flat()
+                    const sourceTrace = findClosestTraceByYear(
+                      network.id,
+                      edge.year,
+                      allTraces,
+                    )
+                    const targetTrace = findClosestTraceByYear(
+                      edge.targetId,
+                      edge.year,
+                      allTraces,
+                    )
+                    if (!sourceTrace || !targetTrace) return null
+                    const positions = [
                       [sourceTrace.latitude, sourceTrace.longitude],
                       [targetTrace.latitude, targetTrace.longitude],
-                    ]}
-                    color="#e65100" // 더 진한 주황색
-                    weight={3} // 더 두껍게
-                    dashArray="4, 4"
-                    eventHandlers={{
-                      click: (e) => {
-                        L.popup()
-                          .setLatLng(e.latlng)
-                          .setContent(
-                            `<div>
+                    ]
+                    // 강도에 따라 선 굵기 조정 (최소 2, 최대 10)
+                    const edgeWeight = Math.max(
+                      2,
+                      Math.min(10, edge.strength * 2),
+                    )
+                    return (
+                      <>
+                        <Polyline
+                          key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
+                          positions={[
+                            [sourceTrace.latitude, sourceTrace.longitude],
+                            [targetTrace.latitude, targetTrace.longitude],
+                          ]}
+                          color="#e65100" // 더 진한 주황색
+                          weight={edgeWeight}
+                          dashArray="4, 4"
+                          eventHandlers={{
+                            click: (e) => {
+                              L.popup()
+                                .setLatLng(e.latlng)
+                                .setContent(
+                                  `<div>
                             <strong>${t("Connections")}</strong><br/>
                             ${t("Source")}: ${network.title}<br/>
                             ${t("Target")}: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
@@ -2750,21 +2761,43 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                             ${t("Type")}: ${t(edge.edgeType)}<br/>
                             ${t("Strength")}: ${edge.strength}
                           </div>`,
-                          )
-                          .openOn(e.target._map)
-                      },
-                    }}
-                  >
-                    {showEdgeDetails && (
-                      <Tooltip permanent direction="center" opacity={0.7}>
-                        <span>
-                          {t(edge.edgeType)} ({edge.strength}, {edge.year})
-                        </span>
-                      </Tooltip>
-                    )}
-                  </Polyline>
-                )
-              }),
+                                )
+                                .openOn(e.target._map)
+                            },
+                          }}
+                        >
+                          {showEdgeDetails && (
+                            <Tooltip permanent direction="center" opacity={0.7}>
+                              <span>
+                                {t(edge.edgeType)} ({edge.strength}, {edge.year}
+                                )
+                              </span>
+                            </Tooltip>
+                          )}
+                        </Polyline>
+                        {/* 화살표 데코레이터 추가 */}
+                        <PolylineDecoratorWrapper
+                          positions={positions}
+                          patterns={[
+                            {
+                              offset: "50%",
+                              repeat: 0,
+                              symbol: L.Symbol.arrowHead({
+                                pixelSize: 12 + edgeWeight,
+                                polygon: true,
+                                pathOptions: {
+                                  color: "#FF0000",
+                                  fillOpacity: 1,
+                                  weight: edgeWeight,
+                                },
+                              }),
+                            },
+                          ]}
+                        />
+                      </>
+                    )
+                  })
+                : [],
             )}
         </MapContainer>
       )}
