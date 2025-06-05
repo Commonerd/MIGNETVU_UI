@@ -2734,8 +2734,8 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                     ]
                     // 강도에 따라 선 굵기 조정 (최소 2, 최대 10)
                     const edgeWeight = Math.max(
-                      2,
-                      Math.min(10, edge.strength * 2),
+                      1,
+                      Math.min(5, edge.strength * 2),
                     )
                     return (
                       <>
@@ -2783,7 +2783,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                               offset: "50%",
                               repeat: 0,
                               symbol: L.Symbol.arrowHead({
-                                pixelSize: 12 + edgeWeight,
+                                pixelSize: 5 + edgeWeight,
                                 polygon: true,
                                 pathOptions: {
                                   color: "#FF0000",
