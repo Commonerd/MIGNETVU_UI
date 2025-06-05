@@ -69,11 +69,11 @@ export const Legend = ({
       div.style.cssText = legendStyles // 스타일 적용
       div.innerHTML = `
       <div style="display: flex; align-items: center; margin-bottom: 7px;">
-        <div style="width: 28px; height: 0; border-top: 4px solid #ff9800; margin: 0 8px; vertical-align: middle;"></div>
+        <div style="width: 28px; height: 0; border-top: 4px dashed #ff9800; margin: 0 8px; vertical-align: middle;"></div>
         <span style="color:#e65100; font-weight:600;">${t("Connections")}</span>
       </div>
       <div style="display: flex; align-items: center; margin-bottom: 7px;">
-        <div style="width: 28px; height: 0; border-top: 4px solid #1976d2; margin: 0 8px; vertical-align: middle;"></div>
+        <div style="width: 28px; height: 0; border-top: 4px dashed #1976d2; margin: 0 8px; vertical-align: middle;"></div>
         <span style="color:#1976d2; font-weight:600;">${t("Mobility")}</span>
       </div>
     `

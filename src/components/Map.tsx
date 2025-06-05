@@ -2707,60 +2707,65 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
               return <MigrationTraceDecorator traces={migrationTraces.flat()} />
             }),
           )}
-          {workerFilteredNetworks.flatMap((network) =>
-            (network.edges || []).map((edge, idx) => {
-              const allTraces = migrationTraces.flat()
-              const sourceTrace = findClosestTraceByYear(
-                network.id,
-                edge.year,
-                allTraces,
-              )
-              const targetTrace = findClosestTraceByYear(
-                edge.targetId,
-                edge.year,
-                allTraces,
-              )
-              if (!sourceTrace || !targetTrace) return null
+          {workerFilteredNetworks
+            .filter(
+              (network) =>
+                !selectedNetworkId || network.id === selectedNetworkId,
+            )
+            .flatMap((network) =>
+              (network.edges || []).map((edge, idx) => {
+                const allTraces = migrationTraces.flat()
+                const sourceTrace = findClosestTraceByYear(
+                  network.id,
+                  edge.year,
+                  allTraces,
+                )
+                const targetTrace = findClosestTraceByYear(
+                  edge.targetId,
+                  edge.year,
+                  allTraces,
+                )
+                if (!sourceTrace || !targetTrace) return null
 
-              return (
-                <Polyline
-                  key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
-                  positions={[
-                    [sourceTrace.latitude, sourceTrace.longitude],
-                    [targetTrace.latitude, targetTrace.longitude],
-                  ]}
-                  color="#ff9800" // 주황색 계열로 변경
-                  weight={2}
-                  dashArray="4, 4"
-                  eventHandlers={{
-                    click: (e) => {
-                      L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(
-                          `<div>
-                  <strong>{t("Connections")}</strong><br/>
-                  {t("Source")}: ${network.title}<br/>
-                  {t("Target")}: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
-                  {t("Year")}: ${edge.year}<br/>
-                  {t("Type")}: ${edge.edgeType}<br/>
-                  {t("Strength")}: ${edge.strength}
-                </div>`,
-                        )
-                        .openOn(e.target._map)
-                    },
-                  }}
-                >
-                  {showEdgeDetails && (
-                    <Tooltip permanent direction="center" opacity={0.7}>
-                      <span>
-                        {t(edge.edgeType)} ({edge.strength}, {edge.year})
-                      </span>
-                    </Tooltip>
-                  )}
-                </Polyline>
-              )
-            }),
-          )}
+                return (
+                  <Polyline
+                    key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
+                    positions={[
+                      [sourceTrace.latitude, sourceTrace.longitude],
+                      [targetTrace.latitude, targetTrace.longitude],
+                    ]}
+                    color="#e65100" // 더 진한 주황색
+                    weight={3} // 더 두껍게
+                    dashArray="4, 4"
+                    eventHandlers={{
+                      click: (e) => {
+                        L.popup()
+                          .setLatLng(e.latlng)
+                          .setContent(
+                            `<div>
+                            <strong>${t("Connections")}</strong><br/>
+                            ${t("Source")}: ${network.title}<br/>
+                            ${t("Target")}: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
+                            ${t("Year")}: ${edge.year}<br/>
+                            ${t("Type")}: ${t(edge.edgeType)}<br/>
+                            ${t("Strength")}: ${edge.strength}
+                          </div>`,
+                          )
+                          .openOn(e.target._map)
+                      },
+                    }}
+                  >
+                    {showEdgeDetails && (
+                      <Tooltip permanent direction="center" opacity={0.7}>
+                        <span>
+                          {t(edge.edgeType)} ({edge.strength}, {edge.year})
+                        </span>
+                      </Tooltip>
+                    )}
+                  </Polyline>
+                )
+              }),
+            )}
         </MapContainer>
       )}
     </div>
