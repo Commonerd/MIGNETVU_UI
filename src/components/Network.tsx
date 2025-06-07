@@ -8,7 +8,6 @@ import useStore from "../store"
 import { useQueryAllNetworksOnMap } from "../hooks/useQueryNetworks"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
 import SearchResults from "./SearchResults"
-import { useNavigate } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { GlobeIcon } from "lucide-react"
 import { toast, ToastContainer } from "react-toastify"
@@ -16,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { ClipLoader } from "react-spinners"
 import * as XLSX from "xlsx"
 import { fetchAllComments } from "../api/comments"
+import { useRouter } from "next/router"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -30,7 +30,7 @@ export const Network = () => {
   const [isLatitudeComplete, setIsLatitudeComplete] = useState(false) // 상태로 Birth/Death 전환 관리
   const [isTargetIdComplete, setIsTargetIdComplete] = useState(false) // 상태로 Birth/Death 전환 관리
 
-  const navigate = useNavigate()
+  const navigate = useRouter()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 

@@ -1,10 +1,10 @@
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
 import { CsrfToken } from "../types"
 import useStore from "../store"
+import { useRouter } from "next/router"
 
 export const useError = () => {
-  const navigate = useNavigate()
+  const navigate = useRouter()
   const resetEditedTask = useStore((state) => state.resetEditedTask)
   const getCsrfToken = async () => {
     const { data } = await axios.get<CsrfToken>(

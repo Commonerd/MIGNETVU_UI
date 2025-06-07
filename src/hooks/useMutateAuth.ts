@@ -1,12 +1,12 @@
 import axios from "axios"
-import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useStore from "../store"
 import { Credential, LoginResponse } from "../types"
 import { useError } from "../hooks/useError"
+import { useRouter } from "next/router"
 
 export const useMutateAuth = () => {
-  const navigate = useNavigate()
+  const navigate = useRouter()
   const resetEditedTask = useStore((state) => state.resetEditedTask)
   const { switchErrorHandling } = useError()
 

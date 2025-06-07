@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { members } from '../members' // 회원 목데이터 import
-import { useNavigate } from 'react-router-dom' // 페이지 이동용
-import styled from 'styled-components' // styled-components import
+import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { members } from "../members" // 회원 목데이터 import
+import styled from "styled-components" // styled-components import
+import { useRouter } from "next/router"
 
 interface LoginProps {
   setUser: React.Dispatch<
@@ -12,8 +12,8 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ setUser }) => {
   const { t } = useTranslation()
-  const [credentials, setCredentials] = useState({ email: '', password: '' })
-  const navigate = useNavigate() // 페이지 이동을 위해 useNavigate 사용
+  const [credentials, setCredentials] = useState({ email: "", password: "" })
+  const navigate = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value })
@@ -30,23 +30,23 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
     )
 
     if (user) {
-      sessionStorage.setItem('isLoggedIn', 'true') // 로그인 상태 저장
+      sessionStorage.setItem("isLoggedIn", "true") // 로그인 상태 저장
       setUser({ email: user.email, isLoggedIn: true }) // 사용자 이름과 로그인 상태 설정
-      alert(t('loginSuccess'))
-      navigate('/') // 홈으로 리다이렉트
+      alert(t("loginSuccess"))
+      navigate("/") // 홈으로 리다이렉트
     } else {
-      alert(t('loginError'))
+      alert(t("loginError"))
     }
   }
 
   return (
     <Container>
       <LoginBox>
-        <Title>{t('login')}</Title>
+        <Title>{t("login")}</Title>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="email" className="block">
-              {t('email')}
+              {t("email")}
             </label>
             <Input
               type="email"
@@ -59,7 +59,7 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="password" className="block">
-              {t('password')}
+              {t("password")}
             </label>
             <Input
               type="password"
@@ -70,7 +70,7 @@ const Login: React.FC<LoginProps> = ({ setUser }) => {
               required
             />
           </div>
-          <Button type="submit">{t('login')}</Button>
+          <Button type="submit">{t("login")}</Button>
         </form>
       </LoginBox>
     </Container>

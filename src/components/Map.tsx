@@ -87,10 +87,23 @@ L.Icon.Default.mergeOptions({
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
 })
-const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
-  const isMobile = window.innerWidth <= 768
+
+type MapProps = {
+  user: any
+  setUser: any
+  guideStep: number
+  networks: any[]
+}
+
+const Map: React.FC<{ guideStep?: number }> = ({
+  user,
+  setUser,
+  guideStep = 1,
+  networks,
+}) => {
+  const [isMobile, setIsMobile] = useState(false)
   const { t } = useTranslation()
-  const [networks, setNetworks] = useState<Network[] | undefined>()
+  // const [networks, setNetworks] = useState<Network[] | undefined>()
   const [showNetworkNames, setShowNetworkNames] = useState<boolean>(false) // 네트워크 이름 표시 여부 상태 추가
   const [filters, setFilters] = useState<FilterOptions>({
     nationality: ["all"],
@@ -117,7 +130,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     lat: number
     lng: number
   } | null>(null)
-  const { user } = useStore()
+  // const { user } = useStore()
   const { data } = useQueryAllNetworksOnMap()
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
@@ -171,6 +184,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   >([])
   const [showMigrationTable, setShowMigrationTable] = useState(false)
   const [showEdgeTable, setShowEdgeTable] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsMobile(window.innerWidth <= 768)
+    }
+  }, [])
 
   const handleOpenPopup = async (
     network: Network,
@@ -1350,7 +1369,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1381,7 +1402,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1417,7 +1440,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1451,7 +1476,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1482,7 +1509,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 }}
                 placeholder={t("selectCentrality")}
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1516,7 +1545,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={document.body}
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                }
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1662,7 +1693,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPortalTarget={
+                    typeof window !== "undefined" ? document.body : undefined
+                  } // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1708,7 +1741,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPortalTarget={
+                    typeof window !== "undefined" ? document.body : undefined
+                  } // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1761,7 +1796,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPortalTarget={
+                    typeof window !== "undefined" ? document.body : undefined
+                  } // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1819,7 +1856,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   }),
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                } // 드롭다운을 body에 렌더링
                 menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1873,7 +1912,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPortalTarget={
+                    typeof window !== "undefined" ? document.body : undefined
+                  } // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1923,7 +1964,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   }),
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
-                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                menuPortalTarget={
+                  typeof window !== "undefined" ? document.body : undefined
+                } // 드롭다운을 body에 렌더링
                 menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -2028,7 +2071,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             <div
               className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
               style={{
-                maxWidth: window.innerWidth <= 768 ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
+                maxWidth: isMobile ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
                 marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
                 position: "relative",
                 backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도

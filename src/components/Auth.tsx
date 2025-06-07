@@ -7,7 +7,7 @@ import styled from "styled-components"
 import { CsrfToken } from "../types"
 import axios from "axios"
 import GoogleLoginButton from "./GoogleLoginButton"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/router"
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
@@ -19,7 +19,7 @@ export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
   const [csrfLoaded, setCsrfLoaded] = useState(false)
-  const navigate = useNavigate()
+  const navigate = useRouter()
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)

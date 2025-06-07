@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
-import axios from 'axios'
-import { members } from '../members'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react"
+import { useTranslation } from "react-i18next"
+import styled from "styled-components"
+import axios from "axios"
+import { members } from "../members"
+import { useRouter } from "next/router"
 
 interface RegisterProps {
   setUser: React.Dispatch<
@@ -15,12 +15,12 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
   const { t } = useTranslation()
   const [formData, setFormData] = useState({
     id: 0,
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   })
-  const navigate = useNavigate() // 페이지 이동을 위해 useNavigate 사용
+  const navigate = useRouter()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -29,7 +29,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
-      alert(t('passwordMismatch'))
+      alert(t("passwordMismatch"))
       return
     }
     // Mock API call for registration (testing without real backend)
@@ -38,7 +38,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
         (member) => member.email === formData.email,
       )
       if (existingUser) {
-        throw new Error('User already exists')
+        throw new Error("User already exists")
       }
       members.push({
         id: formData.id,
@@ -51,22 +51,22 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
 
     try {
       await mockRegister()
-      alert(t('registerSuccess'))
+      alert(t("registerSuccess"))
       setUser({ email: formData.email, isLoggedIn: true })
-      navigate('/') // 홈으로 리다이렉트
+      navigate("/") // 홈으로 리다이렉트
     } catch (error) {
-      alert(t('registerError'))
+      alert(t("registerError"))
     }
   }
 
   return (
     <Container>
       <RegisterBox>
-        <Title>{t('register')}</Title>
+        <Title>{t("register")}</Title>
         <form onSubmit={handleSubmit}>
           <div>
             <label htmlFor="name" className="block">
-              {t('name')}
+              {t("name")}
             </label>
             <Input
               type="text"
@@ -79,7 +79,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="email" className="block">
-              {t('email')}
+              {t("email")}
             </label>
             <Input
               type="email"
@@ -92,7 +92,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="password" className="block">
-              {t('password')}
+              {t("password")}
             </label>
             <Input
               type="password"
@@ -105,7 +105,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
           </div>
           <div>
             <label htmlFor="confirmPassword" className="block">
-              {t('confirmPassword')}
+              {t("confirmPassword")}
             </label>
             <Input
               type="password"
@@ -116,7 +116,7 @@ const Register: React.FC<RegisterProps> = ({ setUser }) => {
               required
             />
           </div>
-          <Button type="submit">{t('register')}</Button>
+          <Button type="submit">{t("register")}</Button>
         </form>
       </RegisterBox>
     </Container>

@@ -1,15 +1,16 @@
 import React from "react"
-import { Link, useNavigate } from "react-router-dom"
+import Link from "next/link"
 import { useTranslation } from "react-i18next"
 import { Info, LogIn, PlusCircle, User, LogOut } from "lucide-react"
 import useStore from "../store"
 import { useMutateAuth } from "../hooks/useMutateAuth"
 import { useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/router"
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation()
   const { user, setUser } = useStore()
-  const navigate = useNavigate()
+  const navigate = useRouter()
   const queryClient = useQueryClient()
   const { logoutMutation } = useMutateAuth()
 
@@ -28,7 +29,7 @@ const Header: React.FC = () => {
       id: 0,
     })
     alert(t("logoutSuccess"))
-    navigate("/")
+    router.push("/")
     window.location.reload()
   }
 
@@ -50,7 +51,7 @@ const Header: React.FC = () => {
           >
             <Info className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
-          <Link to="/" className="flex items-center gap-1">
+          <Link href="/" className="flex items-center gap-1">
             <img
               src="/hisnetvu2.png"
               alt="Globe"
@@ -76,10 +77,10 @@ const Header: React.FC = () => {
               </span>
 
               {/* 네비게이션 아이콘 */}
-              <Link to="/network" className="flex items-center">
+              <Link href="/network" className="flex items-center">
                 <PlusCircle className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
-              <Link to="/editprofile" className="flex items-center">
+              <Link href="/editprofile" className="flex items-center">
                 <User className="w-4 h-4 sm:w-5 sm:h-5" />
               </Link>
               <button onClick={logout} className="flex items-center">
@@ -88,7 +89,7 @@ const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <Link to="/login" className="flex items-center">
+              <Link href="/login" className="flex items-center">
                 <LogIn className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="hidden sm:inline text-xs sm:text-sm">
                   {t("login")}

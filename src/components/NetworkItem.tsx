@@ -3,8 +3,9 @@ import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid"
 import useStore from "../store"
 import { Network } from "../types"
 import { useMutateNetwork } from "../hooks/useMutateNetwork"
-import { useLocation, useNavigate } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useTranslation } from "react-i18next"
+import { useRouter } from "next/router"
 
 const NetworkItemMemo: FC<
   Omit<Network, "created_at" | "updated_at"> & {
@@ -37,7 +38,7 @@ const NetworkItemMemo: FC<
 }) => {
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
   const { deleteNetworkMutation } = useMutateNetwork()
-  const navigate = useNavigate()
+  const navigate = useRouter()
   const location = useLocation()
   const { t } = useTranslation()
   const { user } = useStore()
