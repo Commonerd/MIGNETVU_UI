@@ -56,6 +56,7 @@ import Spinner from "./Spinner"
 import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
 import PolylineDecoratorWrapper from "./PolylineDecoratorWrapper"
+import { User } from "../types"
 
 // 중심 노드로 포커스 이동
 const FocusMap = ({
@@ -89,13 +90,13 @@ L.Icon.Default.mergeOptions({
 })
 
 type MapProps = {
-  user: any
-  setUser: any
-  guideStep: number
+  user: User
+  setUser: (user: User) => void
+  guideStep?: number
   networks: any[]
 }
 
-const Map: React.FC<{ guideStep?: number }> = ({
+const Map: React.FC<MapProps> = ({
   user,
   setUser,
   guideStep = 1,
