@@ -1,29 +1,32 @@
 import { useEffect } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { Auth } from "./components/Auth"
-import { Todo } from "./components/Todo"
+import { Auth } from "../components/Auth"
+import { Todo } from "../components/Todo"
 import "./i18n"
 
 import axios from "axios"
-import { CsrfToken } from "./types"
-import Header from "./components/Header"
-import Footer from "./components/Footer"
+import { CsrfToken } from "../types"
+import Header from "../components/Header"
+import Footer from "../components/Footer"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
-import NetworkForm from "./components/NetworkForm"
-import Register from "./components/Register"
-import Login from "./components/Login"
-import Map from "./components/Map"
-import { Network } from "./components/Network"
+// import NetworkForm from "./components/NetworkForm"
+// import Register from "./components/Register"
+// import Login from "./components/Login"
+import Map from "../components/Map"
+// import { Network } from "./components/Network"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import useStore from "./store"
-import EditProfile from "./components/EditProfile"
+import useStore from "../store"
+// import EditProfile from "./components/EditProfile"
 import Modal from "react-modal"
 import { GoogleOAuthProvider } from "@react-oauth/google"
+import { useQueryAllNetworksOnMap } from "../hooks/useQueryNetworks"
 
 Modal.setAppElement("#root") // 모달 접근성을 위한 설정
 function App() {
   const [guideStep, setGuideStep] = useState(1)
+
+  const { data: networks = [] } = useQueryAllNetworksOnMap()
 
   useEffect(() => {
     axios.defaults.withCredentials = true
@@ -110,22 +113,27 @@ function App() {
             <main className="flex-grow mb-16">
               {" "}
               {/* mb-16 to account for the fixed footer height */}
-              <Routes>
+              {/* <Routes>
                 <Route
                   path="/"
-                  element={
-                    <Map user={user} setUser={setUser} guideStep={guideStep} />
-                  }
-                />
-                <Route path="/login" element={<Auth />} />
+                  element={ */}
+              <Map
+                user={user}
+                setUser={setUser}
+                guideStep={guideStep}
+                networks={networks}
+              />
+              {/* }
+                /> */}
+              {/* <Route path="/login" element={<Auth />} />
                 <Route path="/network" element={<Network />} />
                 <Route path="/editprofile" element={<EditProfile />} />
-                <Route path="/todo" element={<Todo />} />
-                {/* 잠정 */}
-                {/* <Route path="/add-network" element={<NetworkForm />} /> */}
-                {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
-                {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
-              </Routes>
+                <Route path="/todo" element={<Todo />} /> */}
+              {/* 잠정 */}
+              {/* <Route path="/add-network" element={<NetworkForm />} /> */}
+              {/* <Route path="/login" element={<Login setUser={setUser} />} /> */}
+              {/* <Route path="/register" element={<Register setUser={setUser} />} /> */}
+              {/* </Routes> */}
             </main>{" "}
             <Footer />
             {/* 모달 */}
