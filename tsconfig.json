@@ -18,10 +18,24 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
-    "src"
+    "app/api",
+    "app/components",
+    "src",
+    ".next/types/**/*.ts"
   ],
-  "types": ["@types/react-i18next"]
+  "types": [
+    "@types/react-i18next"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
