@@ -1,6 +1,6 @@
 // api/comments.ts
 import axios from "axios"
-import { Comment } from "../types"
+import { Comment } from "../types/index"
 
 const API_URL = process.env.REACT_APP_API_URL
 
@@ -17,7 +17,7 @@ export const fetchAllComments = async () => {
 }
 
 export const createComment = async (
-  comment: Omit<Comment, "id" | "createdAt" | "updatedAt">,
+  comment: Omit<Comment, "id" | "created_at" | "updated_at">,
 ) => {
   const response = await axios.post<Comment>(`${API_URL}/comments`, comment)
   return response.data

@@ -1,5 +1,5 @@
 import L from "leaflet"
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { useTranslation } from "react-i18next"
 import { useMap } from "react-leaflet"
 
@@ -109,4 +109,76 @@ export const Legend = ({
       legend.remove()
     }
   }, [map, t, topNetworks, centralityType, onEntityClick, networkAnalysis])
+
+  return (
+    <div
+      className="legend-container"
+      style={{
+        backgroundColor: "rgba(255, 255, 255, 0.7)",
+        padding: "7px",
+        top: 0,
+        right: "1rem",
+        borderRadius: "0.5rem",
+        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
+        fontSize: "0.7rem",
+        maxWidth: "10rem",
+        overflowY: "auto",
+      }}
+    >
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "7px" }}
+      >
+        <div
+          style={{
+            width: "28px",
+            height: 0,
+            borderTop: "4px dashed #ff9800",
+            margin: "0 8px",
+            verticalAlign: "middle",
+          }}
+        ></div>
+        <span style={{ color: "#e65100", fontWeight: 600 }}>
+          {t("Connections")}
+        </span>
+      </div>
+      <div
+        style={{ display: "flex", alignItems: "center", marginBottom: "7px" }}
+      >
+        <div
+          style={{
+            width: "28px",
+            height: 0,
+            borderTop: "4px dashed #1976d2",
+            margin: "0 8px",
+            verticalAlign: "middle",
+          }}
+        ></div>
+        <span style={{ color: "#1976d2", fontWeight: 600 }}>
+          {t("Mobility")}
+        </span>
+      </div>
+      {centralityType !== "none" && (
+        <>
+          <br />
+          <strong>{t("topEntities")}</strong>
+          <br />
+          {topNetworks.map((entity, index) => (
+            <div
+              key={entity.id}
+              style={{ cursor: "pointer" }}
+              onClick={() => onEntityClick(entity.id)}
+            >
+              {index + 1}. {entity.name}: {entity.centrality.toFixed(2)}
+            </div>
+          ))}
+          <br />
+          <strong>{t("Analysis Results")}</strong>
+          <br />
+          {networkAnalysis.map((result, idx) => (
+            <div key={idx}>{result}</div>
+          ))}
+        </>
+      )}
+    </div>
+  )
 }

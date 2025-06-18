@@ -10,9 +10,6 @@ import Header from "./components/Header"
 import Footer from "./components/Footer"
 import { useTranslation } from "react-i18next"
 import { useState } from "react"
-import NetworkForm from "./components/NetworkForm"
-import Register from "./components/Register"
-import Login from "./components/Login"
 import Map from "./components/Map"
 import { Network } from "./components/Network"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -29,7 +26,7 @@ function App() {
     axios.defaults.withCredentials = true
     const getCsrfToken = async () => {
       const { data } = await axios.get<CsrfToken>(
-        `${process.env.REACT_APP_API_URL}/csrf`,
+        `${process.env.NEXT_PUBLIC_API_URL}/csrf`,
       )
       axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
     }
@@ -80,7 +77,7 @@ function App() {
   useEffect(() => {
     const fetchUserState = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           credentials: "include", // 쿠키를 포함해 요청
         })
         if (res.ok) {

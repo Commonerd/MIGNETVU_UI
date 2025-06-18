@@ -44,9 +44,12 @@ const AIStorytelling: React.FC<Props> = ({
         { role: "user", content: prompt },
       ])
       setStory(result)
-    } catch (e) {
+    } catch (e: any) {
       alert(
-        "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
+        "AI 기능을 사용할 수 없습니다: " +
+          (e && typeof e === "object" && "message" in e
+            ? (e as any).message
+            : JSON.stringify(e)),
       )
     }
     setLoading(false)
@@ -87,9 +90,12 @@ const AIStorytelling: React.FC<Props> = ({
         },
       ])
       setStory(result)
-    } catch (e) {
+    } catch (e: unknown) {
       alert(
-        "AI 기능을 사용할 수 없습니다: " + (e?.message || JSON.stringify(e)),
+        "AI 기능을 사용할 수 없습니다: " +
+          (e && typeof e === "object" && "message" in e
+            ? (e as { message: string }).message
+            : JSON.stringify(e)),
       )
     }
     setLoading(false)

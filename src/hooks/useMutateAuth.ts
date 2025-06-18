@@ -1,19 +1,19 @@
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useStore from "../store"
 import { Credential, LoginResponse } from "../types"
 import { useError } from "../hooks/useError"
-import { useRouter } from "next/router"
 
 export const useMutateAuth = () => {
-  const navigate = useRouter()
+  const navigate = useNavigate()
   const resetEditedTask = useStore((state) => state.resetEditedTask)
   const { switchErrorHandling } = useError()
 
   const loginMutation = useMutation<LoginResponse, Error, Credential>(
     async (user: Credential) => {
       const response = await axios.post<LoginResponse>(
-        `${process.env.REACT_APP_API_URL}/login`,
+        `${process.env.NEXT_PUBLIC_API_URL}/login`,
         user,
       )
       return response.data
@@ -33,7 +33,7 @@ export const useMutateAuth = () => {
   )
   const registerMutation = useMutation(
     async (user: Credential) =>
-      await axios.post(`${process.env.REACT_APP_API_URL}/signup`, user),
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/signup`, user),
     {
       onError: (err: any) => {
         if (err.response.data.message) {
@@ -45,7 +45,7 @@ export const useMutateAuth = () => {
     },
   )
   const logoutMutation = useMutation(
-    async () => await axios.post(`${process.env.REACT_APP_API_URL}/logout`),
+    async () => await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/logout`),
     {
       onSuccess: () => {
         resetEditedTask()

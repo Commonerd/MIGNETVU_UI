@@ -12,7 +12,7 @@ export const useMutateProfile = () => {
     const getCsrfToken = async () => {
       try {
         const { data } = await axios.get<CsrfToken>(
-          `${process.env.REACT_APP_API_URL}/csrf`,
+          `${process.env.NEXT_PUBLIC_API_URL}/csrf`,
         )
         axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
         setCsrfLoaded(true)
@@ -27,7 +27,7 @@ export const useMutateProfile = () => {
   const updateProfileMutation = useMutation(
     (profileData: ProfileUpdateData) =>
       axios.put(
-        `${process.env.REACT_APP_API_URL}/user/update-profile`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/update-profile`,
         profileData,
       ),
     {

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react"
 import useCommentStore from "../store/comments"
-import { Comment } from "../types"
+import { Comment } from "../types/index"
 import useStore from "../store"
 import { useTranslation } from "react-i18next"
+
+type CommentSectionProps = {
+  networkId: number
+}
 
 const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
   const {
@@ -28,7 +32,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ networkId }) => {
     if (newComment.trim()) {
       const commentData = {
         network_id: networkId,
-        user_id: user?.id || null, // 로그인하지 않은 경우 user_id를 null로 설정
+        user_id: user?.id ?? 0, // null 대신 0
         user_name: user?.name || "Guest", // 로그인하지 않은 경우 기본 이름 설정
         user_role: user?.role || "Guest", // 로그인하지 않은 경우 기본 역할 설정
         content: newComment,

@@ -44,6 +44,7 @@ export const EditProfile = () => {
       if (res != null) {
         toast.success("Profile updated successfully!")
         setUser({
+          id: res.data.id ?? user.id,
           isLoggedIn: true,
           name: res.data.name,
           email: res.data.email,

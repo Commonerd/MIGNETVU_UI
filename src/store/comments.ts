@@ -14,7 +14,7 @@ interface CommentState {
   fetchComments: (networkId: number) => Promise<void>
   createComment: (
     networkId: number,
-    comment: Omit<Comment, "id" | "createdAt" | "updatedAt">,
+    comment: Omit<Comment, "id" | "created_at" | "updated_at">,
   ) => Promise<Comment>
   updateComment: (networkId: number, comment: Comment) => Promise<void>
   deleteComment: (networkId: number, id: number) => Promise<void>

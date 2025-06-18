@@ -1,14 +1,14 @@
 import axios from "axios"
+import { useRouter } from "next/router"
 import { CsrfToken } from "../types"
 import useStore from "../store"
-import { useRouter } from "next/router"
 
 export const useError = () => {
-  const navigate = useRouter()
+  const router = useRouter()
   const resetEditedTask = useStore((state) => state.resetEditedTask)
   const getCsrfToken = async () => {
     const { data } = await axios.get<CsrfToken>(
-      `${process.env.REACT_APP_API_URL}/csrf`,
+      `${process.env.NEXT_PUBLIC_API_URL}/csrf`,
     )
     axios.defaults.headers.common["X-CSRF-TOKEN"] = data.csrf_token
   }
@@ -21,12 +21,12 @@ export const useError = () => {
       case "invalid or expired jwt":
         alert("access token expired, please login")
         resetEditedTask()
-        navigate("/")
+        router.push("/")
         break
       case "missing or malformed jwt":
         alert("access token is not valid, please login")
         resetEditedTask()
-        navigate("/")
+        router.push("/")
         break
       case "duplicated key not allowed":
         alert("email already exist, please use another one")

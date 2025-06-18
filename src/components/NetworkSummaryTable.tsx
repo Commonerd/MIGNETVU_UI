@@ -1,6 +1,6 @@
 import React from "react"
 
-export default function NetworkSummaryTable({ networks }) {
+export default function NetworkSummaryTable({ networks }: { networks: any[] }) {
   if (!networks || networks.length === 0) return <p>No data</p>
   return (
     <section>

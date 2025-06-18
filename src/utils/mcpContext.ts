@@ -1,3 +1,5 @@
+import { Network } from "../types"
+
 export function buildMcpContext(network: Network) {
   return {
     type: network.type,

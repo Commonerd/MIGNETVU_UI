@@ -1,18 +1,21 @@
 import React, { useMemo } from "react"
 import DeckGL from "@deck.gl/react"
-import { ScatterplotLayer, LineLayer } from "@deck.gl/layers"
+import { ScatterplotLayer, LineLayer, BitmapLayer } from "@deck.gl/layers"
 import { TileLayer } from "@deck.gl/geo-layers"
 import { MapView } from "@deck.gl/core"
+import type { PickingInfo } from "@deck.gl/core"
+import type { Network, Edge } from "../types"
+import { TileBoundingBox, GeoBoundingBox } from "../types"
 
 type Props = {
   width: string | number
   height: string | number
-  networks: any[]
-  edges: any[]
-  highlightedNode: any
+  networks: Network[]
+  edges: Edge[]
+  highlightedNode: Network | null
   centralityValues: Record<number, number>
   centralityType: string
-  onNodeClick: (network: any) => void
+  onNodeClick: (network: Network) => void
 }
 
 const DeckGLOverlay: React.FC<Props> = ({
@@ -35,21 +38,22 @@ const DeckGLOverlay: React.FC<Props> = ({
         maxZoom: 19,
         tileSize: 256,
         renderSubLayers: (props) => {
-          const {
-            bbox: { west, south, east, north },
-          } = props.tile
-          return [
-            new ScatterplotLayer(props, {
-              id: `${props.id}-tile`,
-              data: [],
-            }),
-            // 실제 타일 이미지를 렌더링
-            new (require("@deck.gl/layers").BitmapLayer)({
-              id: `${props.id}-bitmap`,
-              bounds: [west, south, east, north],
-              image: props.data,
-            }),
-          ]
+          const { bbox } = props.tile
+
+          if (isGeoBoundingBox(bbox)) {
+            const { west, south, east, north } = bbox
+            return [
+              new BitmapLayer(props, {
+                id: `${props.id}-bitmap`,
+                bounds: [west, south, east, north],
+                image: props.data,
+              }),
+            ]
+          } else {
+            // Handle NonGeoBoundingBox case if necessary
+            console.error("NonGeoBoundingBox is not supported in this context.")
+            return null
+          }
         },
       }),
     [],
@@ -61,24 +65,19 @@ const DeckGLOverlay: React.FC<Props> = ({
       new ScatterplotLayer({
         id: "scatterplot-layer",
         data: networks,
-        getPosition: (d) => [d.longitude, d.latitude],
-        getRadius: (d) =>
-          Math.max(
-            6,
-            (centralityValues[d.id] || 0) *
-              (centralityType === "degree" ? 0.5 : 1.5) +
-              6,
-          ),
-        getFillColor: (d) =>
-          highlightedNode && highlightedNode.id === d.id
-            ? [255, 165, 0, 255]
-            : d.type === "Organization"
-              ? [0, 0, 255, 255]
-              : [255, 0, 0, 255],
+        getPosition: (d: Network) => [d.longitude, d.latitude],
+        getRadius: (d: Network & { radius?: number }) => d.radius ?? 10,
+        getFillColor: (
+          d: Network & { color?: [number, number, number, number] },
+        ) => d.color ?? [0, 0, 255, 200],
         pickable: true,
-        onClick: ({ object }) => onNodeClick(object),
+        onClick: (info: PickingInfo & { object?: Network }) => {
+          if (info.object) {
+            onNodeClick(info.object)
+          }
+        },
       }),
-    [networks, highlightedNode, centralityValues, centralityType, onNodeClick],
+    [networks, onNodeClick],
   )
 
   // 엣지(관계) 레이어
@@ -87,8 +86,14 @@ const DeckGLOverlay: React.FC<Props> = ({
       new LineLayer({
         id: "line-layer",
         data: edges,
-        getSourcePosition: (d) => [d[0][1], d[0][0]], // [lng, lat]
-        getTargetPosition: (d) => [d[1][1], d[1][0]],
+        getSourcePosition: (d: [[number, number], [number, number]]) => [
+          d[0][1],
+          d[0][0],
+        ], // [lng, lat]
+        getTargetPosition: (d: [[number, number], [number, number]]) => [
+          d[1][1],
+          d[1][0],
+        ],
         getColor: [139, 69, 19, 180],
         getWidth: 2,
       }),
@@ -111,6 +116,10 @@ const DeckGLOverlay: React.FC<Props> = ({
       views={new MapView({ repeat: true })}
     />
   )
+}
+
+function isGeoBoundingBox(bbox: TileBoundingBox): bbox is GeoBoundingBox {
+  return "west" in bbox && "north" in bbox && "east" in bbox && "south" in bbox
 }
 
 export default DeckGLOverlay

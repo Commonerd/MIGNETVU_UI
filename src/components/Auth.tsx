@@ -7,7 +7,7 @@ import styled from "styled-components"
 import { CsrfToken } from "../types"
 import axios from "axios"
 import GoogleLoginButton from "./GoogleLoginButton"
-import { useRouter } from "next/router"
+import { useNavigate } from "react-router-dom"
 
 export const Auth = () => {
   const { t, i18n } = useTranslation()
@@ -19,7 +19,7 @@ export const Auth = () => {
   const [isLogin, setIsLogin] = useState(true)
   const { loginMutation, registerMutation } = useMutateAuth()
   const [csrfLoaded, setCsrfLoaded] = useState(false)
-  const navigate = useRouter()
+  const navigate = useNavigate()
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
@@ -29,7 +29,7 @@ export const Auth = () => {
     const getCsrfToken = async () => {
       try {
         const { data } = await axios.get<CsrfToken>(
-          `${process.env.REACT_APP_API_URL}/csrf`,
+          `${process.env.NEXT_PUBLIC_API_URL}/csrf`,
         )
         axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
         setCsrfLoaded(true)
@@ -95,7 +95,7 @@ export const Auth = () => {
     }
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/auth/google`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/google`,
         { id_token: token },
         { withCredentials: true },
       )

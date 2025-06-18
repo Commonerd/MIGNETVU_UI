@@ -12,7 +12,7 @@ export async function getServerSideProps() {
   return { props: { networks } }
 }
 
-export default function Home({ networks }) {
+export default function Home({ networks }: { networks: any[] }) {
   const { user, setUser } = useStore()
   const [guideStep, setGuideStep] = useState(1)
   return (

@@ -32,7 +32,7 @@ function App() {
     axios.defaults.withCredentials = true
     const getCsrfToken = async () => {
       const { data } = await axios.get<CsrfToken>(
-        `${process.env.REACT_APP_API_URL}/csrf`,
+        `${process.env.NEXT_PUBLIC_API_URL}/csrf`,
       )
       axios.defaults.headers.common["X-CSRF-Token"] = data.csrf_token
     }
@@ -83,7 +83,7 @@ function App() {
   useEffect(() => {
     const fetchUserState = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/user`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           credentials: "include", // 쿠키를 포함해 요청
         })
         if (res.ok) {

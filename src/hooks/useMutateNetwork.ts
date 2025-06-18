@@ -12,7 +12,7 @@ export const useMutateNetwork = () => {
   const createNetworkMutation = useMutation(
     (formData: FormData) => {
       return axios.post<Network>(
-        `${process.env.REACT_APP_API_URL}/networks`,
+        `${process.env.NEXT_PUBLIC_API_URL}/networks`,
         formData,
         {
           headers: {
@@ -47,7 +47,7 @@ export const useMutateNetwork = () => {
   const updateNetworkMutation = useMutation(
     ({ id, formData }: { id: number; formData: FormData }) => {
       return axios.put<Network>(
-        `${process.env.REACT_APP_API_URL}/networks/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/networks/${id}`,
         formData,
         {
           headers: {
@@ -83,7 +83,7 @@ export const useMutateNetwork = () => {
 
   const deleteNetworkMutation = useMutation(
     (id: number) =>
-      axios.delete(`${process.env.REACT_APP_API_URL}/networks/${id}`),
+      axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/networks/${id}`),
     {
       onSuccess: (_, variables) => {
         const previousNetworks = queryClient.getQueryData<Network[]>([

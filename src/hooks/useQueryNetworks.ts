@@ -7,7 +7,7 @@ export const useQueryNetworks = () => {
   const { switchErrorHandling } = useError()
   const getNetworks = async () => {
     const { data } = await axios.get<Network[]>(
-      `${process.env.REACT_APP_API_URL}/networks`,
+      `${process.env.NEXT_PUBLIC_API_URL}/networks`,
       { withCredentials: true },
     )
     return data
@@ -30,7 +30,7 @@ export const useQueryAllNetworksOnMap = () => {
   const { switchErrorHandling } = useError()
   const getAllNetworksOnMap = async () => {
     const { data } = await axios.get<Network[]>(
-      `${process.env.REACT_APP_API_URL}/networks/map`,
+      `${process.env.NEXT_PUBLIC_API_URL}/networks/map`,
       { withCredentials: true }, // No credentials needed since it's fetching all networks
     )
     return data
@@ -59,7 +59,7 @@ export const useQuerySearchNetworks = (searchQuery: string, page: number) => {
       totalPages: number
       totalCount: number
     }>(
-      `${process.env.REACT_APP_API_URL}/networks/search`, // 수정된 URL
+      `${process.env.NEXT_PUBLIC_API_URL}/networks/search`, // 수정된 URL
       {
         params: { searchQuery, page }, // 검색어와 페이지 번호를 쿼리 파라미터로 전달
         withCredentials: true,

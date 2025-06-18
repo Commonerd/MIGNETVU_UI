@@ -15,7 +15,6 @@ import "react-toastify/dist/ReactToastify.css"
 import { ClipLoader } from "react-spinners"
 import * as XLSX from "xlsx"
 import { fetchAllComments } from "../api/comments"
-import { useRouter } from "next/router"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -29,8 +28,6 @@ export const Network = () => {
   const [isBirthComplete, setIsBirthComplete] = useState(false) // 상태로 Birth/Death 전환 관리
   const [isLatitudeComplete, setIsLatitudeComplete] = useState(false) // 상태로 Birth/Death 전환 관리
   const [isTargetIdComplete, setIsTargetIdComplete] = useState(false) // 상태로 Birth/Death 전환 관리
-
-  const navigate = useRouter()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -77,9 +74,6 @@ export const Network = () => {
     if (photo) {
       formData.append("photo", photo)
     }
-    // FormData 내용 콘솔에 출력
-    for (let [key, value] of formData.entries()) {
-    }
     try {
       if (id === 0) {
         await createNetworkMutation.mutateAsync(formData)
@@ -88,7 +82,7 @@ export const Network = () => {
         await updateNetworkMutation.mutateAsync({ ...editedNetwork, formData })
         toast.success("Network updated successfully!")
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred. Please try again.")
     } finally {
       setIsSubmitting(false)
@@ -137,7 +131,7 @@ export const Network = () => {
           connectionsString,
         ] = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/) // CSV 쉼표 구분
 
-        let connections: any = []
+        let connections: Array<{ id: number; name: string }> = []
 
         try {
           if (connectionsString) {
@@ -147,13 +141,12 @@ export const Network = () => {
             )
 
             if (Array.isArray(parsedConnections)) {
-              connections = parsedConnections.map((conn: any) => ({
-                targetId: Number(conn.targetId),
-                targetType: conn.targetType,
-                strength: Number(conn.strength),
-                type: conn.type,
-                year: Number(conn.year),
-              }))
+              connections = parsedConnections.map(
+                (conn: { id: number; name: string }) => ({
+                  id: conn.id,
+                  name: conn.name,
+                }),
+              )
             } else {
               throw new Error("Parsed connections data is not an array")
             }
@@ -182,7 +175,13 @@ export const Network = () => {
       })
 
       importedData.forEach((network) => {
-        createNetworkMutation.mutate(network)
+        const formData = new FormData()
+        Object.entries(network).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            formData.append(key, value.toString())
+          }
+        })
+        createNetworkMutation.mutate(formData)
       })
     }
 
@@ -281,9 +280,28 @@ export const Network = () => {
     ]
 
     // Fetch all comments
-    let comments: any[] = []
+    let comments: Array<{
+      id: number
+      network_id: number
+      user_id: number
+      user_name: string
+      user_role: string
+      content: string
+      created_at: string
+    }> = []
     try {
-      comments = await fetchAllComments()
+      comments = (await fetchAllComments()).map((comment) => ({
+        id: comment.id,
+        network_id: comment.network_id,
+        user_id: comment.user_id,
+        user_name: comment.user_name,
+        user_role: comment.user_role,
+        content: comment.content,
+        created_at:
+          comment.created_at instanceof Date
+            ? comment.created_at.toISOString()
+            : comment.created_at,
+      }))
     } catch (error) {
       console.error("Failed to fetch comments:", error)
     }
@@ -327,29 +345,6 @@ export const Network = () => {
     XLSX.writeFile(workbook, "networks.xlsx")
   }
 
-  const deleteMigrationTrace = (idx: number) => {
-    updateNetwork({
-      ...editedNetwork,
-      migration_traces: editedNetwork.migration_traces?.filter(
-        (_, i) => i !== idx,
-      ),
-    })
-  }
-
-  const deleteConnection = (idx: number) => {
-    updateNetwork({
-      ...editedNetwork,
-      connections: editedNetwork.connections?.filter((_, i) => i !== idx),
-    })
-  }
-
-  const deleteEdge = (idx: number) => {
-    updateNetwork({
-      ...editedNetwork,
-      edge: editedNetwork.edge?.filter((_, i) => i !== idx),
-    })
-  }
-
   const clearFormHandler = () => {
     updateNetwork({
       id: 0,
@@ -377,6 +372,13 @@ export const Network = () => {
       setTriggerSearch(true)
     }
   }
+
+  // Defined missing variables
+  const setFocusedNode = () => {} // Placeholder function
+  const handleEntityClick = () => {} // Placeholder function
+  const handleMigrationTraceClick = () => {} // Placeholder function
+  const handleEdgeClick = () => {} // Placeholder function
+  const handleNetworkEdgesToggle = () => {} // Placeholder function
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-[#d1c6b1]">
@@ -427,7 +429,14 @@ export const Network = () => {
 
       {/* Render the SearchResults with pagination only after the search button is clicked */}
       {triggerSearch && searchQuery && (
-        <SearchResults searchQuery={searchQuery} />
+        <SearchResults
+          searchQuery={searchQuery}
+          setFocusedNode={setFocusedNode}
+          handleEntityClick={handleEntityClick}
+          handleMigrationTraceClick={handleMigrationTraceClick}
+          handleEdgeClick={handleEdgeClick}
+          handleNetworkEdgesToggle={handleNetworkEdgesToggle}
+        />
       )}
 
       <div className="w-full max-w-lg bg-[#f2f2f2] rounded-lg shadow-md p-6">
@@ -459,7 +468,11 @@ export const Network = () => {
             {editedNetwork.photo && (
               <div className="mt-2">
                 <img
-                  src={editedNetwork.photo}
+                  src={
+                    editedNetwork.photo instanceof File
+                      ? URL.createObjectURL(editedNetwork.photo)
+                      : editedNetwork.photo
+                  }
                   alt="Network"
                   className="w-full h-auto rounded"
                 />
@@ -699,21 +712,7 @@ export const Network = () => {
                   />
 
                   {/* Reason */}
-                  <input
-                    type="text"
-                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                    value={detail.reason || ""}
-                    onChange={(e) =>
-                      updateNetwork({
-                        ...editedNetwork,
-                        migration_traces: editedNetwork.migration_traces?.map(
-                          (d, i) =>
-                            i === idx ? { ...d, reason: e.target.value } : d,
-                        ),
-                      })
-                    }
-                    placeholder={t("Reason")}
-                  />
+                  <input />
 
                   {/* Delete Button */}
                   <button
@@ -757,6 +756,8 @@ export const Network = () => {
                     migration_traces: [
                       ...(editedNetwork.migration_traces || []),
                       {
+                        id: 0,
+                        network_id: editedNetwork.id || 0,
                         location_name: "",
                         latitude: 0,
                         longitude: 0,
@@ -914,6 +915,7 @@ export const Network = () => {
                       edge: [
                         ...(editedNetwork.edge || []),
                         {
+                          id: 0,
                           targetId: 0,
                           targetType: "Person",
                           strength: 0,

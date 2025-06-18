@@ -8,33 +8,16 @@ import {
   Tooltip,
   Popup,
   useMapEvents,
-  CircleMarker,
 } from "react-leaflet"
 import { useTranslation } from "react-i18next"
 import "leaflet/dist/leaflet.css"
-import L, {
-  LatLng,
-  LatLngExpression,
-  LeafletMouseEvent,
-  PolylineDecorator,
-} from "leaflet"
+import L, { LatLng } from "leaflet"
 import "leaflet-polylinedecorator"
 import ResizablePopup from "./ResizablePopup"
-import {
-  Organization,
-  EntityType,
-  Connection,
-  FilterOptions,
-  Network,
-  CsrfToken,
-} from "../types"
+import { FilterOptions, Network } from "../types"
 import styled from "styled-components"
 import useStore from "../store"
-import {
-  useQueryAllNetworksOnMap,
-  useQueryNetworks,
-} from "../hooks/useQueryNetworks"
-import { useError } from "../hooks/useError"
+import { useQueryAllNetworksOnMap } from "../hooks/useQueryNetworks"
 import axios from "axios"
 import ClipboardJS from "clipboard"
 import SearchResults from "./SearchResults"
@@ -57,7 +40,6 @@ import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
 import PolylineDecoratorWrapper from "./PolylineDecoratorWrapper"
 import { User } from "../types"
-
 // 중심 노드로 포커스 이동
 const FocusMap = ({
   lat,
@@ -79,32 +61,36 @@ const FocusMap = ({
   return null
 }
 // Fix Leaflet icon issue
-delete (L.Icon.Default.prototype as any)._getIconUrl
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
-})
+if (typeof window !== "undefined") {
+  // @ts-ignore
+  delete (L.Icon.Default.prototype as any)._getIconUrl
+  L.Icon.Default.mergeOptions({
+    iconRetinaUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon-2x.png",
+    iconUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-icon.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.3.1/images/marker-shadow.png",
+  })
+}
 
 type MapProps = {
   user: User
   setUser: (user: User) => void
   guideStep?: number
-  networks: any[]
+  networks?: Network[]
 }
 
 const Map: React.FC<MapProps> = ({
   user,
   setUser,
   guideStep = 1,
-  networks,
+  // networks,
 }) => {
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobile =
+    typeof window !== "undefined" ? window.innerWidth <= 768 : false
   const { t } = useTranslation()
-  // const [networks, setNetworks] = useState<Network[] | undefined>()
+  const [networks, setNetworks] = useState<Network[]>()
   const [showNetworkNames, setShowNetworkNames] = useState<boolean>(false) // 네트워크 이름 표시 여부 상태 추가
   const [filters, setFilters] = useState<FilterOptions>({
     nationality: ["all"],
@@ -119,6 +105,12 @@ const Map: React.FC<MapProps> = ({
     selectedMigrationNetworkIds: [], // 배열로 변경
     searchQuery: "", // searchQuery도 포함
     forceIncludeNetworkIds: [], // 필요하다면 추가
+
+    // Add missing properties with default values
+    userNetworkEdgeFilter: false, // Example default value
+    networkIds: [], // Example default value
+    connectionType: ["all"], // Example default value
+    migrationYearRange: [1800, 2025], // Example range
   }) // Ensure this is closing a valid block or function
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -127,11 +119,9 @@ const Map: React.FC<MapProps> = ({
     // type: EntityType
   } | null>(null)
   const [focusedNode, setFocusedNode] = useState<{
-    id: number | null
     lat: number
     lng: number
   } | null>(null)
-  // const { user } = useStore()
   const { data } = useQueryAllNetworksOnMap()
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
@@ -186,12 +176,6 @@ const Map: React.FC<MapProps> = ({
   const [showMigrationTable, setShowMigrationTable] = useState(false)
   const [showEdgeTable, setShowEdgeTable] = useState(false)
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsMobile(window.innerWidth <= 768)
-    }
-  }, [])
-
   const handleOpenPopup = async (
     network: Network,
     position: { x: number; y: number },
@@ -201,7 +185,7 @@ const Map: React.FC<MapProps> = ({
     let photo = ""
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/networks/photo/${network.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/networks/photo/${network.id}`,
       )
       photo = response.data.photo
     } catch (e) {}
@@ -219,7 +203,7 @@ const Map: React.FC<MapProps> = ({
 
   // 중심 이동 함수
   const focusPacific = () => {
-    setFocusedNode({ id: null, lat: pacificCenter.lat, lng: pacificCenter.lng })
+    setFocusedNode({ lat: pacificCenter.lat, lng: pacificCenter.lng })
     setTimeout(() => {
       // MapContainer의 zoom을 직접 변경할 수 없으므로, useMap 훅을 활용한 컴포넌트로 처리
       setMapZoom(pacificCenter.zoom)
@@ -233,7 +217,7 @@ const Map: React.FC<MapProps> = ({
     latitude: number
     longitude: number
   }) => {
-    setFocusedNode({ id: node.id, lat: node.latitude, lng: node.longitude })
+    setFocusedNode({ lat: node.latitude, lng: node.longitude })
     setMapZoom(7)
   }
 
@@ -400,7 +384,7 @@ const Map: React.FC<MapProps> = ({
         <ul style={{ margin: "0", padding: "0", display: "flex" }}>{dots}</ul>
       </div>
     ),
-    customPaging: (i) => (
+    customPaging: (i: number) => (
       <div
         style={{
           width: "12px",
@@ -420,14 +404,15 @@ const Map: React.FC<MapProps> = ({
         {i + 1} {/* 현재 슬라이드 번호 표시 */}
       </div>
     ),
-    afterChange: (current) => {
+    afterChange: (current: number) => {
       // 현재 슬라이드 변경 시 도트 색상 업데이트
       const dots = document.querySelectorAll(".slick-dots li div")
       dots.forEach((dot, index) => {
+        const dotElement = dot as HTMLElement // Explicitly cast to HTMLElement
         if (index === current) {
-          dot.style.backgroundColor = "#3e2723" // 활성화된 도트 색상
+          dotElement.style.backgroundColor = "#3e2723" // 활성화된 도트 색상
         } else {
-          dot.style.backgroundColor = "rgba(158, 157, 137, 0.8)" // 기본 도트 색상
+          dotElement.style.backgroundColor = "rgba(158, 157, 137, 0.8)" // 기본 도트 색상
         }
       })
     },
@@ -591,17 +576,21 @@ const Map: React.FC<MapProps> = ({
   const handleEntityClick = async (id: number) => {
     const entity = getEntityById(id)
     if (entity) {
-      let imageUrl = entity.photo || ""
-      if (!imageUrl) {
+      let imageUrl: string = ""
+      if (!entity.photo) {
         try {
           const response = await axios.get(
-            `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
+            `${process.env.NEXT_PUBLIC_API_URL}/networks/photo/${id}`,
+            { responseType: "blob" }, // Ensure response is a Blob
           )
-          imageUrl = response.data.photo
+          imageUrl = URL.createObjectURL(response.data)
         } catch (e) {
           imageUrl = ""
         }
+      } else {
+        // imageUrl = entity.photo // Assume this is a string (URL or base64)
       }
+
       if (guideStep !== 3) {
         focusNode(entity)
       }
@@ -614,7 +603,16 @@ const Map: React.FC<MapProps> = ({
       setPopupPosition({ x: entity.latitude, y: entity.longitude })
       setOpenPopups((prev) => {
         if (prev.some((p) => p.id === id)) return prev
-        return [...prev, { id, network: entity, photo: imageUrl }]
+        // Use the entity's latitude/longitude as the position, as done elsewhere
+        return [
+          ...prev,
+          {
+            id,
+            position: { x: entity.latitude, y: entity.longitude },
+            network: entity,
+            photo: imageUrl,
+          },
+        ]
       })
     } else {
       console.warn(`Entity with ID ${id} not found.`)
@@ -1038,6 +1036,7 @@ const Map: React.FC<MapProps> = ({
         nationality: "",
         ethnicity: "",
         migration_year: 0,
+        end_year: 0, // Added missing property
         latitude: latLng.lat,
         longitude: latLng.lng,
         migration_traces: [],
@@ -1050,6 +1049,7 @@ const Map: React.FC<MapProps> = ({
             year: 0,
           },
         ],
+        edge: [], // Added missing property
       })
       // latLng가 null이 아닐 때만 실행
       const clipboard = new ClipboardJS(".copy-btn", {
@@ -1079,7 +1079,7 @@ const Map: React.FC<MapProps> = ({
     fetchComments(id)
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/networks/photo/${id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/networks/photo/${id}`,
       )
       const imageUrl = response.data.photo
       setHighlightedNode({
@@ -1200,23 +1200,6 @@ const Map: React.FC<MapProps> = ({
       },
     })
     return null
-  }
-  //  가장 가까운 트레이스 찾기 함수
-  const findClosestTrace = (network, traces) => {
-    if (!traces.length) return null
-    let minDist = Infinity
-    let closest = null
-    traces.forEach((trace) => {
-      const dist = Math.sqrt(
-        Math.pow(network.latitude - trace.latitude, 2) +
-          Math.pow(network.longitude - trace.longitude, 2),
-      )
-      if (dist < minDist) {
-        minDist = dist
-        closest = trace
-      }
-    })
-    return closest
   }
 
   // 네트워크 id와 연도 기준으로 가장 가까운 마이그레이션 트레이스 찾기
@@ -1370,9 +1353,7 @@ const Map: React.FC<MapProps> = ({
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1403,9 +1384,7 @@ const Map: React.FC<MapProps> = ({
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1441,9 +1420,7 @@ const Map: React.FC<MapProps> = ({
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1477,9 +1454,7 @@ const Map: React.FC<MapProps> = ({
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1510,9 +1485,7 @@ const Map: React.FC<MapProps> = ({
                 }}
                 placeholder={t("selectCentrality")}
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1546,9 +1519,7 @@ const Map: React.FC<MapProps> = ({
                 isClearable
                 isMulti
                 styles={customStyles}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                }
+                menuPortalTarget={document.body}
                 menuPlacement="auto"
                 menuPosition="fixed"
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1694,9 +1665,7 @@ const Map: React.FC<MapProps> = ({
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={
-                    typeof window !== "undefined" ? document.body : undefined
-                  } // 드롭다운을 body에 렌더링
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1742,9 +1711,7 @@ const Map: React.FC<MapProps> = ({
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={
-                    typeof window !== "undefined" ? document.body : undefined
-                  } // 드롭다운을 body에 렌더링
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1797,9 +1764,7 @@ const Map: React.FC<MapProps> = ({
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={
-                    typeof window !== "undefined" ? document.body : undefined
-                  } // 드롭다운을 body에 렌더링
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1857,9 +1822,7 @@ const Map: React.FC<MapProps> = ({
                   }),
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                } // 드롭다운을 body에 렌더링
+                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                 menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1913,9 +1876,7 @@ const Map: React.FC<MapProps> = ({
                     }),
                     menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                   }}
-                  menuPortalTarget={
-                    typeof window !== "undefined" ? document.body : undefined
-                  } // 드롭다운을 body에 렌더링
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                   menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                   menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                   className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -1965,9 +1926,7 @@ const Map: React.FC<MapProps> = ({
                   }),
                   menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
                 }}
-                menuPortalTarget={
-                  typeof window !== "undefined" ? document.body : undefined
-                } // 드롭다운을 body에 렌더링
+                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
                 menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
@@ -2072,7 +2031,10 @@ const Map: React.FC<MapProps> = ({
             <div
               className="bg-white shadow rounded p-4 border border-gray-300 max-h-80 overflow-y-auto"
               style={{
-                maxWidth: isMobile ? "90%" : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
+                maxWidth:
+                  typeof window !== "undefined" && window.innerWidth <= 768
+                    ? "90%"
+                    : "30%", // 모바일에서는 90%, 데스크톱에서는 30%
                 marginRight: "1rem", // 오른쪽 끝에서 약간의 여백
                 position: "relative",
                 backgroundColor: "rgba(255, 255, 255, 0.8)", // 배경 투명도
@@ -2347,7 +2309,6 @@ const Map: React.FC<MapProps> = ({
           {openPopups.map((popup) => (
             <ResizablePopup
               key={popup.id}
-              position={popup.position}
               onClose={() => handleClosePopup(popup.id)}
             >
               <PopupContent>
@@ -2461,7 +2422,7 @@ const Map: React.FC<MapProps> = ({
                       fontSize: "1.05em",
                       cursor: "pointer",
                       marginBottom: "0.3em",
-                      boxShadow: "0 1px 3px rgba(33,150,243,0.07)",
+                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
                       transition: "background 0.2s, color 0.2s",
                     }}
                   >
@@ -2821,7 +2782,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                         </Polyline>
                         {/* 화살표 데코레이터 추가 */}
                         <PolylineDecoratorWrapper
-                          positions={positions}
+                          positions={positions as [number, number][]}
                           patterns={[
                             {
                               offset: "50%",
@@ -2898,7 +2859,7 @@ const LegendBox = styled.div`
   }
 `
 const customStyles = {
-  control: (provided, state) => ({
+  control: (provided: any, state: any) => ({
     ...provided,
     display: "flex",
     flexWrap: "nowrap", // 줄바꿈 방지
@@ -2919,23 +2880,23 @@ const customStyles = {
     minWidth: "120px", // 최소 너비 설정
     maxWidth: "100%", // 최대 너비 설정
   }),
-  multiValue: (provided) => ({
+  multiValue: (provided: any) => ({
     ...provided,
     display: "inline-flex", // 선택된 항목을 가로로 정렬
     alignItems: "center",
     margin: "0 4px", // 항목 간격 조정
   }),
-  multiValueLabel: (provided) => ({
+  multiValueLabel: (provided: any) => ({
     ...provided,
     whiteSpace: "nowrap", // 텍스트 줄바꿈 방지
     overflow: "hidden", // 텍스트가 넘칠 경우 숨김
     textOverflow: "ellipsis", // 넘친 텍스트에 말줄임표 추가
   }),
-  multiValueRemove: (provided) => ({
+  multiValueRemove: (provided: any) => ({
     ...provided,
     cursor: "pointer",
   }),
-  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+  menuPortal: (base: any) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
 }
 // 추가: 필터 버튼 컨테이너 스타일
 const FilterContainer = styled.div`

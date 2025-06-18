@@ -98,6 +98,7 @@ const useStore = create<State>((set) => ({
         strength: 0,
         edgeType: "",
         year: 0,
+        id: 0,
       },
     ],
     photo: undefined, // Add photo field
@@ -132,6 +133,7 @@ const useStore = create<State>((set) => ({
         ],
         edge: [
           {
+            id: 0,
             targetId: 0,
             targetType: "Person",
             strength: 0,

@@ -11,8 +11,11 @@ import zhTranslations from "./locales/zh.json";
 // 지원하는 언어 목록
 const supportedLanguages = ["en", "es", "ko", "ja", "ru", "zh"];
 
-// 사용자의 언어 감지
-const userLanguage = navigator.language; // 'en-US', 'ko-KR' 등
+// 사용자의 언어 감지 (SSR 환경 대응)
+let userLanguage = "en";
+if (typeof navigator !== "undefined" && navigator.language) {
+  userLanguage = navigator.language;
+}
 const languageCode = userLanguage.split("-")[0]; // 'en', 'ko' 등
 
 // 지원하는 언어인지 확인하고 기본 언어로 설정
