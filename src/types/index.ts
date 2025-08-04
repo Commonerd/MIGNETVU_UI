@@ -23,7 +23,7 @@ type MigrationTrace = {
   network_id: number
   latitude: number
   longitude: number
-  migration_year: number
+  migration_year: string
   location_name: string
   reason: string
 }
@@ -34,7 +34,7 @@ export type Edge = {
   targetType: string
   strength: number
   edgeType: string
-  year: number
+  year: string
 }
 
 export type Network = {
@@ -45,8 +45,8 @@ export type Network = {
   type: string
   nationality: string
   ethnicity: string
-  migration_year: number
-  end_year: number
+  migration_year: string
+  end_year: string
   latitude: number
   longitude: number
   created_at: Date
@@ -56,7 +56,7 @@ export type Network = {
     targetType: string
     strength: number
     type: string
-    year: number
+    year: string
   }>
   edges: Edge[]
   migration_traces: MigrationTrace[]
@@ -75,8 +75,6 @@ export type Credential = {
   role: string
 }
 
-// new
-
 export interface Person {
   id: number
   name: string
@@ -84,7 +82,7 @@ export interface Person {
   ethnicity: string
   latitude: number
   longitude: number
-  migrationYear: number
+  migrationYear: string
   connections: Connection[]
   age: number
   occupation: string
@@ -98,7 +96,7 @@ export interface Organization {
   name: string
   latitude: number
   longitude: number
-  foundationYear: number
+  foundationYear: string
   connections: Connection[]
   type: string
   mission: string
@@ -126,8 +124,8 @@ export type FilterOptions = {
   connectionType: string[] | string
   edgeType: string[] | string
   entityType: string[] | string
-  yearRange: [number, number]
-  migrationYearRange: [number, number]
+  yearRange: [string, string]
+  migrationYearRange: [string, string]
   migrationReasons: string[] | string
   selectedMigrationNetworkIds: number[]
   searchQuery: string

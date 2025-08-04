@@ -25,7 +25,6 @@ export async function askGpt(
     throw new Error("messages must be an array")
   }
   const res = await puter.ai.chat(messages, false, { model })
-  console.log("Puter API 응답:", res)
   if (res?.message?.content) {
     return res.message.content
   }

@@ -5,14 +5,14 @@ import { loadPuterScript } from "../utils/puterLoader"
 type EdgeInfo = {
   targetId: number
   targetTitle: string
-  year: number
+  year: string
   edgeType: string
 }
 
 type Props = {
   originId: number // 원점 네트워크 id 추가
   originTitle: string
-  migrationPath: { year: number; place: string; reason?: string }[]
+  migrationPath: { year: string; place: string; reason?: string }[]
   networkSummary: string
   edges?: EdgeInfo[]
 }

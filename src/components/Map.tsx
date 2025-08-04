@@ -50,9 +50,10 @@ import { Legend } from "./Legend"
 import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
+import Spinner from "./Spinner"
 import YearRangeInput from "./YearRangeInput"
 import MigrationYearRangeInput from "./MigrationYearRangeInput"
-import Spinner from "./Spinner"
+
 import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
 import PolylineDecoratorWrapper from "./PolylineDecoratorWrapper"
@@ -93,18 +94,22 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [networks, setNetworks] = useState<Network[] | undefined>()
   const [showNetworkNames, setShowNetworkNames] = useState<boolean>(false) // 네트워크 이름 표시 여부 상태 추가
   const [filters, setFilters] = useState<FilterOptions>({
+    userNetworkEdgeFilter: false,
+    userNetworkConnectionFilter: false,
+    userNetworkTraceFilter: false,
+    userNetworkFilter: false,
+    networkIds: [],
     nationality: ["all"],
     ethnicity: ["all"],
+    connectionType: ["all"],
     edgeType: ["all"],
     entityType: ["all"],
-    yearRange: [1800, 1945], // 현재 연도로 자동 설정
-    userNetworkFilter: false,
-    userNetworkTraceFilter: false,
-    userNetworkConnectionFilter: false,
+    yearRange: ["0001-01-01", "1945-12-31"],
+    migrationYearRange: ["0001-01-01", "1945-12-31"],
     migrationReasons: ["all"],
-    selectedMigrationNetworkIds: [], // 배열로 변경
-    searchQuery: "", // searchQuery도 포함
-    forceIncludeNetworkIds: [], // 필요하다면 추가
+    selectedMigrationNetworkIds: [],
+    searchQuery: "",
+    forceIncludeNetworkIds: [],
   }) // Ensure this is closing a valid block or function
   const [centralityType, setCentralityType] = useState<string>("none")
   const [highlightedNode, setHighlightedNode] = useState<{
@@ -122,7 +127,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[number, number]>([1800, 1945])
+  const [yearRange, setYearRange] = useState<[string, string]>([
+    "0001-01-01",
+    "1945-12-31",
+  ])
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -155,8 +163,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     Record<number, number>
   >({})
   const [migrationYearRange, setMigrationYearRange] = useState<
-    [number, number]
-  >([1800, 1945])
+    [string, string]
+  >(["0001-01-01", "1945-12-31"])
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
@@ -476,10 +484,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const filteredTraces =
     networks?.flatMap((network) =>
       network.migration_traces.filter((trace) => {
-        // 기존 필터 조건: 이주 연도 범위
+        // 연월일 비교: migrationYearRange는 ['yyyy-mm-dd', 'yyyy-mm-dd'] 형태로 가정
+        const startDate = migrationYearRange[0]
+        const endDate = migrationYearRange[1]
         const matchesYearRange =
-          trace.migration_year >= migrationYearRange[0] &&
-          trace.migration_year <= migrationYearRange[1]
+          trace.migration_year >= startDate && trace.migration_year <= endDate
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
@@ -657,8 +666,19 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   // Updated getEdges function
   const getEdges = () => {
     const edges: any[] = []
-    const addEdges = (network: Network) => {
-      ;(network.edges || []).forEach((edge) => {
+    // Defensive: flatten all migration traces and ensure network_id is present
+    const allTraces = (workerFilteredNetworks || []).flatMap((n) =>
+      (n.migration_traces || []).map((t) => ({ ...t, network_id: n.id })),
+    )
+    workerFilteredNetworks.forEach((network, netIdx) => {
+      ;(network.edges || []).forEach((edge, edgeIdx) => {
+        // Ensure edgeYear is always a valid string
+        let edgeYear = "0001-01-01"
+        if (typeof edge.year === "string" && edge.year.length === 10) {
+          edgeYear = edge.year
+        } else if (typeof edge.year === "number" && edge.year > 0) {
+          edgeYear = String(edge.year).padStart(10, "0")
+        }
         const isEdgeSelected = selectedEdgeId
           ? edge.targetId === selectedEdgeId
           : true
@@ -669,74 +689,57 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           filters.edgeType.includes("all") ||
           filters.edgeType.includes(edge.edgeType)
         const matchesYearRange =
-          Number(edge.year) >= Number(filters.yearRange[0]) &&
-          Number(edge.year) < Number(filters.yearRange[1])
+          edgeYear >= yearRange[0] && edgeYear <= yearRange[1]
+        const target = workerFilteredNetworks.find(
+          (n) => n.id === edge.targetId,
+        )
+        const matchesUserNetworkConnection =
+          !filters.userNetworkConnectionFilter ||
+          !user.name ||
+          network.user_name === user.name ||
+          (target && target.user_name === user.name)
         if (
           isEdgeSelected &&
           isNetworkSelected &&
           matchesEdgeType &&
-          matchesYearRange
+          matchesYearRange &&
+          target &&
+          matchesUserNetworkConnection
         ) {
-          const target = networks?.find((n) => n.id === edge.targetId)
-          // 유저 네트워크 커넥션 필터 조건
-          const matchesUserNetworkConnection =
-            !filters.userNetworkConnectionFilter ||
-            !user.name ||
-            network.user_name === user.name ||
-            (target && target.user_name === user.name)
-          if (target && matchesUserNetworkConnection) {
+          // Defensive: ensure network.id and target.id are valid numbers
+          const sourceId =
+            typeof network.id === "number" ? network.id : Number(network.id)
+          const targetId =
+            typeof target.id === "number" ? target.id : Number(target.id)
+          // Find closest migration trace by year for source and target
+          const sourceTrace = findClosestTraceByYear(
+            sourceId,
+            edgeYear,
+            allTraces,
+          )
+          const targetTrace = findClosestTraceByYear(
+            targetId,
+            edgeYear,
+            allTraces,
+          )
+          // If both traces found, use their lat/lng for polyline
+          if (sourceTrace && targetTrace) {
             edges.push([
-              [network.latitude, network.longitude],
-              [target.latitude, target.longitude],
+              [sourceTrace.latitude, sourceTrace.longitude],
+              [targetTrace.latitude, targetTrace.longitude],
               getConnectionColor(edge.edgeType),
               edge.strength,
               edge.edgeType,
-              edge.year,
+              edgeYear,
+              {
+                sourceId,
+                targetId,
+                edgeType: edge.edgeType,
+                edgeYear,
+                sourceTraceId: sourceTrace.id,
+                targetTraceId: targetTrace.id,
+              },
             ])
-          }
-        }
-      })
-    }
-    networks?.forEach((network) => {
-      // migration_year를 숫자로 변환 후, 연도로 처리
-      const migration_year = new Date(`${network.migration_year}-01-01`)
-      if (
-        (filters.entityType.includes("all") ||
-          filters.entityType.includes(network.type)) &&
-        (filters.nationality.includes("all") ||
-          filters.nationality.includes(network.nationality)) &&
-        (filters.ethnicity.includes("all") ||
-          filters.ethnicity.includes(network.ethnicity)) &&
-        migration_year.getFullYear() >= filters.yearRange[0] &&
-        migration_year.getFullYear() <= filters.yearRange[1]
-      ) {
-        addEdges(network)
-      }
-    })
-    return edges
-  }
-  // 3D 전용 getEdges 함수
-  const getEdgesFor3D = () => {
-    const edges: any[] = []
-    networks?.forEach((network) => {
-      ;(network.edges || []).forEach((edge) => {
-        const matchesEdgeType =
-          filters.edgeType.includes("all") ||
-          filters.edgeType.includes(edge.edgeType)
-        const matchesYearRange =
-          Number(edge.year) >= Number(filters.yearRange[0]) &&
-          Number(edge.year) <= Number(filters.yearRange[1])
-        if (matchesEdgeType && matchesYearRange) {
-          const target = networks.find((n) => n.id === edge.targetId)
-          if (target) {
-            edges.push({
-              startLat: network.latitude,
-              startLon: network.longitude,
-              endLat: target.latitude,
-              endLon: target.longitude,
-              edgeType: edge.edgeType,
-              year: edge.year,
-            })
           }
         }
       })
@@ -1017,7 +1020,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         type: "Person",
         nationality: "",
         ethnicity: "",
-        migration_year: 0,
+        migration_year: "",
         latitude: latLng.lat,
         longitude: latLng.lng,
         migration_traces: [],
@@ -1027,7 +1030,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             targetId: 0,
             strength: 0,
             type: "",
-            year: 0,
+            year: "",
           },
         ],
       })
@@ -1202,20 +1205,36 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   // 네트워크 id와 연도 기준으로 가장 가까운 마이그레이션 트레이스 찾기
   const findClosestTraceByYear = (
     networkId: number,
-    year: number,
+    year: string,
     allTraces: any[],
   ) => {
-    const traces = allTraces.filter((t) => t.network_id === networkId)
-    if (!traces.length) return null
-    let minDiff = Infinity
-    let closest = traces[0]
-    traces.forEach((trace) => {
-      const diff = Math.abs(trace.migration_year - year)
-      if (diff < minDiff) {
-        minDiff = diff
-        closest = trace
+    const yearDate = new Date(year)
+    // 해당 네트워크의 모든 트레이스 중 migration_year가 year 이하인 것만 필터
+    const traces = allTraces
+      .filter(
+        (t) =>
+          t.network_id === networkId &&
+          typeof t.migration_year === "string" &&
+          t.migration_year.length > 0,
+      )
+      .sort(
+        (a, b) =>
+          new Date(a.migration_year).getTime() -
+          new Date(b.migration_year).getTime(),
+      )
+    // year 이하 중 가장 최근(가장 큰 날짜) 찾기
+    let closest = null
+    for (let i = traces.length - 1; i >= 0; i--) {
+      const traceDate = new Date(traces[i].migration_year)
+      if (traceDate.getTime() <= yearDate.getTime()) {
+        closest = traces[i]
+        break
       }
-    })
+    }
+    // 만약 year 이하가 없으면 가장 이른 트레이스 반환
+    if (!closest && traces.length > 0) {
+      closest = traces[0]
+    }
     return closest
   }
   const getMigrationTraces = () => {
@@ -1255,7 +1274,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     return Object.values(tracesByNetwork)
       .map((traces) =>
         traces
-          .sort((a, b) => a.migration_year - b.migration_year) // 연도 기준 정렬
+          .sort((a, b) => {
+            // migration_year가 없으면 항상 뒤로
+            if (!a.migration_year) return 1
+            if (!b.migration_year) return -1
+            return a.migration_year.localeCompare(b.migration_year)
+          })
           .map((trace, index) => ({
             ...trace,
             traceNumber: index + 1, // 네트워크별로 번호 부여
@@ -1265,6 +1289,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         // 기존 필터 조건 적용
         const matchesYearRange = traces.some(
           (trace) =>
+            trace.migration_year &&
             trace.migration_year >= migrationYearRange[0] &&
             trace.migration_year <= migrationYearRange[1],
         )
@@ -1282,8 +1307,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         const matchesMigrationReasons =
           filters.migrationReasons.includes("all") ||
           filters.migrationReasons.length === 0 ||
-          traces.some((trace) =>
-            filters.migrationReasons.includes(trace.reason),
+          traces.some(
+            (trace) =>
+              trace.reason && filters.migrationReasons.includes(trace.reason),
           )
         return (
           matchesYearRange && matchesUserNetworkTrace && matchesMigrationReasons
@@ -1427,11 +1453,22 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
                 <label className="text-sm">{t("yearRange")}</label>
-                <YearRangeInput
-                  value={filters.yearRange}
-                  onChange={(range) => handleFilterChange("yearRange", range)}
-                  placeholderStart="1800"
-                  placeholderEnd="2024"
+                <input
+                  type="date"
+                  value={yearRange[0]}
+                  onChange={(e) => setYearRange([e.target.value, yearRange[1]])}
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  value={yearRange[1]}
+                  onChange={(e) => setYearRange([yearRange[0], e.target.value])}
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
                 />
               </div>
             </div>
@@ -1492,11 +1529,32 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             <div>
               <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
                 <label className="text-sm">{t("migrationTraceability")}</label>
-                <MigrationYearRangeInput
-                  value={migrationYearRange}
-                  onChange={setMigrationYearRange}
-                  placeholderStart="1800"
-                  placeholderEnd="2024"
+                <input
+                  type="date"
+                  value={migrationYearRange[0]}
+                  onChange={(e) =>
+                    setMigrationYearRange([
+                      e.target.value,
+                      migrationYearRange[1],
+                    ])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  value={migrationYearRange[1]}
+                  onChange={(e) =>
+                    setMigrationYearRange([
+                      migrationYearRange[0],
+                      e.target.value,
+                    ])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
                 />
               </div>
             </div>
@@ -1771,11 +1829,22 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* Year Range */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
               <label className="text-sm">{t("yearRange")}</label>
-              <YearRangeInput
-                value={filters.yearRange}
-                onChange={(range) => handleFilterChange("yearRange", range)}
-                placeholderStart="1800"
-                placeholderEnd="2024"
+              <input
+                type="date"
+                value={yearRange[0]}
+                onChange={(e) => setYearRange([e.target.value, yearRange[1]])}
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
+              <span>~</span>
+              <input
+                type="date"
+                value={yearRange[1]}
+                onChange={(e) => setYearRange([yearRange[0], e.target.value])}
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
               />
               <Select
                 options={edgeTypeOptions}
@@ -1885,11 +1954,26 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* Migration Traceability */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
               <label className="text-sm">{t("migrationTraceability")}</label>
-              <MigrationYearRangeInput
-                value={migrationYearRange}
-                onChange={setMigrationYearRange}
-                placeholderStart="1800"
-                placeholderEnd="2024"
+              <input
+                type="date"
+                value={migrationYearRange[0]}
+                onChange={(e) =>
+                  setMigrationYearRange([e.target.value, migrationYearRange[1]])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
+              <span>~</span>
+              <input
+                type="date"
+                value={migrationYearRange[1]}
+                onChange={(e) =>
+                  setMigrationYearRange([migrationYearRange[0], e.target.value])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
               />
               <Select
                 options={migrationReasonOptions}
@@ -2435,7 +2519,13 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                       </thead>
                       <tbody>
                         {popup.network.migration_traces
-                          .sort((a, b) => a.migration_year - b.migration_year)
+                          .sort((a, b) => {
+                            if (!a.migration_year) return 1
+                            if (!b.migration_year) return -1
+                            return a.migration_year.localeCompare(
+                              b.migration_year,
+                            )
+                          })
                           .map((trace, idx) => (
                             <tr key={trace.id}>
                               <td>{idx + 1}</td>
@@ -2536,7 +2626,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   originTitle={popup.network.title}
                   migrationPath={popup.network.migration_traces.map(
                     (trace) => ({
-                      year: trace.migration_year,
+                      year: String(trace.migration_year),
                       place: trace.location_name,
                       reason: trace.reason,
                     }),
@@ -2554,7 +2644,7 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
                       return {
                         targetId: edge.targetId,
                         targetTitle: target ? target.title : "",
-                        year: edge.year,
+                        year: String(edge.year),
                         edgeType: edge.edgeType,
                       }
                     }) ?? []
@@ -2708,97 +2798,86 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
               return <MigrationTraceDecorator traces={migrationTraces.flat()} />
             }),
           )}
-          {workerFilteredNetworks
-            .filter(
-              (network) =>
-                !selectedNetworkId || network.id === selectedNetworkId,
-            )
-            .flatMap((network) =>
-              Array.isArray(network.edges)
-                ? network.edges.map((edge, idx) => {
-                    const allTraces = migrationTraces.flat()
-                    const sourceTrace = findClosestTraceByYear(
-                      network.id,
-                      edge.year,
-                      allTraces,
-                    )
-                    const targetTrace = findClosestTraceByYear(
-                      edge.targetId,
-                      edge.year,
-                      allTraces,
-                    )
-                    if (!sourceTrace || !targetTrace) return null
-                    const positions = [
-                      [sourceTrace.latitude, sourceTrace.longitude],
-                      [targetTrace.latitude, targetTrace.longitude],
-                    ]
-                    // 강도에 따라 선 굵기 조정 (최소 2, 최대 10)
-                    const edgeWeight = Math.max(
-                      1,
-                      Math.min(5, edge.strength * 2),
-                    )
-                    return (
-                      <>
-                        <Polyline
-                          key={`edge-trace-${network.id}-${edge.targetId}-${edge.year}-${idx}`}
-                          positions={[
-                            [sourceTrace.latitude, sourceTrace.longitude],
-                            [targetTrace.latitude, targetTrace.longitude],
-                          ]}
-                          color="#e65100" // 더 진한 주황색
-                          weight={edgeWeight}
-                          dashArray="5, 5"
-                          eventHandlers={{
-                            click: (e) => {
-                              L.popup()
-                                .setLatLng(e.latlng)
-                                .setContent(
-                                  `<div>
-                            <strong>${t("Connections")}</strong><br/>
-                            ${t("Source")}: ${network.title}<br/>
-                            ${t("Target")}: ${networks?.find((n) => n.id === edge.targetId)?.title || edge.targetId}<br/>
-                            ${t("Year")}: ${edge.year}<br/>
-                            ${t("Type")}: ${t(edge.edgeType)}<br/>
-                            ${t("Strength")}: ${edge.strength}
-                          </div>`,
-                                )
-                                .openOn(e.target._map)
-                            },
-                          }}
-                        >
-                          {showEdgeDetails && (
-                            <Tooltip permanent direction="center" opacity={0.7}>
-                              <span>
-                                {t(edge.edgeType)} ({edge.strength}, {edge.year}
-                                )
-                              </span>
-                            </Tooltip>
-                          )}
-                        </Polyline>
-                        {/* 화살표 데코레이터 추가 */}
-                        <PolylineDecoratorWrapper
-                          positions={positions}
-                          patterns={[
-                            {
-                              offset: "50%",
-                              repeat: 0,
-                              symbol: L.Symbol.arrowHead({
-                                pixelSize: 5 + edgeWeight,
-                                polygon: true,
-                                pathOptions: {
-                                  color: "#FF0000",
-                                  fillOpacity: 1,
-                                  weight: edgeWeight,
-                                },
-                              }),
-                            },
-                          ]}
-                        />
-                      </>
-                    )
-                  })
-                : [],
-            )}
+          {getEdges()
+            .filter((edge) => {
+              // edge[6]에 실제 정보가 있음
+              const info = edge[6]
+              return !selectedNetworkId || info.sourceId === selectedNetworkId
+            })
+            .map((edge, idx) => {
+              const info = edge[6]
+              const allTraces = migrationTraces.flat()
+              const sourceTrace = findClosestTraceByYear(
+                info.sourceId,
+                info.edgeYear,
+                allTraces,
+              )
+              const targetTrace = findClosestTraceByYear(
+                info.targetId,
+                info.edgeYear,
+                allTraces,
+              )
+              if (!sourceTrace || !targetTrace) return null
+              const positions: [number, number][] = [
+                [Number(sourceTrace.latitude), Number(sourceTrace.longitude)],
+                [Number(targetTrace.latitude), Number(targetTrace.longitude)],
+              ]
+              const edgeWeight = Math.max(1, Math.min(5, edge[3] * 2))
+              return (
+                <>
+                  <Polyline
+                    key={`edge-trace-${info.sourceId}-${info.targetId}-${info.edgeYear}-${idx}`}
+                    positions={positions}
+                    color="#e65100"
+                    weight={edgeWeight}
+                    dashArray="5, 5"
+                    eventHandlers={{
+                      click: (e) => {
+                        L.popup()
+                          .setLatLng(e.latlng)
+                          .setContent(
+                            `<div>
+                    <strong>${t("Connections")}</strong><br/>
+                    ${t("Source")}: ${networks?.find((n) => n.id === info.sourceId)?.title || info.sourceId}<br/>
+                    ${t("Target")}: ${networks?.find((n) => n.id === info.targetId)?.title || info.targetId}<br/>
+                    ${t("Year")}: ${info.edgeYear}<br/>
+                    ${t("Type")}: ${t(info.edgeType)}<br/>
+                    ${t("Strength")}: ${edge[3]}
+                  </div>`,
+                          )
+                          .openOn(e.target._map)
+                      },
+                    }}
+                  >
+                    {showEdgeDetails && (
+                      <Tooltip permanent direction="center" opacity={0.7}>
+                        <span>
+                          {t(info.edgeType)} ({edge[3]}, {info.edgeYear})
+                        </span>
+                      </Tooltip>
+                    )}
+                  </Polyline>
+                  <PolylineDecoratorWrapper
+                    positions={positions}
+                    patterns={[
+                      {
+                        offset: "50%",
+                        repeat: 0,
+                        symbol: L.Symbol.arrowHead({
+                          pixelSize: 5 + edgeWeight,
+                          polygon: true,
+                          pathOptions: {
+                            color: "#FF0000",
+                            fillOpacity: 1,
+                            weight: edgeWeight,
+                          },
+                        }),
+                      },
+                    ]}
+                  />
+                </>
+              )
+            })}
         </MapContainer>
       )}
     </div>

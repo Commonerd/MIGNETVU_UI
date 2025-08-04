@@ -31,9 +31,46 @@ export const useQueryAllNetworksOnMap = () => {
   const getAllNetworksOnMap = async () => {
     const { data } = await axios.get<Network[]>(
       `${process.env.REACT_APP_API_URL}/networks/map`,
-      { withCredentials: true }, // No credentials needed since it's fetching all networks
+      { withCredentials: true },
     )
-    return data
+    // Convert migration_year and end_year to number (year)
+    const converted = data.map((network) => ({
+      ...network,
+      migration_year:
+        typeof network.migration_year === "string"
+          ? network.migration_year.slice(0, 10)
+          : network.migration_year,
+      end_year:
+        typeof network.end_year === "string"
+          ? network.end_year.slice(0, 10)
+          : network.end_year,
+      edges: Array.isArray(network.edges)
+        ? network.edges.map((edge) => ({
+            ...edge,
+            year:
+              edge.year && (edge.year as unknown) instanceof Date
+                ? (edge.year as unknown as Date).toISOString().slice(0, 10)
+                : typeof edge.year === "string"
+                  ? edge.year.slice(0, 10)
+                  : edge.year,
+          }))
+        : network.edges,
+      migration_traces: Array.isArray(network.migration_traces)
+        ? network.migration_traces.map((trace) => ({
+            ...trace,
+            migration_year:
+              trace.migration_year !== null &&
+              trace.migration_year !== undefined &&
+              typeof trace.migration_year === "object" &&
+              (trace.migration_year as object) instanceof Date
+                ? (trace.migration_year as Date).toISOString().slice(0, 10)
+                : typeof trace.migration_year === "string"
+                  ? trace.migration_year.slice(0, 10)
+                  : trace.migration_year,
+          }))
+        : network.migration_traces,
+    }))
+    return converted
   }
 
   return useQuery<Network[], Error>({

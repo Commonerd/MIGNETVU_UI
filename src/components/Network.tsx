@@ -357,8 +357,8 @@ export const Network = () => {
       type: "Person",
       nationality: "",
       ethnicity: "",
-      migration_year: 0,
-      end_year: 0,
+      migration_year: "",
+      end_year: "",
       latitude: 0,
       longitude: 0,
       migration_traces: [],
@@ -535,18 +535,16 @@ export const Network = () => {
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  placeholder={
-                    editedNetwork.type === "Person" ? "ex) 1990" : "ex) 2000"
-                  }
-                  type="number"
+                  type="date"
                   onChange={(e) =>
                     updateNetwork({
                       ...editedNetwork,
-                      migration_year: Number(e.target.value),
+                      migration_year: e.target.value,
                     })
                   }
                   value={editedNetwork.migration_year || ""}
-                  onBlur={() => setIsBirthComplete(true)} // 포커스 아웃 시 Death로 전환
+                  onBlur={() => setIsBirthComplete(true)}
+                  pattern="\d{4}-\d{2}-\d{2}"
                 />
               </div>
             )}
@@ -561,18 +559,16 @@ export const Network = () => {
                 </label>
                 <input
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  placeholder={
-                    editedNetwork.type === "Person" ? "ex) 1990" : "ex) 2000"
-                  }
-                  type="number"
+                  type="date"
                   onChange={(e) =>
                     updateNetwork({
                       ...editedNetwork,
-                      end_year: Number(e.target.value),
+                      end_year: e.target.value,
                     })
                   }
                   value={editedNetwork.end_year || ""}
-                  onBlur={() => setIsBirthComplete(false)} // 포커스 아웃 시 Death로 전환
+                  onBlur={() => setIsBirthComplete(false)}
+                  pattern="\d{4}-\d{2}-\d{2}"
                 />
               </div>
             )}
@@ -681,7 +677,7 @@ export const Network = () => {
 
                   {/* Year */}
                   <input
-                    type="number"
+                    type="date"
                     className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
                     value={detail.migration_year || ""}
                     onChange={(e) =>
@@ -690,12 +686,13 @@ export const Network = () => {
                         migration_traces: editedNetwork.migration_traces?.map(
                           (d, i) =>
                             i === idx
-                              ? { ...d, migration_year: Number(e.target.value) }
+                              ? { ...d, migration_year: e.target.value }
                               : d,
                         ),
                       })
                     }
                     placeholder={t("Year")}
+                    pattern="\d{4}-\d{2}-\d{2}"
                   />
 
                   {/* Reason */}
@@ -757,10 +754,12 @@ export const Network = () => {
                     migration_traces: [
                       ...(editedNetwork.migration_traces || []),
                       {
+                        id: Date.now(),
+                        network_id: editedNetwork.id || 0,
                         location_name: "",
                         latitude: 0,
                         longitude: 0,
-                        migration_year: 0,
+                        migration_year: "",
                         reason: "",
                       },
                     ],
@@ -859,20 +858,19 @@ export const Network = () => {
 
                     {/* Year */}
                     <input
-                      type="number"
+                      type="date"
                       className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
                       value={edge.year || ""}
                       onChange={(e) =>
                         updateNetwork({
                           ...editedNetwork,
                           edge: editedNetwork.edge?.map((d, i) =>
-                            i === idx
-                              ? { ...d, year: Number(e.target.value) }
-                              : d,
+                            i === idx ? { ...d, year: e.target.value } : d,
                           ),
                         })
                       }
                       placeholder={t("Year")}
+                      pattern="\d{4}-\d{2}-\d{2}"
                     />
 
                     {/* Delete Button */}
@@ -914,11 +912,12 @@ export const Network = () => {
                       edge: [
                         ...(editedNetwork.edge || []),
                         {
+                          id: Date.now(),
                           targetId: 0,
                           targetType: "Person",
                           strength: 0,
                           edgeType: "",
-                          year: 0,
+                          year: "",
                         },
                       ],
                     })

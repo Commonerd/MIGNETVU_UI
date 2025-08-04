@@ -15,7 +15,7 @@ type EditedTask = {
 }
 
 type MigrationTrace = {
-  migration_year: number
+  migration_year: string
   id: number
   network_id: number
   latitude: number
@@ -29,7 +29,7 @@ type Connection = {
   targetType: string
   strength: number
   type: string
-  year: number
+  year: string
 }
 
 type EditedNetwork = {
@@ -39,8 +39,8 @@ type EditedNetwork = {
   type: string
   nationality: string
   ethnicity: string
-  migration_year: number
-  end_year: number
+  migration_year: string
+  end_year: string
   latitude: number
   longitude: number
   migration_traces: MigrationTrace[] // Add migration traces
@@ -83,8 +83,8 @@ const useStore = create<State>((set) => ({
     type: "Person",
     nationality: "",
     ethnicity: "",
-    migration_year: 0,
-    end_year: 0,
+    migration_year: "",
+    end_year: "",
     latitude: 0,
     longitude: 0,
     migration_traces: [],
@@ -97,7 +97,8 @@ const useStore = create<State>((set) => ({
         targetType: "Person",
         strength: 0,
         edgeType: "",
-        year: 0,
+        year: "",
+        id: 0,
       },
     ],
     photo: undefined, // Add photo field
@@ -116,8 +117,8 @@ const useStore = create<State>((set) => ({
         type: "Person",
         nationality: "",
         ethnicity: "",
-        migration_year: 0,
-        end_year: 0,
+        migration_year: "",
+        end_year: "",
         latitude: 0,
         longitude: 0,
         migration_traces: [],
@@ -127,7 +128,7 @@ const useStore = create<State>((set) => ({
             targetId: 0,
             strength: 0,
             type: "",
-            year: 0,
+            year: "",
           },
         ],
         edge: [
@@ -136,7 +137,8 @@ const useStore = create<State>((set) => ({
             targetType: "Person",
             strength: 0,
             edgeType: "",
-            year: 0,
+            year: "",
+            id: 0,
           },
         ],
         photo: undefined, // Add photo field

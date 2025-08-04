@@ -18,8 +18,8 @@
 //   ethnicity: string[] | string
 //   edgeType: string[] | string
 //   entityType: string
-//   yearRange: [number, number]
-//   migrationYearRange: [number, number] // 추가
+//   yearRange: [string, string]
+//   migrationYearRange: [string, string] // 추가
 //   userNetworkFilter: boolean
 //   userNetworkTraceFilter: boolean
 //   userNetworkConnectionFilter: boolean
@@ -32,6 +32,13 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
   let filtered = []
   self.postMessage({ type: "PROGRESS", payload: 0 })
 
+  // Ensure filter ranges are always wide enough to include all data
+  if (!filters.yearRange || filters.yearRange.length !== 2) {
+    filters.yearRange = ["0000-01-01", "3000-12-31"]
+  }
+  if (!filters.migrationYearRange || filters.migrationYearRange.length !== 2) {
+    filters.migrationYearRange = ["0000-01-01", "3000-12-31"]
+  }
   networks.forEach((network, idx) => {
     // 국적 필터
     const matchesNationality =
@@ -47,20 +54,31 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
       filters.ethnicity === "all" ||
       network.ethnicity === filters.ethnicity
 
-    // 연도 필터
+    // 연도 필터 (yyyy-mm-dd string 비교, fallback)
+    const networkMigrationYear =
+      typeof network.migration_year === "string" &&
+      network.migration_year.length === 10
+        ? network.migration_year
+        : "0001-01-01"
     const matchesYearRange =
-      network.migration_year >= filters.yearRange[0] &&
-      network.migration_year <= filters.yearRange[1]
+      networkMigrationYear >= filters.yearRange[0] &&
+      networkMigrationYear <= filters.yearRange[1]
 
-    // 이동연도(이주연도) 필터: migration_traces 중 하나라도 migrationYearRange에 포함되면 통과
+    // 이동연도(이주연도) 필터: migration_traces 중 하나라도 migrationYearRange에 포함되면 통과 (yyyy-mm-dd string 비교, fallback)
     const matchesMigrationYearRange =
       !filters.migrationYearRange ||
       filters.migrationYearRange.length !== 2 ||
-      network.migration_traces.some(
-        (trace) =>
-          trace.migration_year >= filters.migrationYearRange[0] &&
-          trace.migration_year <= filters.migrationYearRange[1],
-      )
+      network.migration_traces.some((trace) => {
+        const traceYear =
+          typeof trace.migration_year === "string" &&
+          trace.migration_year.length === 10
+            ? trace.migration_year
+            : "0001-01-01"
+        const result =
+          traceYear >= filters.migrationYearRange[0] &&
+          traceYear <= filters.migrationYearRange[1]
+        return result
+      })
 
     // 유저 네트워크 필터
     const matchesUserNetwork =
@@ -86,20 +104,22 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
       filters.edgeType.length > 0 &&
       !filters.edgeType.includes("all")
     ) {
-      matchesEdgeType = network.edges.some((edge) =>
-        Array.isArray(filters.edgeType)
+      matchesEdgeType = network.edges.some((edge) => {
+        const result = Array.isArray(filters.edgeType)
           ? filters.edgeType.includes(edge.edgeType)
-          : filters.edgeType === edge.edgeType,
-      )
+          : filters.edgeType === edge.edgeType
+        return result
+      })
     }
 
     // 이주 원인 필터
     const matchesMigrationReasons =
       filters.migrationReasons.includes("all") ||
       filters.migrationReasons.length === 0 ||
-      network.migration_traces.some((trace) =>
-        filters.migrationReasons.includes(trace.reason),
-      )
+      network.migration_traces.some((trace) => {
+        const result = filters.migrationReasons.includes(trace.reason)
+        return result
+      })
 
     // 여러 네트워크 필터
     const matchesSelectedMigrationNetworks =
