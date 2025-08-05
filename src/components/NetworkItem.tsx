@@ -42,6 +42,33 @@ const NetworkItemMemo: FC<
   const { t } = useTranslation()
   const { user } = useStore()
 
+  // yyyy-mm-dd만 반환하는 날짜 변환 함수
+  const formatDate = (
+    dateValue: string | number | Date | undefined | null,
+  ): string => {
+    if (!dateValue) return ""
+    if (typeof dateValue === "string") {
+      // 이미 yyyy-mm-dd면 그대로 반환
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateValue)) return dateValue
+      // ISO 문자열이면 앞 10자리만 반환
+      if (/^\d{4}-\d{2}-\d{2}T/.test(dateValue)) return dateValue.slice(0, 10)
+      // yyyyMMdd 문자열이면 변환
+      if (/^\d{8}$/.test(dateValue))
+        return `${dateValue.slice(0, 4)}-${dateValue.slice(4, 6)}-${dateValue.slice(6, 8)}`
+      // yyyy만 있으면 1월 1일로
+      if (/^\d{4}$/.test(dateValue)) return `${dateValue}-01-01`
+      return dateValue
+    }
+    if (dateValue instanceof Date) return dateValue.toISOString().slice(0, 10)
+    if (typeof dateValue === "number") {
+      const str = dateValue.toString()
+      if (str.length === 8)
+        return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`
+      if (str.length === 4) return `${str}-01-01`
+    }
+    return ""
+  }
+
   return (
     <li className="my-3 px-2 py-2 bg-[#f2f2f2] rounded shadow-md text-xs w-full max-w-lg">
       <div className="flex justify-between items-center w-full max-w-lg">
@@ -71,21 +98,29 @@ const NetworkItemMemo: FC<
                   type: type,
                   nationality: nationality,
                   ethnicity: ethnicity,
-                  migration_year: migration_year,
-                  end_year,
+                  migration_year: formatDate(migration_year),
+                  end_year: formatDate(end_year),
                   latitude: latitude,
                   longitude: longitude,
                   connections: connections,
-                  edge: edges,
-                  migration_traces: migration_traces,
+                  edge: edges?.map((edge) => ({
+                    ...edge,
+                    year: formatDate(edge.year),
+                  })),
+                  migration_traces: migration_traces?.map((trace) => ({
+                    ...trace,
+                    migration_year: formatDate(trace.migration_year),
+                  })),
                   user_id: 0,
                 })
-                window.location.href.includes("network")
-                  ? window.scrollTo({
-                      top: document.body.scrollHeight,
-                      behavior: "instant",
-                    })
-                  : navigate("/network")
+                if (window.location.href.includes("network")) {
+                  window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: "instant",
+                  })
+                } else {
+                  navigate("/network")
+                }
               }}
             />
             <TrashIcon
@@ -204,7 +239,7 @@ const NetworkItemMemo: FC<
                         {edge.edgeType}
                       </td>
                       <td className="px-2 py-1 border text-center">
-                        {edge.year}
+                        {formatDate(edge.year)}
                       </td>
                     </tr>
                   ))}
@@ -262,7 +297,7 @@ const NetworkItemMemo: FC<
                         {trace.latitude}
                       </td>
                       <td className="px-2 py-1 border text-center">
-                        {trace.migration_year}
+                        {formatDate(trace.migration_year)}
                       </td>
                       <td className="px-2 py-1 border text-center">
                         {trace.reason}
