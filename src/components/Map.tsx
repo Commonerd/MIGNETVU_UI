@@ -178,6 +178,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }[]
   >([])
   const [showMigrationTable, setShowMigrationTable] = useState(false)
+  // 관계/이동 토글 상태 (Legend에서 제어)
+  const [showRelationsOnly, setShowRelationsOnly] = useState(false)
+  const [showMigrationsOnly, setShowMigrationsOnly] = useState(true)
   const [showEdgeTable, setShowEdgeTable] = useState(false)
 
   const handleOpenPopup = async (
@@ -2131,6 +2134,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           </div>
         )}
       </div>
+      {/* 관계/이동 토글 버튼은 Legend로 이동 */}
       {/* 3D 모드와 2D 모드 전환 */}
       {is3DMode ? (
         <ThreeDMap
@@ -2270,7 +2274,15 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               topNetworks={topNetworks}
               onEntityClick={handleEntityClick}
               centralityType={centralityType}
-              networkAnalysis={networkAnalysis} // 네트워크 분석 결과 전달
+              networkAnalysis={networkAnalysis}
+              showRelationsOnly={showRelationsOnly}
+              showMigrationsOnly={showMigrationsOnly}
+              onToggleRelationsOnly={() => {
+                setShowRelationsOnly((prev) => !prev)
+              }}
+              onToggleMigrationsOnly={() => {
+                setShowMigrationsOnly((prev) => !prev)
+              }}
             />
           )}
           {/* 네트워크 이름 표시/비표시 토글 버튼
@@ -2741,143 +2753,310 @@ ${/* 네트워크 요약 텍스트 동적으로 생성 */ ""}
               )
             }),
           )}
-          {migrationTraces.map((traces) =>
-            traces.slice(0, -1).map((trace, index) => {
-              const nextTrace = traces[index + 1]
-              // 같은 네트워크 아이디인지 확인
-              if (trace.network_id !== nextTrace.network_id) {
-                return null // 네트워크 아이디가 다르면 선을 그리지 않음
-              }
-              return (
-                <Polyline
-                  key={`${trace.id}-${nextTrace.id}`}
-                  positions={[
-                    [trace.latitude, trace.longitude],
-                    [nextTrace.latitude, nextTrace.longitude],
-                  ]}
-                  color="#1976d2" // 파란색 계열로 변경
-                  weight={3}
-                  opacity={0.7}
-                  dashArray="5, 5"
-                  lineCap="round"
-                  lineJoin="round"
-                  eventHandlers={{
-                    click: (e) => {
-                      L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(
-                          `<div>
-                      <strong>{t("Network ID")}:</strong> ${nextTrace.network_id}<br/>
-                      <strong>{t("Migration Year")}:</strong> ${nextTrace.migration_year}<br/>
-                      <strong>{t("Location")}:</strong> ${nextTrace.location_name}<br/>
-                      <strong>{t("Reason")}:</strong> ${nextTrace.reason}
-                    </div>`,
-                        )
-                        .openOn(e.target._map)
-                    },
-                  }}
-                />
-              )
-            }),
-          )}
-          {migrationTraces.map((traces) =>
-            traces.slice(0, -1).map((trace, index) => {
-              const nextTrace = traces[index + 1]
-              // 데이터 검증: trace와 nextTrace가 유효한지 확인
-              if (
-                !trace ||
-                !nextTrace ||
-                !trace.latitude ||
-                !trace.longitude ||
-                !nextTrace.latitude ||
-                !nextTrace.longitude
-              ) {
-                console.warn("Invalid trace data:", { trace, nextTrace })
-                return null
-              }
-              return <MigrationTraceDecorator traces={migrationTraces.flat()} />
-            }),
-          )}
-          {getEdges()
-            .filter((edge) => {
-              // edge[6]에 실제 정보가 있음
-              const info = edge[6]
-              return !selectedNetworkId || info.sourceId === selectedNetworkId
-            })
-            .map((edge, idx) => {
-              const info = edge[6]
-              const allTraces = migrationTraces.flat()
-              const sourceTrace = findClosestTraceByYear(
-                info.sourceId,
-                info.edgeYear,
-                allTraces,
-              )
-              const targetTrace = findClosestTraceByYear(
-                info.targetId,
-                info.edgeYear,
-                allTraces,
-              )
-              if (!sourceTrace || !targetTrace) return null
-              const positions: [number, number][] = [
-                [Number(sourceTrace.latitude), Number(sourceTrace.longitude)],
-                [Number(targetTrace.latitude), Number(targetTrace.longitude)],
-              ]
-              const edgeWeight = Math.max(1, Math.min(5, edge[3] * 2))
-              return (
-                <>
-                  <Polyline
-                    key={`edge-trace-${info.sourceId}-${info.targetId}-${info.edgeYear}-${idx}`}
-                    positions={positions}
-                    color="#e65100"
-                    weight={edgeWeight}
-                    dashArray="5, 5"
-                    eventHandlers={{
-                      click: (e) => {
-                        L.popup()
-                          .setLatLng(e.latlng)
-                          .setContent(
-                            `<div>
-                    <strong>${t("Connections")}</strong><br/>
-                    ${t("Source")}: ${networks?.find((n) => n.id === info.sourceId)?.title || info.sourceId}<br/>
-                    ${t("Target")}: ${networks?.find((n) => n.id === info.targetId)?.title || info.targetId}<br/>
-                    ${t("Year")}: ${info.edgeYear}<br/>
-                    ${t("Type")}: ${t(info.edgeType)}<br/>
-                    ${t("Strength")}: ${edge[3]}
-                  </div>`,
-                          )
-                          .openOn(e.target._map)
-                      },
-                    }}
-                  >
-                    {showEdgeDetails && (
-                      <Tooltip permanent direction="center" opacity={0.7}>
-                        <span>
-                          {t(info.edgeType)} ({edge[3]}, {info.edgeYear})
-                        </span>
-                      </Tooltip>
-                    )}
-                  </Polyline>
-                  <PolylineDecoratorWrapper
-                    positions={positions}
-                    patterns={[
-                      {
-                        offset: "50%",
-                        repeat: 0,
-                        symbol: L.Symbol.arrowHead({
-                          pixelSize: 5 + edgeWeight,
-                          polygon: true,
-                          pathOptions: {
-                            color: "#FF0000",
-                            fillOpacity: 1,
-                            weight: edgeWeight,
+          {/* 관계/이동 토글에 따라 명확하게 분기 */}
+          {/* 둘 다 OFF: 아무것도 안보임 */}
+          {!showRelationsOnly && !showMigrationsOnly && null}
+          {/* 둘 다 ON: 둘 다 보임 */}
+          {showRelationsOnly && showMigrationsOnly && (
+            <>
+              {/* 이동선 */}
+              {migrationTraces.map((traces) =>
+                traces.slice(0, -1).map((trace, index) => {
+                  const nextTrace = traces[index + 1]
+                  if (trace.network_id !== nextTrace.network_id) return null
+                  return (
+                    <Polyline
+                      key={`${trace.id}-${nextTrace.id}`}
+                      positions={[
+                        [trace.latitude, trace.longitude],
+                        [nextTrace.latitude, nextTrace.longitude],
+                      ]}
+                      color="#1976d2"
+                      weight={3}
+                      opacity={0.7}
+                      dashArray="5, 5"
+                      lineCap="round"
+                      lineJoin="round"
+                      eventHandlers={{
+                        click: (e) => {
+                          L.popup()
+                            .setLatLng(e.latlng)
+                            .setContent(
+                              `<div>
+                          <strong>{t("Network ID")}:</strong> ${nextTrace.network_id}<br/>
+                          <strong>{t("Migration Year")}:</strong> ${nextTrace.migration_year}<br/>
+                          <strong>{t("Location")}:</strong> ${nextTrace.location_name}<br/>
+                          <strong>{t("Reason")}:</strong> ${nextTrace.reason}
+                        </div>`,
+                            )
+                            .openOn(e.target._map)
+                        },
+                      }}
+                    />
+                  )
+                }),
+              )}
+              {migrationTraces.map((traces) =>
+                traces.slice(0, -1).map((trace, index) => {
+                  const nextTrace = traces[index + 1]
+                  if (
+                    !trace ||
+                    !nextTrace ||
+                    !trace.latitude ||
+                    !trace.longitude ||
+                    !nextTrace.latitude ||
+                    !nextTrace.longitude
+                  ) {
+                    console.warn("Invalid trace data:", { trace, nextTrace })
+                    return null
+                  }
+                  return (
+                    <MigrationTraceDecorator traces={migrationTraces.flat()} />
+                  )
+                }),
+              )}
+              {/* 관계선 */}
+              {getEdges()
+                .filter((edge) => {
+                  const info = edge[6]
+                  return (
+                    !selectedNetworkId || info.sourceId === selectedNetworkId
+                  )
+                })
+                .map((edge, idx) => {
+                  const info = edge[6]
+                  const allTraces = migrationTraces.flat()
+                  const sourceTrace = findClosestTraceByYear(
+                    info.sourceId,
+                    info.edgeYear,
+                    allTraces,
+                  )
+                  const targetTrace = findClosestTraceByYear(
+                    info.targetId,
+                    info.edgeYear,
+                    allTraces,
+                  )
+                  if (!sourceTrace || !targetTrace) return null
+                  const positions: [number, number][] = [
+                    [
+                      Number(sourceTrace.latitude),
+                      Number(sourceTrace.longitude),
+                    ],
+                    [
+                      Number(targetTrace.latitude),
+                      Number(targetTrace.longitude),
+                    ],
+                  ]
+                  const edgeWeight = Math.max(1, Math.min(5, edge[3] * 2))
+                  return (
+                    <>
+                      <Polyline
+                        key={`edge-trace-${info.sourceId}-${info.targetId}-${info.edgeYear}-${idx}`}
+                        positions={positions}
+                        color="#e65100"
+                        weight={edgeWeight}
+                        dashArray="5, 5"
+                        eventHandlers={{
+                          click: (e) => {
+                            L.popup()
+                              .setLatLng(e.latlng)
+                              .setContent(
+                                `<div>
+                        <strong>${t("Connections")}</strong><br/>
+                        ${t("Source")}: ${networks?.find((n) => n.id === info.sourceId)?.title || info.sourceId}<br/>
+                        ${t("Target")}: ${networks?.find((n) => n.id === info.targetId)?.title || info.targetId}<br/>
+                        ${t("Year")}: ${info.edgeYear}<br/>
+                        ${t("Type")}: ${t(info.edgeType)}<br/>
+                        ${t("Strength")}: ${edge[3]}
+                      </div>`,
+                              )
+                              .openOn(e.target._map)
                           },
-                        }),
-                      },
-                    ]}
-                  />
-                </>
-              )
-            })}
+                        }}
+                      >
+                        {showEdgeDetails && (
+                          <Tooltip permanent direction="center" opacity={0.7}>
+                            <span>
+                              {t(info.edgeType)} ({edge[3]}, {info.edgeYear})
+                            </span>
+                          </Tooltip>
+                        )}
+                      </Polyline>
+                      <PolylineDecoratorWrapper
+                        positions={positions}
+                        patterns={[
+                          {
+                            offset: "50%",
+                            repeat: 0,
+                            symbol: L.Symbol.arrowHead({
+                              pixelSize: 5 + edgeWeight,
+                              polygon: true,
+                              pathOptions: {
+                                color: "#FF0000",
+                                fillOpacity: 1,
+                                weight: edgeWeight,
+                              },
+                            }),
+                          },
+                        ]}
+                      />
+                    </>
+                  )
+                })}
+            </>
+          )}
+          {/* 이동(이주선)만 보기 */}
+          {showMigrationsOnly && !showRelationsOnly && (
+            <>
+              {migrationTraces.map((traces) =>
+                traces.slice(0, -1).map((trace, index) => {
+                  const nextTrace = traces[index + 1]
+                  if (trace.network_id !== nextTrace.network_id) return null
+                  return (
+                    <Polyline
+                      key={`${trace.id}-${nextTrace.id}`}
+                      positions={[
+                        [trace.latitude, trace.longitude],
+                        [nextTrace.latitude, nextTrace.longitude],
+                      ]}
+                      color="#1976d2"
+                      weight={3}
+                      opacity={0.7}
+                      dashArray="5, 5"
+                      lineCap="round"
+                      lineJoin="round"
+                      eventHandlers={{
+                        click: (e) => {
+                          L.popup()
+                            .setLatLng(e.latlng)
+                            .setContent(
+                              `<div>
+                          <strong>{t("Network ID")}:</strong> ${nextTrace.network_id}<br/>
+                          <strong>{t("Migration Year")}:</strong> ${nextTrace.migration_year}<br/>
+                          <strong>{t("Location")}:</strong> ${nextTrace.location_name}<br/>
+                          <strong>{t("Reason")}:</strong> ${nextTrace.reason}
+                        </div>`,
+                            )
+                            .openOn(e.target._map)
+                        },
+                      }}
+                    />
+                  )
+                }),
+              )}
+              {migrationTraces.map((traces) =>
+                traces.slice(0, -1).map((trace, index) => {
+                  const nextTrace = traces[index + 1]
+                  if (
+                    !trace ||
+                    !nextTrace ||
+                    !trace.latitude ||
+                    !trace.longitude ||
+                    !nextTrace.latitude ||
+                    !nextTrace.longitude
+                  ) {
+                    console.warn("Invalid trace data:", { trace, nextTrace })
+                    return null
+                  }
+                  return (
+                    <MigrationTraceDecorator traces={migrationTraces.flat()} />
+                  )
+                }),
+              )}
+            </>
+          )}
+          {/* 관계(엣지)만 보기 */}
+          {showRelationsOnly && !showMigrationsOnly && (
+            <>
+              {getEdges()
+                .filter((edge) => {
+                  const info = edge[6]
+                  return (
+                    !selectedNetworkId || info.sourceId === selectedNetworkId
+                  )
+                })
+                .map((edge, idx) => {
+                  const info = edge[6]
+                  const allTraces = migrationTraces.flat()
+                  const sourceTrace = findClosestTraceByYear(
+                    info.sourceId,
+                    info.edgeYear,
+                    allTraces,
+                  )
+                  const targetTrace = findClosestTraceByYear(
+                    info.targetId,
+                    info.edgeYear,
+                    allTraces,
+                  )
+                  if (!sourceTrace || !targetTrace) return null
+                  const positions: [number, number][] = [
+                    [
+                      Number(sourceTrace.latitude),
+                      Number(sourceTrace.longitude),
+                    ],
+                    [
+                      Number(targetTrace.latitude),
+                      Number(targetTrace.longitude),
+                    ],
+                  ]
+                  const edgeWeight = Math.max(1, Math.min(5, edge[3] * 2))
+                  return (
+                    <>
+                      <Polyline
+                        key={`edge-trace-${info.sourceId}-${info.targetId}-${info.edgeYear}-${idx}`}
+                        positions={positions}
+                        color="#e65100"
+                        weight={edgeWeight}
+                        dashArray="5, 5"
+                        eventHandlers={{
+                          click: (e) => {
+                            L.popup()
+                              .setLatLng(e.latlng)
+                              .setContent(
+                                `<div>
+                        <strong>${t("Connections")}</strong><br/>
+                        ${t("Source")}: ${networks?.find((n) => n.id === info.sourceId)?.title || info.sourceId}<br/>
+                        ${t("Target")}: ${networks?.find((n) => n.id === info.targetId)?.title || info.targetId}<br/>
+                        ${t("Year")}: ${info.edgeYear}<br/>
+                        ${t("Type")}: ${t(info.edgeType)}<br/>
+                        ${t("Strength")}: ${edge[3]}
+                      </div>`,
+                              )
+                              .openOn(e.target._map)
+                          },
+                        }}
+                      >
+                        {showEdgeDetails && (
+                          <Tooltip permanent direction="center" opacity={0.7}>
+                            <span>
+                              {t(info.edgeType)} ({edge[3]}, {info.edgeYear})
+                            </span>
+                          </Tooltip>
+                        )}
+                      </Polyline>
+                      <PolylineDecoratorWrapper
+                        positions={positions}
+                        patterns={[
+                          {
+                            offset: "50%",
+                            repeat: 0,
+                            symbol: L.Symbol.arrowHead({
+                              pixelSize: 5 + edgeWeight,
+                              polygon: true,
+                              pathOptions: {
+                                color: "#FF0000",
+                                fillOpacity: 1,
+                                weight: edgeWeight,
+                              },
+                            }),
+                          },
+                        ]}
+                      />
+                    </>
+                  )
+                })}
+            </>
+          )}
         </MapContainer>
       )}
     </div>
