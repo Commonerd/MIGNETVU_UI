@@ -2283,6 +2283,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               onToggleMigrationsOnly={() => {
                 setShowMigrationsOnly((prev) => !prev)
               }}
+              showEdgeDetails={showEdgeDetails}
+              showMigrationReasons={showMigrationReasons}
+              onToggleEdgeDetails={toggleEdgeDetails}
+              onToggleMigrationReasons={toggleMigrationReasons}
             />
           )}
           {/* 네트워크 이름 표시/비표시 토글 버튼
@@ -2303,41 +2307,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           // >
           //   {showNetworkNames ? "-" : "+"}
           // </button> */}
-          {/* 엣지 세부정보 표시/비표시 토글 버튼 */}
-          <button
-            onClick={toggleEdgeDetails}
-            style={{
-              position: "absolute",
-              top: "2rem", // 네트워크 토글 버튼 바로 아래
-              right: "0rem",
-              zIndex: 2000,
-              backgroundColor: "#3e2723",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            {showEdgeDetails ? "-" : "+"}
-          </button>
-          <button
-            onClick={toggleMigrationReasons}
-            style={{
-              position: "absolute",
-              top: "4rem", // 관계 토글 버튼 바로 아래
-              right: "0rem",
-              zIndex: 2000,
-              backgroundColor: "#3e2723",
-              color: "#fff",
-              border: "none",
-              borderRadius: "8px",
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            {showMigrationReasons ? "-" : "+"}
-          </button>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

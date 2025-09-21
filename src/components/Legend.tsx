@@ -54,6 +54,10 @@ export const Legend = ({
   showMigrationsOnly,
   onToggleRelationsOnly,
   onToggleMigrationsOnly,
+  showEdgeDetails,
+  showMigrationReasons,
+  onToggleEdgeDetails,
+  onToggleMigrationReasons,
 }: {
   topNetworks: {
     id: number
@@ -67,6 +71,10 @@ export const Legend = ({
   showMigrationsOnly: boolean
   onToggleRelationsOnly: () => void
   onToggleMigrationsOnly: () => void
+  showEdgeDetails: boolean
+  showMigrationReasons: boolean
+  onToggleEdgeDetails: () => void
+  onToggleMigrationReasons: () => void
 }) => {
   const map = useMap()
   const { t } = useTranslation()
@@ -85,71 +93,139 @@ export const Legend = ({
         maxWidth: 200,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", marginBottom: 7 }}>
-        <div
-          style={{
-            width: 28,
-            height: 0,
-            borderTop: "4px dashed #ff9800",
-            margin: "0 8px",
-            verticalAlign: "middle",
-          }}
-        />
-        <span style={{ color: "#e65100", fontWeight: 600 }}>
-          {t("Connections")}
-        </span>
-        <button
-          onClick={onToggleRelationsOnly}
-          style={{
-            marginLeft: 8,
-            background: showRelationsOnly ? "#ff9800" : "#fff3e0",
-            color: showRelationsOnly ? "#fff" : "#e65100",
-            border: showRelationsOnly
-              ? "2px solid #e65100"
-              : "1.5px solid #ffe0b2",
-            borderRadius: 4,
-            padding: "0.2rem 0.8rem",
-            fontWeight: 600,
-            fontSize: 13,
-            cursor: "pointer",
-            transition: "background 0.2s, color 0.2s, border 0.2s",
-          }}
-        >
-          {showRelationsOnly ? t("Show") : t("Show")}
-        </button>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 7,
+          gap: 6,
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+          <div
+            style={{
+              width: 28,
+              height: 0,
+              borderTop: "4px dashed #ff9800",
+              margin: "0 8px 0 0",
+              verticalAlign: "middle",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{ color: "#e65100", fontWeight: 600, whiteSpace: "nowrap" }}
+          >
+            {t("Connections")}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
+          <button
+            onClick={onToggleRelationsOnly}
+            style={{
+              background: showRelationsOnly ? "#ff9800" : "#fff3e0",
+              color: showRelationsOnly ? "#fff" : "#e65100",
+              border: showRelationsOnly
+                ? "2px solid #e65100"
+                : "1.5px solid #ffe0b2",
+              borderRadius: 4,
+              padding: "0.2rem 0.8rem",
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: "pointer",
+              transition: "background 0.2s, color 0.2s, border 0.2s",
+              marginRight: 4,
+            }}
+          >
+            {showRelationsOnly ? t("Show") : t("Show")}
+          </button>
+          <button
+            onClick={onToggleEdgeDetails}
+            style={{
+              background: showEdgeDetails ? "#ff9800" : "#fff3e0",
+              color: showEdgeDetails ? "#fff" : "#e65100",
+              border: showEdgeDetails
+                ? "2px solid #e65100"
+                : "1.5px solid #ffe0b2",
+              borderRadius: 4,
+              padding: "0.2rem 0.7rem",
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: "pointer",
+              transition: "background 0.2s, color 0.2s, border 0.2s",
+            }}
+          >
+            Detail
+          </button>
+        </div>
       </div>
-      <div style={{ display: "flex", alignItems: "center", marginBottom: 7 }}>
-        <div
-          style={{
-            width: 28,
-            height: 0,
-            borderTop: "4px dashed #1976d2",
-            margin: "0 8px",
-            verticalAlign: "middle",
-          }}
-        />
-        <span style={{ color: "#1976d2", fontWeight: 600 }}>
-          {t("Mobility")}
-        </span>
-        <button
-          onClick={onToggleMigrationsOnly}
-          style={{
-            marginLeft: 8,
-            background: showMigrationsOnly ? "#1976d2" : "#e3f2fd",
-            color: showMigrationsOnly ? "#fff" : "#1976d2",
-            border: showMigrationsOnly
-              ? "2px solid #1976d2"
-              : "1.5px solid #bbdefb",
-            borderRadius: 4,
-            padding: "0.2rem 0.8rem",
-            fontWeight: 600,
-            fontSize: 13,
-            cursor: "pointer",
-            transition: "background 0.2s, color 0.2s, border 0.2s",
-          }}
-        >
-          {showMigrationsOnly ? t("Show") : t("Show")}
-        </button>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: 7,
+          gap: 6,
+          flexWrap: "wrap",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+          <div
+            style={{
+              width: 28,
+              height: 0,
+              borderTop: "4px dashed #1976d2",
+              margin: "0 8px 0 0",
+              verticalAlign: "middle",
+              flexShrink: 0,
+            }}
+          />
+          <span
+            style={{ color: "#1976d2", fontWeight: 600, whiteSpace: "nowrap" }}
+          >
+            {t("Mobility")}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 4 }}>
+          <button
+            onClick={onToggleMigrationsOnly}
+            style={{
+              background: showMigrationsOnly ? "#1976d2" : "#e3f2fd",
+              color: showMigrationsOnly ? "#fff" : "#1976d2",
+              border: showMigrationsOnly
+                ? "2px solid #1976d2"
+                : "1.5px solid #bbdefb",
+              borderRadius: 4,
+              padding: "0.2rem 0.8rem",
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: "pointer",
+              transition: "background 0.2s, color 0.2s, border 0.2s",
+              marginRight: 4,
+            }}
+          >
+            {showMigrationsOnly ? t("Show") : t("Show")}
+          </button>
+          <button
+            onClick={onToggleMigrationReasons}
+            style={{
+              background: showMigrationReasons ? "#1976d2" : "#e3f2fd",
+              color: showMigrationReasons ? "#fff" : "#1976d2",
+              border: showMigrationReasons
+                ? "2px solid #1976d2"
+                : "1.5px solid #bbdefb",
+              borderRadius: 4,
+              padding: "0.2rem 0.7rem",
+              fontWeight: 600,
+              fontSize: 13,
+              cursor: "pointer",
+              transition: "background 0.2s, color 0.2s, border 0.2s",
+            }}
+          >
+            Detail
+          </button>
+        </div>
       </div>
       {centralityType !== "none" && (
         <>
