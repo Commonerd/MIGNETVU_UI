@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css"
 import { ClipLoader } from "react-spinners"
 import * as XLSX from "xlsx"
 import { fetchAllComments } from "../api/comments"
+import { useEffect } from "react"
 
 export const Network = () => {
   const { t } = useTranslation()
@@ -397,6 +398,16 @@ export const Network = () => {
       setTriggerSearch(true)
     }
   }
+
+  useEffect(() => {
+    if (Array.isArray(editedNetwork.edge) && editedNetwork.edge.length === 1) {
+      updateNetwork({
+        ...editedNetwork,
+        edge: [],
+      })
+    }
+    // eslint-disable-next-line
+  }, [])
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-[#d1c6b1]">
