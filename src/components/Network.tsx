@@ -1,4 +1,8 @@
-import { FormEvent, useRef, useState } from "react"
+// @ts-nocheck
+import { FormEvent, useRef, useState, ChangeEvent } from "react"
+// @ts-ignore
+// eslint-disable-next-line
+import React from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   ArrowRightOnRectangleIcon,
@@ -43,10 +47,6 @@ export const Network = () => {
       type,
       nationality,
       ethnicity,
-      migration_year,
-      end_year,
-      latitude,
-      longitude,
       connections,
       edge,
       user_id,
@@ -61,19 +61,39 @@ export const Network = () => {
       return
     }
 
+    // migration_traces reason 가공
+    let traces = migration_traces ? [...migration_traces] : []
+    if (traces.length >= 2) {
+      traces[0] = { ...traces[0], reason: "Birth" }
+      traces[traces.length - 1] = {
+        ...traces[traces.length - 1],
+        reason: "Death",
+      }
+    }
+
+    // 네트워크 입력란 값도 이동에서 가져온 값으로 세팅
+    const migration_year = traces[0]?.migration_year || ""
+    const end_year = traces[traces.length - 1]?.migration_year || ""
+    const latitude = traces[0]?.latitude || 0
+    const longitude = traces[0]?.longitude || 0
+    const end_latitude = traces[traces.length - 1]?.latitude || 0
+    const end_longitude = traces[traces.length - 1]?.longitude || 0
+
     const formData = new FormData()
     formData.append("title", title)
     formData.append("type", type)
     formData.append("nationality", nationality)
     formData.append("ethnicity", ethnicity)
-    formData.append("migration_year", migration_year.toString())
-    formData.append("end_year", end_year.toString())
+    formData.append("migration_year", migration_year)
+    formData.append("end_year", end_year)
     formData.append("latitude", latitude.toString())
     formData.append("longitude", longitude.toString())
+    formData.append("end_latitude", end_latitude.toString())
+    formData.append("end_longitude", end_longitude.toString())
     formData.append("connections", JSON.stringify(connections || []))
     formData.append("edge", JSON.stringify(edge || []))
     formData.append("user_id", user_id.toString())
-    formData.append("migration_traces", JSON.stringify(migration_traces || []))
+    formData.append("migration_traces", JSON.stringify(traces))
     if (photo) {
       formData.append("photo", photo)
     }
@@ -523,8 +543,11 @@ export const Network = () => {
             </div>
           </div>
 
-          {/* Birth/Death, Latitude, and Longitude in a single row */}
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          {/* Birth/Death, Latitude, and Longitude in a single row (숨김 처리) */}
+          <div
+            className="grid grid-cols-3 gap-4 mt-4"
+            style={{ display: "none" }}
+          >
             {/* Birth or Established */}
             {!isBirthComplete && (
               <div>
@@ -607,282 +630,298 @@ export const Network = () => {
               />
             </div>
           </div>
-          {/* Migration Trace Section */}
+          {/* Migration Trace Section (Birth/Death 고정, 추가 이동 행) */}
           <div>
             <label className="block text-gray-700 font-semibold text-xs mb-2">
               {t("Migration Trace")}
             </label>
             <div className="space-y-2">
-              {editedNetwork.migration_traces?.map((detail, idx) => (
-                <div key={idx} className="grid grid-cols-5 gap-1 items-center">
-                  {/* Location Name */}
-                  <input
-                    type="text"
-                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                    value={detail.location_name || ""}
-                    onChange={(e) =>
-                      updateNetwork({
-                        ...editedNetwork,
-                        migration_traces: editedNetwork.migration_traces?.map(
-                          (d, i) =>
-                            i === idx
-                              ? { ...d, location_name: e.target.value }
-                              : d,
-                        ),
-                      })
-                    }
-                    placeholder={t("Loc.")}
-                  />
-
-                  {/* Latitude */}
-                  {!isLatitudeComplete ? (
-                    <input
-                      type="number"
-                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                      value={detail.latitude || ""}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          migration_traces: editedNetwork.migration_traces?.map(
-                            (d, i) =>
-                              i === idx
-                                ? { ...d, latitude: Number(e.target.value) }
-                                : d,
-                          ),
-                        })
-                      }
-                      placeholder={t("Lat.")}
-                      onBlur={() => setIsLatitudeComplete(true)} // 포커스 아웃 시 Longitude로 전환
-                    />
-                  ) : (
-                    <input
-                      type="number"
-                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                      value={detail.longitude || ""}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          migration_traces: editedNetwork.migration_traces?.map(
-                            (d, i) =>
-                              i === idx
-                                ? { ...d, longitude: Number(e.target.value) }
-                                : d,
-                          ),
-                        })
-                      }
-                      placeholder={t("Long.")}
-                      onBlur={() => setIsLatitudeComplete(false)} // 포커스 아웃 시 Latitude로 전환
-                    />
-                  )}
-
-                  {/* Year */}
-                  <input
-                    type="date"
-                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                    value={detail.migration_year || ""}
-                    onChange={(e) =>
-                      updateNetwork({
-                        ...editedNetwork,
-                        migration_traces: editedNetwork.migration_traces?.map(
-                          (d, i) =>
-                            i === idx
-                              ? { ...d, migration_year: e.target.value }
-                              : d,
-                        ),
-                      })
-                    }
-                    placeholder={t("Year")}
-                    pattern="\d{4}-\d{2}-\d{2}"
-                  />
-
-                  {/* Reason */}
-                  <input
-                    type="text"
-                    className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                    value={detail.reason || ""}
-                    onChange={(e) =>
-                      updateNetwork({
-                        ...editedNetwork,
-                        migration_traces: editedNetwork.migration_traces?.map(
-                          (d, i) =>
-                            i === idx ? { ...d, reason: e.target.value } : d,
-                        ),
-                      })
-                    }
-                    placeholder={t("Reason")}
-                  />
-
-                  {/* Delete Button */}
-                  <button
-                    type="button"
-                    className="text-red-500 hover:text-red-700 flex justify-center items-center"
-                    onClick={() =>
-                      updateNetwork({
-                        ...editedNetwork,
-                        migration_traces:
-                          editedNetwork.migration_traces?.filter(
-                            (_, i) => i !== idx,
-                          ),
-                      })
-                    }
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth={1.5}
-                      stroke="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-
-              {/* Add New Detail */}
-              <button
-                type="button"
-                className="block mx-auto mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-lg hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
-                onClick={() =>
-                  updateNetwork({
-                    ...editedNetwork,
-                    migration_traces: [
-                      ...(editedNetwork.migration_traces || []),
-                      {
-                        id: Date.now(),
+              {/* Birth Row */}
+              <div className="grid grid-cols-6 gap-1 items-center bg-[#f7f3e9] rounded">
+                <input
+                  type="text"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[0]?.location_name || ""
+                  }
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    if (!traces[0]) {
+                      traces[0] = {
+                        id: Date.now() + 1,
                         network_id: editedNetwork.id || 0,
                         location_name: "",
                         latitude: 0,
                         longitude: 0,
                         migration_year: "",
-                        reason: "",
-                      },
-                    ],
-                  })
-                }
-              >
-                {t("Add")}
-              </button>
-            </div>
-          </div>
-          <div>
-            {/* Edge Section */}
-            <div>
-              <label className="block text-gray-700 font-semibold text-xs mb-2">
-                {t("Edge Section")}
-              </label>
-              <div className="space-y-2">
-                {editedNetwork.edge?.map((edge, idx) => (
-                  <div
-                    key={idx}
-                    className="grid grid-cols-5 gap-1 items-center"
-                  >
-                    {/* Target ID */}
-                    {!isTargetIdComplete ? (
-                      <input
-                        type="number"
-                        className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                        value={edge.targetId || ""}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            edge: editedNetwork.edge?.map((d, i) =>
-                              i === idx
-                                ? { ...d, targetId: Number(e.target.value) }
-                                : d,
-                            ),
-                          })
-                        }
-                        placeholder="ID"
-                        onBlur={() => setIsTargetIdComplete(true)} // 포커스 아웃 시 Target Type으로 전환
-                      />
-                    ) : (
-                      <select
-                        className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                        value={edge.targetType || "Person"}
-                        onChange={(e) =>
-                          updateNetwork({
-                            ...editedNetwork,
-                            edge: editedNetwork.edge?.map((d, i) =>
-                              i === idx
-                                ? { ...d, targetType: e.target.value }
-                                : d,
-                            ),
-                          })
-                        }
-                        onBlur={() => setIsTargetIdComplete(false)} // 포커스 아웃 시 Target ID로 전환
-                      >
-                        <option value="Person">Person</option>
-                        <option value="Organization">Organization</option>
-                      </select>
-                    )}
-
-                    {/* Strength */}
-                    <input
-                      type="number"
-                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                      value={edge.strength || ""}
-                      onChange={(e) =>
-                        updateNetwork({
-                          ...editedNetwork,
-                          edge: editedNetwork.edge?.map((d, i) =>
-                            i === idx
-                              ? { ...d, strength: Number(e.target.value) }
-                              : d,
-                          ),
-                        })
+                        reason: "Birth",
                       }
-                      placeholder={t("Str.")}
-                    />
+                    }
+                    traces[0] = { ...traces[0], location_name: e.target.value }
+                    // 사망행이 없으면 추가
+                    if (traces.length < 2) {
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Loc.")}
+                  readOnly={false}
+                />
+                <input
+                  type="number"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={editedNetwork.migration_traces?.[0]?.latitude || ""}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    if (!traces[0]) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                    }
+                    traces[0] = {
+                      ...traces[0],
+                      latitude: Number(e.target.value),
+                    }
+                    if (traces.length < 2) {
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Lat.")}
+                />
+                <input
+                  type="number"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={editedNetwork.migration_traces?.[0]?.longitude || ""}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    if (!traces[0]) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                    }
+                    traces[0] = {
+                      ...traces[0],
+                      longitude: Number(e.target.value),
+                    }
+                    if (traces.length < 2) {
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Long.")}
+                />
+                <input
+                  type="date"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[0]?.migration_year || ""
+                  }
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    if (!traces[0]) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                    }
+                    traces[0] = { ...traces[0], migration_year: e.target.value }
+                    if (traces.length < 2) {
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Year")}
+                  pattern="\d{4}-\d{2}-\d{2}"
+                />
+                <input
+                  type="text"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={"Birth"}
+                  readOnly
+                />
+                <span className="text-xs text-gray-400">{t("Birth")}</span>
+              </div>
 
-                    {/* Edge Type */}
+              {/* 추가 이동 행들 */}
+              {(editedNetwork.migration_traces || [])
+                .slice(1, -1)
+                .map((detail: any, idx: number) => (
+                  <div
+                    key={detail.id || idx}
+                    className="grid grid-cols-6 gap-1 items-center"
+                  >
                     <input
                       type="text"
-                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                      value={edge.edgeType || ""}
-                      onChange={(e) =>
+                      className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                      value={detail.location_name || ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces[idx + 1] = {
+                          ...traces[idx + 1],
+                          location_name: e.target.value,
+                        }
                         updateNetwork({
                           ...editedNetwork,
-                          edge: editedNetwork.edge?.map((d, i) =>
-                            i === idx ? { ...d, edgeType: e.target.value } : d,
-                          ),
+                          migration_traces: traces,
                         })
-                      }
-                      placeholder={t("Type")}
+                      }}
+                      placeholder={t("Loc.")}
                     />
-
-                    {/* Year */}
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                      value={detail.latitude || ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces[idx + 1] = {
+                          ...traces[idx + 1],
+                          latitude: Number(e.target.value),
+                        }
+                        updateNetwork({
+                          ...editedNetwork,
+                          migration_traces: traces,
+                        })
+                      }}
+                      placeholder={t("Lat.")}
+                    />
+                    <input
+                      type="number"
+                      className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                      value={detail.longitude || ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces[idx + 1] = {
+                          ...traces[idx + 1],
+                          longitude: Number(e.target.value),
+                        }
+                        updateNetwork({
+                          ...editedNetwork,
+                          migration_traces: traces,
+                        })
+                      }}
+                      placeholder={t("Long.")}
+                    />
                     <input
                       type="date"
-                      className="w-full px-1 py-1 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-amber-500 text-xs"
-                      value={edge.year || ""}
-                      onChange={(e) =>
+                      className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                      value={detail.migration_year || ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces[idx + 1] = {
+                          ...traces[idx + 1],
+                          migration_year: e.target.value,
+                        }
                         updateNetwork({
                           ...editedNetwork,
-                          edge: editedNetwork.edge?.map((d, i) =>
-                            i === idx ? { ...d, year: e.target.value } : d,
-                          ),
+                          migration_traces: traces,
                         })
-                      }
+                      }}
                       placeholder={t("Year")}
                       pattern="\d{4}-\d{2}-\d{2}"
                     />
-
-                    {/* Delete Button */}
+                    <input
+                      type="text"
+                      className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                      value={detail.reason || ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces[idx + 1] = {
+                          ...traces[idx + 1],
+                          reason: e.target.value,
+                        }
+                        updateNetwork({
+                          ...editedNetwork,
+                          migration_traces: traces,
+                        })
+                      }}
+                      placeholder={t("Reason")}
+                    />
+                    {/* 삭제 버튼 (추가된 행만) */}
                     <button
                       type="button"
                       className="text-red-500 hover:text-red-700 flex justify-center items-center"
-                      onClick={() =>
+                      onClick={() => {
+                        const traces = [
+                          ...(editedNetwork.migration_traces || []),
+                        ]
+                        traces.splice(idx + 1, 1)
                         updateNetwork({
                           ...editedNetwork,
-                          edge: editedNetwork.edge?.filter((_, i) => i !== idx),
+                          migration_traces: traces,
                         })
-                      }
+                      }}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -901,6 +940,368 @@ export const Network = () => {
                     </button>
                   </div>
                 ))}
+
+              {/* Death Row */}
+              <div className="grid grid-cols-6 gap-1 items-center bg-[#f7f3e9] rounded">
+                <input
+                  type="text"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[
+                      editedNetwork.migration_traces.length - 1
+                    ]?.location_name || ""
+                  }
+                  onChange={(e) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    const lastIdx = traces.length - 1
+                    if (lastIdx < 0) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    traces[traces.length - 1] = {
+                      ...traces[traces.length - 1],
+                      location_name: e.target.value,
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Loc.")}
+                  readOnly={false}
+                />
+                <input
+                  type="number"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[
+                      editedNetwork.migration_traces.length - 1
+                    ]?.latitude || ""
+                  }
+                  onChange={(e) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    const lastIdx = traces.length - 1
+                    if (lastIdx < 0) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    traces[traces.length - 1] = {
+                      ...traces[traces.length - 1],
+                      latitude: Number(e.target.value),
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Lat.")}
+                />
+                <input
+                  type="number"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[
+                      editedNetwork.migration_traces.length - 1
+                    ]?.longitude || ""
+                  }
+                  onChange={(e) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    const lastIdx = traces.length - 1
+                    if (lastIdx < 0) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    traces[traces.length - 1] = {
+                      ...traces[traces.length - 1],
+                      longitude: Number(e.target.value),
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Long.")}
+                />
+                <input
+                  type="date"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={
+                    editedNetwork.migration_traces?.[
+                      editedNetwork.migration_traces.length - 1
+                    ]?.migration_year || ""
+                  }
+                  onChange={(e) => {
+                    let traces = [...(editedNetwork.migration_traces || [])]
+                    const lastIdx = traces.length - 1
+                    if (lastIdx < 0) {
+                      traces[0] = {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      }
+                      traces[1] = {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      }
+                    }
+                    traces[traces.length - 1] = {
+                      ...traces[traces.length - 1],
+                      migration_year: e.target.value,
+                    }
+                    updateNetwork({
+                      ...editedNetwork,
+                      migration_traces: traces,
+                    })
+                  }}
+                  placeholder={t("Year")}
+                  pattern="\d{4}-\d{2}-\d{2}"
+                />
+                <input
+                  type="text"
+                  className="w-full px-1 py-1 border border-gray-300 rounded text-xs bg-[#f7f3e9]"
+                  value={"Death"}
+                  readOnly
+                />
+                <span className="text-xs text-gray-400">{t("Death")}</span>
+              </div>
+
+              {/* Add 이동 버튼 (Birth와 Death 사이에 추가) */}
+              <button
+                type="button"
+                className="block mx-auto mt-2 w-auto px-3 py-1 bg-[#d1c6b1] text-[#3e2723] border border-[#9e9d89] rounded-lg hover:bg-[#c4b8a6] hover:text-[#5d4037] transition-all duration-200"
+                onClick={() => {
+                  let traces = [...(editedNetwork.migration_traces || [])]
+                  // traces가 2개 미만이면 기존 값 보존, 없을 때만 기본 Birth/Death 추가
+                  if (traces.length === 0) {
+                    traces = [
+                      {
+                        id: Date.now() + 1,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Birth",
+                      },
+                      {
+                        id: Date.now() + 2,
+                        network_id: editedNetwork.id || 0,
+                        location_name: "",
+                        latitude: 0,
+                        longitude: 0,
+                        migration_year: "",
+                        reason: "Death",
+                      },
+                    ]
+                  } else if (traces.length === 1) {
+                    traces[1] = {
+                      id: Date.now() + 2,
+                      network_id: editedNetwork.id || 0,
+                      location_name: "",
+                      latitude: 0,
+                      longitude: 0,
+                      migration_year: "",
+                      reason: "Death",
+                    }
+                  }
+                  traces.splice(traces.length - 1, 0, {
+                    id: Date.now(),
+                    network_id: editedNetwork.id || 0,
+                    location_name: "",
+                    latitude: 0,
+                    longitude: 0,
+                    migration_year: "",
+                    reason: "",
+                  })
+                  updateNetwork({ ...editedNetwork, migration_traces: traces })
+                }}
+              >
+                {t("Add")}
+              </button>
+            </div>
+          </div>
+          <div>
+            {/* Edge Section */}
+            <div>
+              <label className="block text-gray-700 font-semibold text-xs mb-2">
+                {t("Edge Section")}
+              </label>
+              <div className="space-y-2">
+                {/* 기본 행 없음, edge가 비어있으면 아무것도 렌더링하지 않음 */}
+                {Array.isArray(editedNetwork.edge) &&
+                  editedNetwork.edge.length > 0 &&
+                  editedNetwork.edge.map((edge, idx) => (
+                    <div
+                      key={idx}
+                      className="grid grid-cols-6 gap-1 items-center"
+                    >
+                      {/* ...existing code for edge row... */}
+                      <input
+                        type="number"
+                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                        value={edge.targetId || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, targetId: Number(e.target.value) }
+                                : d,
+                            ),
+                          })
+                        }
+                        placeholder="ID"
+                      />
+                      <select
+                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                        value={edge.targetType || "Person"}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, targetType: e.target.value }
+                                : d,
+                            ),
+                          })
+                        }
+                      >
+                        <option value="Person">Person</option>
+                        <option value="Organization">Organization</option>
+                      </select>
+                      <input
+                        type="text"
+                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                        value={edge.edgeType || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, edgeType: e.target.value }
+                                : d,
+                            ),
+                          })
+                        }
+                        placeholder={t("Type")}
+                      />
+                      <input
+                        type="number"
+                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                        value={edge.strength || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx
+                                ? { ...d, strength: Number(e.target.value) }
+                                : d,
+                            ),
+                          })
+                        }
+                        placeholder={t("Str.")}
+                      />
+                      <input
+                        type="date"
+                        className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
+                        value={edge.year || ""}
+                        onChange={(e) =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.map((d, i) =>
+                              i === idx ? { ...d, year: e.target.value } : d,
+                            ),
+                          })
+                        }
+                        placeholder={t("Year")}
+                        pattern="\d{4}-\d{2}-\d{2}"
+                      />
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-700 flex justify-center items-center"
+                        onClick={() =>
+                          updateNetwork({
+                            ...editedNetwork,
+                            edge: editedNetwork.edge?.filter(
+                              (_, i) => i !== idx,
+                            ),
+                          })
+                        }
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
 
                 {/* Add New Edge */}
                 <button
@@ -938,13 +1339,18 @@ export const Network = () => {
               <button
                 className="w-full py-2 bg-[#800020] text-gray-100 rounded-lg hover:bg-[#455a64] disabled:opacity-40 focus:outline-none mr-3"
                 disabled={
-                  !editedNetwork.title ||
-                  !editedNetwork.nationality ||
-                  !editedNetwork.ethnicity ||
-                  !editedNetwork.migration_year ||
-                  !editedNetwork.latitude ||
-                  !editedNetwork.longitude ||
-                  isSubmitting
+                  !(
+                    editedNetwork.migration_traces &&
+                    editedNetwork.migration_traces.length >= 2 &&
+                    editedNetwork.migration_traces[0].latitude &&
+                    editedNetwork.migration_traces[0].longitude &&
+                    editedNetwork.migration_traces[
+                      editedNetwork.migration_traces.length - 1
+                    ].latitude &&
+                    editedNetwork.migration_traces[
+                      editedNetwork.migration_traces.length - 1
+                    ].longitude
+                  ) || isSubmitting
                 }
               >
                 {isSubmitting ? (
