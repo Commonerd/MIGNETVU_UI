@@ -1228,7 +1228,7 @@ export const Network = () => {
                             ),
                           })
                         }}
-                        placeholder="이름으로 검색"
+                        placeholder={t("name")}
                         autoComplete="off"
                         onFocus={() =>
                           setShowEdgeSearch((prev) => ({
