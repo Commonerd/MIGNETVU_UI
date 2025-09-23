@@ -272,7 +272,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       setFilters((prev) => ({
         ...prev,
         entityType: ["Person"],
-        nationality: ["Korea"],
+        nationality: [""],
         ethnicity: ["Korean"],
       }))
       setAppliedGuideStep(1)

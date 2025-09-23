@@ -180,21 +180,21 @@ function App() {
                   {guideStep === 1 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("한국 국적을 지닌 한인의 관계와 이동"),
+                        __html: t("Product Description1"),
                       }}
                     />
                   )}
                   {guideStep === 2 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("러시아 국적을 지닌 한인의 관계와 이동"),
+                        __html: t("Product Description2"),
                       }}
                     />
                   )}
                   {guideStep === 3 && (
                     <span
                       dangerouslySetInnerHTML={{
-                        __html: t("한국계 러시아인 정재관의 이동"),
+                        __html: t("Product Description3"),
                       }}
                     />
                   )}
