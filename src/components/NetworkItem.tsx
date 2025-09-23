@@ -106,6 +106,8 @@ const NetworkItemMemo: FC<
                   edge: edges?.map((edge) => ({
                     ...edge,
                     year: formatDate(edge.year),
+                    targetName:
+                      edge.targetName || (edge as any).target_name || "",
                   })),
                   migration_traces: migration_traces?.map((trace) => ({
                     ...trace,
@@ -206,6 +208,9 @@ const NetworkItemMemo: FC<
                       {t("Target ID")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
+                      {t("Target Name")}
+                    </th>
+                    <th className="px-2 py-1 border font-semibold text-center">
                       {t("Target Type")}
                     </th>
                     <th className="px-2 py-1 border font-semibold text-center">
@@ -228,6 +233,9 @@ const NetworkItemMemo: FC<
                     >
                       <td className="px-2 py-1 border text-center">
                         {edge.targetId}
+                      </td>
+                      <td className="px-2 py-1 border text-center">
+                        {edge.targetName}
                       </td>
                       <td className="px-2 py-1 border text-center">
                         {edge.targetType}
