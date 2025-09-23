@@ -23,6 +23,19 @@ import { fetchAllComments } from "../api/comments"
 import { useEffect } from "react"
 
 export const Network = () => {
+  // 관계 입력란 자동완성용 state
+  const [edgeSearch, setEdgeSearch] = useState({})
+  const [showEdgeSearch, setShowEdgeSearch] = useState({})
+  // Edge가 1개만 있을 때 자동으로 삭제 (X버튼 자동 클릭 효과)
+  useEffect(() => {
+    if (Array.isArray(editedNetwork.edge) && editedNetwork.edge.length === 1) {
+      updateNetwork({
+        ...editedNetwork,
+        edge: [],
+      })
+    }
+    // eslint-disable-next-line
+  }, [])
   const { t } = useTranslation()
   const { editedNetwork } = useStore()
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
@@ -398,16 +411,6 @@ export const Network = () => {
       setTriggerSearch(true)
     }
   }
-
-  useEffect(() => {
-    if (Array.isArray(editedNetwork.edge) && editedNetwork.edge.length === 1) {
-      updateNetwork({
-        ...editedNetwork,
-        edge: [],
-      })
-    }
-    // eslint-disable-next-line
-  }, [])
 
   return (
     <div className="flex justify-center items-center flex-col text-gray-600 font-mono bg-[#d1c6b1]">
@@ -1195,31 +1198,87 @@ export const Network = () => {
                 {t("Edge Section")}
               </label>
               <div className="space-y-2">
-                {/* 기본 행 없음, edge가 비어있으면 아무것도 렌더링하지 않음 */}
+                {/* 초기화면에 edge가 1개 있으므로, X버튼으로 직접 삭제할 수 있습니다. */}
                 {Array.isArray(editedNetwork.edge) &&
                   editedNetwork.edge.length > 0 &&
                   editedNetwork.edge.map((edge, idx) => (
                     <div
                       key={idx}
-                      className="grid grid-cols-6 gap-1 items-center"
+                      className="grid grid-cols-6 gap-1 items-center relative"
                     >
-                      {/* ...existing code for edge row... */}
+                      {/* 이름 자동완성 인풋 */}
                       <input
-                        type="number"
+                        type="text"
                         className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
-                        value={edge.targetId || ""}
-                        onChange={(e) =>
+                        value={edge.targetName || edgeSearch[idx] || ""}
+                        onChange={(e) => {
+                          const value = e.target.value
+                          setEdgeSearch((prev) => ({ ...prev, [idx]: value }))
+                          setShowEdgeSearch((prev) => ({
+                            ...prev,
+                            [idx]: true,
+                          }))
+                          // 이름 직접 입력 시 targetId는 0으로 초기화
                           updateNetwork({
                             ...editedNetwork,
-                            edge: editedNetwork.edge?.map((d, i) =>
+                            edge: editedNetwork.edge.map((d, i) =>
                               i === idx
-                                ? { ...d, targetId: Number(e.target.value) }
+                                ? { ...d, targetName: value, targetId: 0 }
                                 : d,
                             ),
                           })
+                        }}
+                        placeholder="이름으로 검색"
+                        autoComplete="off"
+                        onFocus={() =>
+                          setShowEdgeSearch((prev) => ({
+                            ...prev,
+                            [idx]: true,
+                          }))
                         }
-                        placeholder="ID"
                       />
+                      {/* 자동완성 후보 리스트 */}
+                      {showEdgeSearch[idx] && edgeSearch[idx] && data && (
+                        <div className="absolute z-20 bg-white border rounded shadow max-h-40 overflow-y-auto w-full left-0 top-8">
+                          {data
+                            .filter(
+                              (n) =>
+                                n.title.includes(edgeSearch[idx]) &&
+                                n.id !== editedNetwork.id,
+                            )
+                            .slice(0, 10)
+                            .map((n) => (
+                              <div
+                                key={n.id}
+                                className="px-2 py-1 hover:bg-gray-200 cursor-pointer text-xs"
+                                onClick={() => {
+                                  updateNetwork({
+                                    ...editedNetwork,
+                                    edge: editedNetwork.edge.map((d, i) =>
+                                      i === idx
+                                        ? {
+                                            ...d,
+                                            targetId: n.id,
+                                            targetName: n.title,
+                                          }
+                                        : d,
+                                    ),
+                                  })
+                                  setEdgeSearch((prev) => ({
+                                    ...prev,
+                                    [idx]: n.title,
+                                  }))
+                                  setShowEdgeSearch((prev) => ({
+                                    ...prev,
+                                    [idx]: false,
+                                  }))
+                                }}
+                              >
+                                {`${n.title} (${n.id}, ${n.nationality || ""}, ${n.ethnicity || ""}, ${n.migration_year || ""}-${n.end_year || ""})`}
+                              </div>
+                            ))}
+                        </div>
+                      )}
                       <select
                         className="w-full px-1 py-1 border border-gray-300 rounded text-xs"
                         value={edge.targetType || "Person"}
