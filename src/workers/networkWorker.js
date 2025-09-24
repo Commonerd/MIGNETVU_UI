@@ -68,17 +68,18 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
     const matchesMigrationYearRange =
       !filters.migrationYearRange ||
       filters.migrationYearRange.length !== 2 ||
-      network.migration_traces.some((trace) => {
-        const traceYear =
-          typeof trace.migration_year === "string" &&
-          trace.migration_year.length === 10
-            ? trace.migration_year
-            : "0001-01-01"
-        const result =
-          traceYear >= filters.migrationYearRange[0] &&
-          traceYear <= filters.migrationYearRange[1]
-        return result
-      })
+      (Array.isArray(network.migration_traces) &&
+        network.migration_traces.some((trace) => {
+          const traceYear =
+            typeof trace.migration_year === "string" &&
+            trace.migration_year.length === 10
+              ? trace.migration_year
+              : "0001-01-01"
+          const result =
+            traceYear >= filters.migrationYearRange[0] &&
+            traceYear <= filters.migrationYearRange[1]
+          return result
+        }))
 
     // 유저 네트워크 필터
     const matchesUserNetwork =
@@ -87,7 +88,8 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
     // 엣지 필터
     const matchesEdge =
       !selectedEdgeId ||
-      network.edges.some((edge) => edge.targetId === selectedEdgeId)
+      (Array.isArray(network.edges) &&
+        network.edges.some((edge) => edge.targetId === selectedEdgeId))
 
     // 엔티티 타입 필터
     const matchesEntityType =
@@ -104,22 +106,25 @@ function filterNetworks(networks, filters, selectedEdgeId, userName) {
       filters.edgeType.length > 0 &&
       !filters.edgeType.includes("all")
     ) {
-      matchesEdgeType = network.edges.some((edge) => {
-        const result = Array.isArray(filters.edgeType)
-          ? filters.edgeType.includes(edge.edgeType)
-          : filters.edgeType === edge.edgeType
-        return result
-      })
+      matchesEdgeType =
+        Array.isArray(network.edges) &&
+        network.edges.some((edge) => {
+          const result = Array.isArray(filters.edgeType)
+            ? filters.edgeType.includes(edge.edgeType)
+            : filters.edgeType === edge.edgeType
+          return result
+        })
     }
 
     // 이주 원인 필터
     const matchesMigrationReasons =
       filters.migrationReasons.includes("all") ||
       filters.migrationReasons.length === 0 ||
-      network.migration_traces.some((trace) => {
-        const result = filters.migrationReasons.includes(trace.reason)
-        return result
-      })
+      (Array.isArray(network.migration_traces) &&
+        network.migration_traces.some((trace) => {
+          const result = filters.migrationReasons.includes(trace.reason)
+          return result
+        }))
 
     // 여러 네트워크 필터
     const matchesSelectedMigrationNetworks =
@@ -157,7 +162,9 @@ function calculateCentrality(filteredNetworks, centralityType) {
   const centrality = {}
   if (centralityType === "degree") {
     filteredNetworks.forEach((network) => {
-      centrality[network.id] = network.edges.length
+      centrality[network.id] = Array.isArray(network.edges)
+        ? network.edges.length
+        : 0
     })
   } else if (centralityType === "none") {
     filteredNetworks.forEach((network) => {
