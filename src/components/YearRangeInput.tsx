@@ -73,4 +73,4 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
   )
 }
 
-export default YearRangeInput
+export default React.memo(YearRangeInput)

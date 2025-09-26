@@ -65,4 +65,4 @@ const MigrationYearRangeInput: React.FC<MigrationYearRangeInputProps> = ({
   )
 }
 
-export default MigrationYearRangeInput
+export default React.memo(MigrationYearRangeInput)
