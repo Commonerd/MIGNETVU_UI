@@ -675,7 +675,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     )
     workerFilteredNetworks.forEach((network, netIdx) => {
       ;(network.edges || []).forEach((edge, edgeIdx) => {
-        // Ensure edgeYear is always a valid string
         let edgeYear = "0001-01-01"
         if (typeof edge.year === "string" && edge.year.length === 10) {
           edgeYear = edge.year
@@ -701,35 +700,34 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           !user.name ||
           network.user_name === user.name ||
           (target && target.user_name === user.name)
+        // 조건 완화: target이 없어도 sourceId가 필터링된 네트워크에 있으면 표시
         if (
           isEdgeSelected &&
           isNetworkSelected &&
           matchesEdgeType &&
           matchesYearRange &&
-          target &&
           matchesUserNetworkConnection
         ) {
-          // Defensive: ensure network.id and target.id are valid numbers
           const sourceId =
             typeof network.id === "number" ? network.id : Number(network.id)
-          const targetId =
-            typeof target.id === "number" ? target.id : Number(target.id)
-          // Find closest migration trace by year for source and target
+          const targetId = edge.targetId
           const sourceTrace = findClosestTraceByYear(
             sourceId,
             edgeYear,
             allTraces,
           )
-          const targetTrace = findClosestTraceByYear(
-            targetId,
-            edgeYear,
-            allTraces,
-          )
-          // If both traces found, use their lat/lng for polyline
-          if (sourceTrace && targetTrace) {
+          // target이 필터링된 네트워크에 없으면 targetTrace를 null로 처리
+          const targetTrace = target
+            ? findClosestTraceByYear(targetId, edgeYear, allTraces)
+            : null
+          // sourceTrace가 있고, targetTrace가 있으면 기존대로 표시
+          // targetTrace가 없으면 sourceTrace 위치만 표시 (혹은 sourceTrace와 sourceTrace로 표시)
+          if (sourceTrace) {
             edges.push([
               [sourceTrace.latitude, sourceTrace.longitude],
-              [targetTrace.latitude, targetTrace.longitude],
+              targetTrace
+                ? [targetTrace.latitude, targetTrace.longitude]
+                : [sourceTrace.latitude, sourceTrace.longitude],
               getConnectionColor(edge.edgeType),
               edge.strength,
               edge.edgeType,
@@ -740,7 +738,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 edgeType: edge.edgeType,
                 edgeYear,
                 sourceTraceId: sourceTrace.id,
-                targetTraceId: targetTrace.id,
+                targetTraceId: targetTrace ? targetTrace.id : null,
               },
             ])
           }
