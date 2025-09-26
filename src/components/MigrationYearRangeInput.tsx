@@ -30,7 +30,7 @@ const MigrationYearRangeInput: React.FC<MigrationYearRangeInputProps> = ({
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       onChange([start, end])
-    }, 1000)
+    }, 200)
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
