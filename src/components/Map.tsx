@@ -127,10 +127,15 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [latLng, setLatLng] = useState<LatLng | null>(null) // 타입을 LatLng | null로 설정
   const [copied, setCopied] = useState(false)
   const updateNetwork = useStore((state) => state.updateEditedNetwork)
-  const [yearRange, setYearRange] = useState<[string, string]>([
+  // 관계연월일 입력값 상태 (화면 즉시 반영)
+  const [yearRangeInput, setYearRangeInput] = useState<[string, string]>([
     "0001-01-01",
     "1945-12-31",
   ])
+  // 이동연월일 입력값 상태 (화면 즉시 반영)
+  const [migrationYearRangeInput, setMigrationYearRangeInput] = useState<
+    [string, string]
+  >(["0001-01-01", "1945-12-31"])
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -162,9 +167,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [workerCentrality, setWorkerCentrality] = useState<
     Record<number, number>
   >({})
-  const [migrationYearRange, setMigrationYearRange] = useState<
-    [string, string]
-  >(["0001-01-01", "1945-12-31"])
+  // 실제 필터에 적용되는 값은 filters.yearRange, filters.migrationYearRange
   const [step, setStep] = useState(1)
   const pacificCenter = { lat: 30, lng: 170, zoom: 3 } // 태평양 중앙 좌표와 줌
   const [mapZoom, setMapZoom] = useState(5) // 기본 줌
@@ -316,13 +319,27 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }
   }, [guideStep, networks, appliedGuideStep])
 
-  // migrationYearRange가 바뀔 때 filters에도 반영
-  // useEffect(() => {
-  //   setFilters((prev) => ({
-  //     ...prev,
-  //     migrationYearRange,
-  //   }))
-  // }, [migrationYearRange])
+  // 관계연월일 입력값이 변경될 때 디바운싱 후 필터 적용
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        yearRange: yearRangeInput,
+      }))
+    }, 1000)
+    return () => clearTimeout(handler)
+  }, [yearRangeInput])
+
+  // 이동연월일 입력값이 변경될 때 디바운싱 후 필터 적용
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        migrationYearRange: migrationYearRangeInput,
+      }))
+    }, 1000)
+    return () => clearTimeout(handler)
+  }, [migrationYearRangeInput])
 
   // 중심성 계산 워커로 요청
   useEffect(() => {
@@ -487,9 +504,9 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const filteredTraces =
     networks?.flatMap((network) =>
       network.migration_traces.filter((trace) => {
-        // 연월일 비교: migrationYearRange는 ['yyyy-mm-dd', 'yyyy-mm-dd'] 형태로 가정
-        const startDate = migrationYearRange[0]
-        const endDate = migrationYearRange[1]
+        // 연월일 비교: filters.migrationYearRange는 ['yyyy-mm-dd', 'yyyy-mm-dd'] 형태로 가정
+        const startDate = filters.migrationYearRange[0]
+        const endDate = filters.migrationYearRange[1]
         const matchesYearRange =
           trace.migration_year >= startDate && trace.migration_year <= endDate
         // 유저 자신이 등록한 네트워크의 트레이스 필터 조건
@@ -691,7 +708,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           filters.edgeType.includes("all") ||
           filters.edgeType.includes(edge.edgeType)
         const matchesYearRange =
-          edgeYear >= yearRange[0] && edgeYear <= yearRange[1]
+          edgeYear >= filters.yearRange[0] && edgeYear <= filters.yearRange[1]
         const target = workerFilteredNetworks.find(
           (n) => n.id === edge.targetId,
         )
@@ -1106,7 +1123,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         setNetworkAnalysis(analysis) // 분석 결과 업데이트
       }
     }
-  }, [workerFilteredNetworks, filters, yearRange]) // 의존성 배열에 getEdges와 getMigrationTraces를 간접적으로 반영
+  }, [workerFilteredNetworks, filters, yearRangeInput]) // yearRange -> yearRangeInput
   // const CustomMapComponent = () => {
   //   const map = useMap()
   //   const [edgeLayer, setEdgeLayer] = useState<L.LayerGroup | null>(null)
@@ -1255,8 +1272,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
           }
           // 연도 및 필터 조건 적용
           if (
-            trace.migration_year >= migrationYearRange[0] &&
-            trace.migration_year <= migrationYearRange[1] &&
+            trace.migration_year >= filters.migrationYearRange[0] &&
+            trace.migration_year <= filters.migrationYearRange[1] &&
             (filters.migrationReasons.includes("all") ||
               filters.migrationReasons.includes(trace.reason)) &&
             (filters.entityType.includes("all") ||
@@ -1291,8 +1308,8 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         const matchesYearRange = traces.some(
           (trace) =>
             trace.migration_year &&
-            trace.migration_year >= migrationYearRange[0] &&
-            trace.migration_year <= migrationYearRange[1],
+            trace.migration_year >= filters.migrationYearRange[0] &&
+            trace.migration_year <= filters.migrationYearRange[1],
         )
         const matchesUserNetworkTrace =
           !filters.userNetworkTraceFilter ||
@@ -1324,7 +1341,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     [
       networks,
       filters,
-      migrationYearRange,
+      migrationYearRangeInput,
       selectedMigrationNetworkIds,
       user.name,
     ],
@@ -1456,8 +1473,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <label className="text-sm">{t("yearRange")}</label>
                 <input
                   type="date"
-                  value={yearRange[0]}
-                  onChange={(e) => setYearRange([e.target.value, yearRange[1]])}
+                  value={yearRangeInput[0]}
+                  onChange={(e) =>
+                    setYearRangeInput([e.target.value, yearRangeInput[1]])
+                  }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
                   max="3000-12-31"
@@ -1465,8 +1484,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <span>~</span>
                 <input
                   type="date"
-                  value={yearRange[1]}
-                  onChange={(e) => setYearRange([yearRange[0], e.target.value])}
+                  value={yearRangeInput[1]}
+                  onChange={(e) =>
+                    setYearRangeInput([yearRangeInput[0], e.target.value])
+                  }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
                   max="3000-12-31"
@@ -1532,11 +1553,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <label className="text-sm">{t("migrationTraceability")}</label>
                 <input
                   type="date"
-                  value={migrationYearRange[0]}
+                  value={migrationYearRangeInput[0]}
                   onChange={(e) =>
-                    setMigrationYearRange([
+                    setMigrationYearRangeInput([
                       e.target.value,
-                      migrationYearRange[1],
+                      migrationYearRangeInput[1],
                     ])
                   }
                   className="border rounded px-2 py-1"
@@ -1546,10 +1567,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 <span>~</span>
                 <input
                   type="date"
-                  value={migrationYearRange[1]}
+                  value={migrationYearRangeInput[1]}
                   onChange={(e) =>
-                    setMigrationYearRange([
-                      migrationYearRange[0],
+                    setMigrationYearRangeInput([
+                      migrationYearRangeInput[0],
                       e.target.value,
                     ])
                   }
@@ -1832,8 +1853,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <label className="text-sm">{t("yearRange")}</label>
               <input
                 type="date"
-                value={yearRange[0]}
-                onChange={(e) => setYearRange([e.target.value, yearRange[1]])}
+                value={yearRangeInput[0]}
+                onChange={(e) =>
+                  setYearRangeInput([e.target.value, yearRangeInput[1]])
+                }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
                 max="3000-12-31"
@@ -1841,8 +1864,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <span>~</span>
               <input
                 type="date"
-                value={yearRange[1]}
-                onChange={(e) => setYearRange([yearRange[0], e.target.value])}
+                value={yearRangeInput[1]}
+                onChange={(e) =>
+                  setYearRangeInput([yearRangeInput[0], e.target.value])
+                }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
                 max="3000-12-31"
@@ -1957,9 +1982,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <label className="text-sm">{t("migrationTraceability")}</label>
               <input
                 type="date"
-                value={migrationYearRange[0]}
+                value={migrationYearRangeInput[0]}
                 onChange={(e) =>
-                  setMigrationYearRange([e.target.value, migrationYearRange[1]])
+                  setMigrationYearRangeInput([
+                    e.target.value,
+                    migrationYearRangeInput[1],
+                  ])
                 }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
@@ -1968,9 +1996,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <span>~</span>
               <input
                 type="date"
-                value={migrationYearRange[1]}
+                value={migrationYearRangeInput[1]}
                 onChange={(e) =>
-                  setMigrationYearRange([migrationYearRange[0], e.target.value])
+                  setMigrationYearRangeInput([
+                    migrationYearRangeInput[0],
+                    e.target.value,
+                  ])
                 }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
