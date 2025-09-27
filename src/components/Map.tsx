@@ -320,35 +320,26 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   }, [guideStep, networks, appliedGuideStep])
 
   // 관계연월일 입력값이 변경될 때 디바운싱 후 필터 적용
-  // 관계연월일, 이동연월일 입력값 변경 시 lodash.debounce로 필터 적용
-  const updateYearRangeFilter = useMemo(
-    () =>
-      debounce((range: [string, string]) => {
-        setFilters((prev) => ({
-          ...prev,
-          yearRange: range,
-        }))
-      }, 300),
-    [],
-  )
-  const updateMigrationYearRangeFilter = useMemo(
-    () =>
-      debounce((range: [string, string]) => {
-        setFilters((prev) => ({
-          ...prev,
-          migrationYearRange: range,
-        }))
-      }, 300),
-    [],
-  )
-
   useEffect(() => {
-    updateYearRangeFilter(yearRangeInput)
-  }, [yearRangeInput, updateYearRangeFilter])
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        yearRange: yearRangeInput,
+      }))
+    }, 1000)
+    return () => clearTimeout(handler)
+  }, [yearRangeInput])
 
+  // 이동연월일 입력값이 변경될 때 디바운싱 후 필터 적용
   useEffect(() => {
-    updateMigrationYearRangeFilter(migrationYearRangeInput)
-  }, [migrationYearRangeInput, updateMigrationYearRangeFilter])
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        migrationYearRange: migrationYearRangeInput,
+      }))
+    }, 1000)
+    return () => clearTimeout(handler)
+  }, [migrationYearRangeInput])
 
   // 중심성 계산 워커로 요청
   useEffect(() => {
