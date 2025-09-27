@@ -322,10 +322,19 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   // 관계연월일 입력값이 변경될 때 디바운싱 후 필터 적용
   useEffect(() => {
     const handler = setTimeout(() => {
-      setFilters((prev) => ({
-        ...prev,
-        yearRange: yearRangeInput,
-      }))
+      setFilters((prev) => {
+        // 값이 실제로 바뀌는 경우에만 업데이트
+        if (
+          prev.yearRange[0] === yearRangeInput[0] &&
+          prev.yearRange[1] === yearRangeInput[1]
+        ) {
+          return prev
+        }
+        return {
+          ...prev,
+          yearRange: yearRangeInput,
+        }
+      })
     }, 1000)
     return () => clearTimeout(handler)
   }, [yearRangeInput])
@@ -333,10 +342,19 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   // 이동연월일 입력값이 변경될 때 디바운싱 후 필터 적용
   useEffect(() => {
     const handler = setTimeout(() => {
-      setFilters((prev) => ({
-        ...prev,
-        migrationYearRange: migrationYearRangeInput,
-      }))
+      setFilters((prev) => {
+        // 값이 실제로 바뀌는 경우에만 업데이트
+        if (
+          prev.migrationYearRange[0] === migrationYearRangeInput[0] &&
+          prev.migrationYearRange[1] === migrationYearRangeInput[1]
+        ) {
+          return prev
+        }
+        return {
+          ...prev,
+          migrationYearRange: migrationYearRangeInput,
+        }
+      })
     }, 1000)
     return () => clearTimeout(handler)
   }, [migrationYearRangeInput])
