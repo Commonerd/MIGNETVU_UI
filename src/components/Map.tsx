@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react"
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -132,10 +132,18 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     "0001-01-01",
     "1945-12-31",
   ])
-  // 이동연월일 입력값 상태 (화면 즉시 반영)
+  const handleYearRangeInputChange = useCallback((val: [string, string]) => {
+    setYearRangeInput(val)
+  }, [])
   const [migrationYearRangeInput, setMigrationYearRangeInput] = useState<
     [string, string]
   >(["0001-01-01", "1945-12-31"])
+  const handleMigrationYearRangeInputChange = useCallback(
+    (val: [string, string]) => {
+      setMigrationYearRangeInput(val)
+    },
+    [],
+  )
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -326,7 +334,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ...prev,
         yearRange: yearRangeInput,
       }))
-    }, 1000)
+    }, 500)
     return () => clearTimeout(handler)
   }, [yearRangeInput])
 
@@ -337,7 +345,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ...prev,
         migrationYearRange: migrationYearRangeInput,
       }))
-    }, 1000)
+    }, 500)
     return () => clearTimeout(handler)
   }, [migrationYearRangeInput])
 
@@ -1540,7 +1548,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* 관계 연도 */}
             <YearRangeInputField
               value={yearRangeInput}
-              onChange={setYearRangeInput}
+              onChange={handleYearRangeInputChange}
               label={t("yearRange")}
             />
             {/* 관계 유형 */}
@@ -1599,7 +1607,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* 이동 연도 */}
             <MigrationYearRangeInputField
               value={migrationYearRangeInput}
-              onChange={setMigrationYearRangeInput}
+              onChange={handleMigrationYearRangeInputChange}
               label={t("migrationTraceability")}
             />
             {/* 이동 원인 */}
@@ -1873,7 +1881,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* Year Range */}
             <YearRangeInputField
               value={yearRangeInput}
-              onChange={setYearRangeInput}
+              onChange={handleYearRangeInputChange}
               label={t("yearRange")}
             />
             <Select
@@ -1983,7 +1991,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             {/* Migration Traceability */}
             <MigrationYearRangeInputField
               value={migrationYearRangeInput}
-              onChange={setMigrationYearRangeInput}
+              onChange={handleMigrationYearRangeInputChange}
               label={t("migrationTraceability")}
             />
 
