@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"
+import type { ChangeEvent } from "react"
 
 interface YearRangeInputProps {
   value: [number, number]
@@ -9,7 +10,7 @@ interface YearRangeInputProps {
   max?: number
 }
 
-const YearRangeInput: React.FC<YearRangeInputProps> = ({
+const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
   value,
   onChange,
   placeholderStart = "Start Year",
@@ -17,8 +18,8 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
   min = -5000,
   max = 5000,
 }) => {
-  const [start, setStart] = useState(value[0])
-  const [end, setEnd] = useState(value[1])
+  const [start, setStart] = useState<number>(value[0])
+  const [end, setEnd] = useState<number>(value[1])
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   // 외부 값이 바뀌면 내부 상태도 동기화
@@ -39,38 +40,47 @@ const YearRangeInput: React.FC<YearRangeInputProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [start, end])
 
-  const handleStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value === "" ? 0 : parseInt(e.target.value)
-    setStart(val)
+  // yyyy-mm-dd로 입력받기 위한 date 타입
+  const formatDate = (val: number) => {
+    if (!val) return ""
+    if (typeof val === "string") return val
+    const str = val.toString()
+    if (str.length === 8) {
+      return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`
+    }
+    return str
   }
-  const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value === "" ? 0 : parseInt(e.target.value)
-    setEnd(val)
+  const parseDate = (val: string) => {
+    if (!val) return 0
+    return parseInt(val.replace(/-/g, ""))
+  }
+  const handleStartChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setStart(parseDate(e.target.value))
+  }
+  const handleEndChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEnd(parseDate(e.target.value))
   }
 
   return (
     <div className="flex items-center gap-2">
       <input
-        type="number"
-        min={min}
-        max={max}
+        type="date"
         placeholder={placeholderStart}
-        value={start === 0 ? "" : start}
+        value={formatDate(start)}
         onChange={handleStartChange}
-        className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+        className="w-28 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
       />
       <span className="text-sm">-</span>
       <input
-        type="number"
-        min={min}
-        max={max}
+        type="date"
         placeholder={placeholderEnd}
-        value={end === 0 ? "" : end}
+        value={formatDate(end)}
         onChange={handleEndChange}
-        className="w-16 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+        className="w-28 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
       />
     </div>
   )
 }
 
+const YearRangeInput = React.memo(YearRangeInputComponent)
 export default React.memo(YearRangeInput)
