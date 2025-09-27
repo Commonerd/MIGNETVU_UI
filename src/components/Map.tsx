@@ -1,4 +1,73 @@
 import React, { useState, useEffect, useRef, useMemo } from "react"
+// 입력 필드 컴포넌트 분리 및 메모이제이션
+type YearRangeInputFieldProps = {
+  value: [string, string]
+  onChange: (val: [string, string]) => void
+  label: string
+}
+const YearRangeInputField: React.FC<YearRangeInputFieldProps> = React.memo(
+  ({ value, onChange, label }: YearRangeInputFieldProps) => (
+    <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+      <label className="text-sm">{label}</label>
+      <input
+        type="date"
+        value={value[0]}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange([e.target.value, value[1]])
+        }
+        className="border rounded px-2 py-1"
+        min="0000-01-01"
+        max="3000-12-31"
+      />
+      <span>~</span>
+      <input
+        type="date"
+        value={value[1]}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          onChange([value[0], e.target.value])
+        }
+        className="border rounded px-2 py-1"
+        min="0000-01-01"
+        max="3000-12-31"
+      />
+    </div>
+  ),
+)
+
+type MigrationYearRangeInputFieldProps = {
+  value: [string, string]
+  onChange: (val: [string, string]) => void
+  label: string
+}
+const MigrationYearRangeInputField: React.FC<MigrationYearRangeInputFieldProps> =
+  React.memo(
+    ({ value, onChange, label }: MigrationYearRangeInputFieldProps) => (
+      <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+        <label className="text-sm">{label}</label>
+        <input
+          type="date"
+          value={value[0]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange([e.target.value, value[1]])
+          }
+          className="border rounded px-2 py-1"
+          min="0000-01-01"
+          max="3000-12-31"
+        />
+        <span>~</span>
+        <input
+          type="date"
+          value={value[1]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange([value[0], e.target.value])
+          }
+          className="border rounded px-2 py-1"
+          min="0000-01-01"
+          max="3000-12-31"
+        />
+      </div>
+    ),
+  )
 import {
   MapContainer,
   TileLayer,
@@ -1469,30 +1538,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             </div>
             {/* 관계 연도 */}
             <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-                <label className="text-sm">{t("yearRange")}</label>
-                <input
-                  type="date"
-                  value={yearRangeInput[0]}
-                  onChange={(e) =>
-                    setYearRangeInput([e.target.value, yearRangeInput[1]])
-                  }
-                  className="border rounded px-2 py-1"
-                  min="0000-01-01"
-                  max="3000-12-31"
-                />
-                <span>~</span>
-                <input
-                  type="date"
-                  value={yearRangeInput[1]}
-                  onChange={(e) =>
-                    setYearRangeInput([yearRangeInput[0], e.target.value])
-                  }
-                  className="border rounded px-2 py-1"
-                  min="0000-01-01"
-                  max="3000-12-31"
-                />
-              </div>
+              <YearRangeInputField
+                value={yearRangeInput}
+                onChange={setYearRangeInput}
+                label={t("yearRange")}
+              />
             </div>
             {/* 관계 유형 */}
             <div>
@@ -1549,36 +1599,11 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             </div>
             {/* 이동 연도 */}
             <div>
-              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-                <label className="text-sm">{t("migrationTraceability")}</label>
-                <input
-                  type="date"
-                  value={migrationYearRangeInput[0]}
-                  onChange={(e) =>
-                    setMigrationYearRangeInput([
-                      e.target.value,
-                      migrationYearRangeInput[1],
-                    ])
-                  }
-                  className="border rounded px-2 py-1"
-                  min="0000-01-01"
-                  max="3000-12-31"
-                />
-                <span>~</span>
-                <input
-                  type="date"
-                  value={migrationYearRangeInput[1]}
-                  onChange={(e) =>
-                    setMigrationYearRangeInput([
-                      migrationYearRangeInput[0],
-                      e.target.value,
-                    ])
-                  }
-                  className="border rounded px-2 py-1"
-                  min="0000-01-01"
-                  max="3000-12-31"
-                />
-              </div>
+              <MigrationYearRangeInputField
+                value={migrationYearRangeInput}
+                onChange={setMigrationYearRangeInput}
+                label={t("migrationTraceability")}
+              />
             </div>
             {/* 이동 원인 */}
             <div>
@@ -1850,28 +1875,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             </div>
             {/* Year Range */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-              <label className="text-sm">{t("yearRange")}</label>
-              <input
-                type="date"
-                value={yearRangeInput[0]}
-                onChange={(e) =>
-                  setYearRangeInput([e.target.value, yearRangeInput[1]])
-                }
-                className="border rounded px-2 py-1"
-                min="0000-01-01"
-                max="3000-12-31"
+              <YearRangeInputField
+                value={yearRangeInput}
+                onChange={setYearRangeInput}
+                label={t("yearRange")}
               />
-              <span>~</span>
-              <input
-                type="date"
-                value={yearRangeInput[1]}
-                onChange={(e) =>
-                  setYearRangeInput([yearRangeInput[0], e.target.value])
-                }
-                className="border rounded px-2 py-1"
-                min="0000-01-01"
-                max="3000-12-31"
-              />
+
               <Select
                 options={edgeTypeOptions}
                 onChange={(selectedOptions) =>
@@ -1979,34 +1988,12 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
             </div>
             {/* Migration Traceability */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-              <label className="text-sm">{t("migrationTraceability")}</label>
-              <input
-                type="date"
-                value={migrationYearRangeInput[0]}
-                onChange={(e) =>
-                  setMigrationYearRangeInput([
-                    e.target.value,
-                    migrationYearRangeInput[1],
-                  ])
-                }
-                className="border rounded px-2 py-1"
-                min="0000-01-01"
-                max="3000-12-31"
+              <MigrationYearRangeInputField
+                value={migrationYearRangeInput}
+                onChange={setMigrationYearRangeInput}
+                label={t("migrationTraceability")}
               />
-              <span>~</span>
-              <input
-                type="date"
-                value={migrationYearRangeInput[1]}
-                onChange={(e) =>
-                  setMigrationYearRangeInput([
-                    migrationYearRangeInput[0],
-                    e.target.value,
-                  ])
-                }
-                className="border rounded px-2 py-1"
-                min="0000-01-01"
-                max="3000-12-31"
-              />
+
               <Select
                 options={migrationReasonOptions}
                 onChange={(selectedOptions) =>
