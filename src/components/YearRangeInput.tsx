@@ -6,8 +6,6 @@ interface YearRangeInputProps {
   onChange: (range: [number, number]) => void
   placeholderStart?: string
   placeholderEnd?: string
-  min?: number
-  max?: number
 }
 
 const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
@@ -15,17 +13,19 @@ const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
   onChange,
   placeholderStart = "Start Year",
   placeholderEnd = "End Year",
-  min = -5000,
-  max = 5000,
 }) => {
   const [start, setStart] = useState<number>(value[0])
   const [end, setEnd] = useState<number>(value[1])
+  const [startInput, setStartInput] = useState<string>("")
+  const [endInput, setEndInput] = useState<string>("")
   const debounceRef = useRef<NodeJS.Timeout | null>(null)
 
   // 외부 값이 바뀌면 내부 상태도 동기화
   useEffect(() => {
     setStart(value[0])
     setEnd(value[1])
+    setStartInput(formatDate(value[0]))
+    setEndInput(formatDate(value[1]))
   }, [value])
 
   // 디바운스 적용: 입력 후 0.7초 뒤에 onChange 호출
@@ -48,6 +48,9 @@ const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
     if (str.length === 8) {
       return `${str.slice(0, 4)}-${str.slice(4, 6)}-${str.slice(6, 8)}`
     }
+    if (str.length === 4) {
+      return `${str}-01-01`
+    }
     return str
   }
   const parseDate = (val: string) => {
@@ -55,10 +58,24 @@ const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
     return parseInt(val.replace(/-/g, ""))
   }
   const handleStartChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setStart(parseDate(e.target.value))
+    let val = e.target.value
+    let year = val.split("-")[0]
+    if (year.length > 4) {
+      year = year.slice(0, 4)
+      val = year + val.slice(4)
+    }
+    setStart(parseDate(val))
+    setStartInput(val)
   }
   const handleEndChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEnd(parseDate(e.target.value))
+    let val = e.target.value
+    let year = val.split("-")[0]
+    if (year.length > 4) {
+      year = year.slice(0, 4)
+      val = year + val.slice(4)
+    }
+    setEnd(parseDate(val))
+    setEndInput(val)
   }
 
   return (
@@ -66,17 +83,27 @@ const YearRangeInputComponent: React.FC<YearRangeInputProps> = ({
       <input
         type="date"
         placeholder={placeholderStart}
-        value={formatDate(start)}
+        value={startInput}
         onChange={handleStartChange}
+        onFocus={() => {
+          setStartInput("")
+          setStart(0)
+        }}
         className="w-28 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+        pattern="\\d{4}-\\d{2}-\\d{2}"
       />
       <span className="text-sm">-</span>
       <input
         type="date"
         placeholder={placeholderEnd}
-        value={formatDate(end)}
+        value={endInput}
         onChange={handleEndChange}
+        onFocus={() => {
+          setEndInput("")
+          setEnd(0)
+        }}
         className="w-28 p-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+        pattern="\\d{4}-\\d{2}-\\d{2}"
       />
     </div>
   )

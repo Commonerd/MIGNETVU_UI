@@ -1490,8 +1490,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   }
                   placeholderStart={t("startDate")}
                   placeholderEnd={t("endDate")}
-                  min={1}
-                  max={30001231}
                 />
               </div>
             </div>
@@ -1571,8 +1569,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   }
                   placeholderStart={t("startDate")}
                   placeholderEnd={t("endDate")}
-                  min={1}
-                  max={30001231}
                 />
               </div>
             </div>
@@ -1863,8 +1859,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 }
                 placeholderStart={t("startDate")}
                 placeholderEnd={t("endDate")}
-                min={1}
-                max={30001231}
               />
               <Select
                 options={edgeTypeOptions}
@@ -1990,8 +1984,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 }
                 placeholderStart={t("startDate")}
                 placeholderEnd={t("endDate")}
-                min={1}
-                max={30001231}
               />
               <Select
                 options={migrationReasonOptions}
