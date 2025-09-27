@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import React, { useState, useEffect, useRef, useMemo } from "react"
 import {
   MapContainer,
   TileLayer,
@@ -132,18 +132,10 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     "0001-01-01",
     "1945-12-31",
   ])
-  const handleYearRangeInputChange = useCallback((val: [string, string]) => {
-    setYearRangeInput(val)
-  }, [])
+  // 이동연월일 입력값 상태 (화면 즉시 반영)
   const [migrationYearRangeInput, setMigrationYearRangeInput] = useState<
     [string, string]
   >(["0001-01-01", "1945-12-31"])
-  const handleMigrationYearRangeInputChange = useCallback(
-    (val: [string, string]) => {
-      setMigrationYearRangeInput(val)
-    },
-    [],
-  )
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -334,7 +326,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ...prev,
         yearRange: yearRangeInput,
       }))
-    }, 500)
+    }, 1000)
     return () => clearTimeout(handler)
   }, [yearRangeInput])
 
@@ -345,7 +337,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
         ...prev,
         migrationYearRange: migrationYearRangeInput,
       }))
-    }, 500)
+    }, 1000)
     return () => clearTimeout(handler)
   }, [migrationYearRangeInput])
 
@@ -1368,76 +1360,6 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }
   }, [data])
 
-  // 입력 필드 컴포넌트 분리 및 메모이제이션
-  type YearRangeInputFieldProps = {
-    value: [string, string]
-    onChange: (val: [string, string]) => void
-    label: string
-  }
-  const YearRangeInputField: React.FC<YearRangeInputFieldProps> = React.memo(
-    ({ value, onChange, label }: YearRangeInputFieldProps) => (
-      <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-        <label className="text-sm">{label}</label>
-        <input
-          type="date"
-          value={value[0]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange([e.target.value, value[1]])
-          }
-          className="border rounded px-2 py-1"
-          min="0000-01-01"
-          max="3000-12-31"
-        />
-        <span>~</span>
-        <input
-          type="date"
-          value={value[1]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange([value[0], e.target.value])
-          }
-          className="border rounded px-2 py-1"
-          min="0000-01-01"
-          max="3000-12-31"
-        />
-      </div>
-    ),
-  )
-
-  type MigrationYearRangeInputFieldProps = {
-    value: [string, string]
-    onChange: (val: [string, string]) => void
-    label: string
-  }
-  const MigrationYearRangeInputField: React.FC<MigrationYearRangeInputFieldProps> =
-    React.memo(
-      ({ value, onChange, label }: MigrationYearRangeInputFieldProps) => (
-        <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-          <label className="text-sm">{label}</label>
-          <input
-            type="date"
-            value={value[0]}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              onChange([e.target.value, value[1]])
-            }
-            className="border rounded px-2 py-1"
-            min="0000-01-01"
-            max="3000-12-31"
-          />
-          <span>~</span>
-          <input
-            type="date"
-            value={value[1]}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              onChange([value[0], e.target.value])
-            }
-            className="border rounded px-2 py-1"
-            min="0000-01-01"
-            max="3000-12-31"
-          />
-        </div>
-      ),
-    )
-
   if (progress < 100) {
     return <Spinner progress={progress} />
   }
@@ -1546,11 +1468,32 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               />
             </div>
             {/* 관계 연도 */}
-            <YearRangeInputField
-              value={yearRangeInput}
-              onChange={handleYearRangeInputChange}
-              label={t("yearRange")}
-            />
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("yearRange")}</label>
+                <input
+                  type="date"
+                  value={yearRangeInput[0]}
+                  onChange={(e) =>
+                    setYearRangeInput([e.target.value, yearRangeInput[1]])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  value={yearRangeInput[1]}
+                  onChange={(e) =>
+                    setYearRangeInput([yearRangeInput[0], e.target.value])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+              </div>
+            </div>
             {/* 관계 유형 */}
             <div>
               <Select
@@ -1605,11 +1548,38 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               />
             </div>
             {/* 이동 연도 */}
-            <MigrationYearRangeInputField
-              value={migrationYearRangeInput}
-              onChange={handleMigrationYearRangeInputChange}
-              label={t("migrationTraceability")}
-            />
+            <div>
+              <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+                <label className="text-sm">{t("migrationTraceability")}</label>
+                <input
+                  type="date"
+                  value={migrationYearRangeInput[0]}
+                  onChange={(e) =>
+                    setMigrationYearRangeInput([
+                      e.target.value,
+                      migrationYearRangeInput[1],
+                    ])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+                <span>~</span>
+                <input
+                  type="date"
+                  value={migrationYearRangeInput[1]}
+                  onChange={(e) =>
+                    setMigrationYearRangeInput([
+                      migrationYearRangeInput[0],
+                      e.target.value,
+                    ])
+                  }
+                  className="border rounded px-2 py-1"
+                  min="0000-01-01"
+                  max="3000-12-31"
+                />
+              </div>
+            </div>
             {/* 이동 원인 */}
             <div>
               <Select
@@ -1879,88 +1849,52 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               </FilterContainer>
             </div>
             {/* Year Range */}
-            <YearRangeInputField
-              value={yearRangeInput}
-              onChange={handleYearRangeInputChange}
-              label={t("yearRange")}
-            />
-            <Select
-              options={edgeTypeOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "edgeType",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              value={
-                Array.isArray(filters.edgeType)
-                  ? filters.edgeType
-                      .filter((value) => value !== "all")
-                      .map((value) => ({
-                        value,
-                        label: value,
-                      }))
-                  : []
-              }
-              placeholder={t("allConnectionTypes")}
-              isClearable
-              isMulti
-              styles={{
-                ...customStyles,
-                multiValue: (provided) => ({
-                  ...provided,
-                  display: "inline-flex", // 선택된 항목을 가로로 정렬
-                  alignItems: "center",
-                  margin: "0 4px", // 항목 간격 조정
-                }),
-                multiValueLabel: (provided) => ({
-                  ...provided,
-                  whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                  overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                }),
-                multiValueRemove: (provided) => ({
-                  ...provided,
-                  cursor: "pointer",
-                }),
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-              }}
-              menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-              menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-              menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
-            {/* Centrality */}
-            {user.isLoggedIn ? (
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("yearRange")}</label>
+              <input
+                type="date"
+                value={yearRangeInput[0]}
+                onChange={(e) =>
+                  setYearRangeInput([e.target.value, yearRangeInput[1]])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
+              <span>~</span>
+              <input
+                type="date"
+                value={yearRangeInput[1]}
+                onChange={(e) =>
+                  setYearRangeInput([yearRangeInput[0], e.target.value])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
               <Select
-                options={[
-                  { value: "none", label: t("selectCentrality") },
-                  { value: "degree", label: t("degreeCentrality") },
-                  // {
-                  //   value: "betweenness",
-                  //   label: t("betweenessCentrality"),
-                  // },
-                  // { value: "closeness", label: t("closenessCentrality") },
-                  {
-                    value: "eigenvector",
-                    label: t("eigenvectorCentrality"),
-                  },
-                ]}
-                onChange={(selectedOption) =>
-                  setCentralityType(
-                    selectedOption ? selectedOption.value : "none",
+                options={edgeTypeOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "edgeType",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
                   )
                 }
-                value={{
-                  value: centralityType,
-                  label: t(
-                    centralityType === "none"
-                      ? "selectCentrality"
-                      : `${centralityType}Centrality`,
-                  ),
-                }}
-                placeholder={t("selectCentrality")}
+                value={
+                  Array.isArray(filters.edgeType)
+                    ? filters.edgeType
+                        .filter((value) => value !== "all")
+                        .map((value) => ({
+                          value,
+                          label: value,
+                        }))
+                    : []
+                }
+                placeholder={t("allConnectionTypes")}
+                isClearable
+                isMulti
                 styles={{
                   ...customStyles,
                   multiValue: (provided) => ({
@@ -1985,53 +1919,132 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
                 className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
-            ) : (
-              <></>
-            )}
+              {/* Centrality */}
+              {user.isLoggedIn ? (
+                <Select
+                  options={[
+                    { value: "none", label: t("selectCentrality") },
+                    { value: "degree", label: t("degreeCentrality") },
+                    // {
+                    //   value: "betweenness",
+                    //   label: t("betweenessCentrality"),
+                    // },
+                    // { value: "closeness", label: t("closenessCentrality") },
+                    {
+                      value: "eigenvector",
+                      label: t("eigenvectorCentrality"),
+                    },
+                  ]}
+                  onChange={(selectedOption) =>
+                    setCentralityType(
+                      selectedOption ? selectedOption.value : "none",
+                    )
+                  }
+                  value={{
+                    value: centralityType,
+                    label: t(
+                      centralityType === "none"
+                        ? "selectCentrality"
+                        : `${centralityType}Centrality`,
+                    ),
+                  }}
+                  placeholder={t("selectCentrality")}
+                  styles={{
+                    ...customStyles,
+                    multiValue: (provided) => ({
+                      ...provided,
+                      display: "inline-flex", // 선택된 항목을 가로로 정렬
+                      alignItems: "center",
+                      margin: "0 4px", // 항목 간격 조정
+                    }),
+                    multiValueLabel: (provided) => ({
+                      ...provided,
+                      whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                      overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                    }),
+                    multiValueRemove: (provided) => ({
+                      ...provided,
+                      cursor: "pointer",
+                    }),
+                    menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                  }}
+                  menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                  menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                  menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                  className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+                />
+              ) : (
+                <></>
+              )}
+            </div>
             {/* Migration Traceability */}
-            <MigrationYearRangeInputField
-              value={migrationYearRangeInput}
-              onChange={handleMigrationYearRangeInputChange}
-              label={t("migrationTraceability")}
-            />
-
-            <Select
-              options={migrationReasonOptions}
-              onChange={(selectedOptions) =>
-                handleFilterChange(
-                  "migrationReasons",
-                  selectedOptions
-                    ? selectedOptions.map((option) => option.value)
-                    : ["all"],
-                )
-              }
-              placeholder={t("allMigrationReasons")}
-              isClearable
-              isMulti
-              styles={{
-                ...customStyles,
-                multiValue: (provided) => ({
-                  ...provided,
-                  display: "inline-flex", // 선택된 항목을 가로로 정렬
-                  alignItems: "center",
-                  margin: "0 4px", // 항목 간격 조정
-                }),
-                multiValueLabel: (provided) => ({
-                  ...provided,
-                  whiteSpace: "normal", // 텍스트 줄바꿈 허용
-                  overflow: "visible", // 텍스트가 생략되지 않도록 설정
-                }),
-                multiValueRemove: (provided) => ({
-                  ...provided,
-                  cursor: "pointer",
-                }),
-                menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
-              }}
-              menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
-              menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
-              menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
-              className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
-            />
+            <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+              <label className="text-sm">{t("migrationTraceability")}</label>
+              <input
+                type="date"
+                value={migrationYearRangeInput[0]}
+                onChange={(e) =>
+                  setMigrationYearRangeInput([
+                    e.target.value,
+                    migrationYearRangeInput[1],
+                  ])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
+              <span>~</span>
+              <input
+                type="date"
+                value={migrationYearRangeInput[1]}
+                onChange={(e) =>
+                  setMigrationYearRangeInput([
+                    migrationYearRangeInput[0],
+                    e.target.value,
+                  ])
+                }
+                className="border rounded px-2 py-1"
+                min="0000-01-01"
+                max="3000-12-31"
+              />
+              <Select
+                options={migrationReasonOptions}
+                onChange={(selectedOptions) =>
+                  handleFilterChange(
+                    "migrationReasons",
+                    selectedOptions
+                      ? selectedOptions.map((option) => option.value)
+                      : ["all"],
+                  )
+                }
+                placeholder={t("allMigrationReasons")}
+                isClearable
+                isMulti
+                styles={{
+                  ...customStyles,
+                  multiValue: (provided) => ({
+                    ...provided,
+                    display: "inline-flex", // 선택된 항목을 가로로 정렬
+                    alignItems: "center",
+                    margin: "0 4px", // 항목 간격 조정
+                  }),
+                  multiValueLabel: (provided) => ({
+                    ...provided,
+                    whiteSpace: "normal", // 텍스트 줄바꿈 허용
+                    overflow: "visible", // 텍스트가 생략되지 않도록 설정
+                  }),
+                  multiValueRemove: (provided) => ({
+                    ...provided,
+                    cursor: "pointer",
+                  }),
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }), // 드롭다운이 다른 요소 위에 표시되도록 설정
+                }}
+                menuPortalTarget={document.body} // 드롭다운을 body에 렌더링
+                menuPlacement="auto" // 드롭다운이 위/아래로 자동 배치되도록 설정
+                menuPosition="fixed" // 드롭다운 위치를 고정하여 스크롤 영향을 받지 않도록 설정
+                className="p-1 rounded text-sm w-full focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
             {/* Search */}
             <div className="p-1 border rounded bg-[#d1c6b1] flex gap-0.5 items-center border-2 border-[#9e9d89]">
               {user.isLoggedIn ? (
