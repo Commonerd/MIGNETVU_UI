@@ -1,73 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from "react"
-// 입력 필드 컴포넌트 분리 및 메모이제이션
-type YearRangeInputFieldProps = {
-  value: [string, string]
-  onChange: (val: [string, string]) => void
-  label: string
-}
-const YearRangeInputField: React.FC<YearRangeInputFieldProps> = React.memo(
-  ({ value, onChange, label }: YearRangeInputFieldProps) => (
-    <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-      <label className="text-sm">{label}</label>
-      <input
-        type="date"
-        value={value[0]}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange([e.target.value, value[1]])
-        }
-        className="border rounded px-2 py-1"
-        min="0000-01-01"
-        max="3000-12-31"
-      />
-      <span>~</span>
-      <input
-        type="date"
-        value={value[1]}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          onChange([value[0], e.target.value])
-        }
-        className="border rounded px-2 py-1"
-        min="0000-01-01"
-        max="3000-12-31"
-      />
-    </div>
-  ),
-)
-
-type MigrationYearRangeInputFieldProps = {
-  value: [string, string]
-  onChange: (val: [string, string]) => void
-  label: string
-}
-const MigrationYearRangeInputField: React.FC<MigrationYearRangeInputFieldProps> =
-  React.memo(
-    ({ value, onChange, label }: MigrationYearRangeInputFieldProps) => (
-      <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
-        <label className="text-sm">{label}</label>
-        <input
-          type="date"
-          value={value[0]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange([e.target.value, value[1]])
-          }
-          className="border rounded px-2 py-1"
-          min="0000-01-01"
-          max="3000-12-31"
-        />
-        <span>~</span>
-        <input
-          type="date"
-          value={value[1]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange([value[0], e.target.value])
-          }
-          className="border rounded px-2 py-1"
-          min="0000-01-01"
-          max="3000-12-31"
-        />
-      </div>
-    ),
-  )
 import {
   MapContainer,
   TileLayer,
@@ -1428,6 +1359,76 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
       }, 0)
     }
   }, [data])
+
+  // 입력 필드 컴포넌트 분리 및 메모이제이션
+  type YearRangeInputFieldProps = {
+    value: [string, string]
+    onChange: (val: [string, string]) => void
+    label: string
+  }
+  const YearRangeInputField: React.FC<YearRangeInputFieldProps> = React.memo(
+    ({ value, onChange, label }: YearRangeInputFieldProps) => (
+      <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+        <label className="text-sm">{label}</label>
+        <input
+          type="date"
+          value={value[0]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange([e.target.value, value[1]])
+          }
+          className="border rounded px-2 py-1"
+          min="0000-01-01"
+          max="3000-12-31"
+        />
+        <span>~</span>
+        <input
+          type="date"
+          value={value[1]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange([value[0], e.target.value])
+          }
+          className="border rounded px-2 py-1"
+          min="0000-01-01"
+          max="3000-12-31"
+        />
+      </div>
+    ),
+  )
+
+  type MigrationYearRangeInputFieldProps = {
+    value: [string, string]
+    onChange: (val: [string, string]) => void
+    label: string
+  }
+  const MigrationYearRangeInputField: React.FC<MigrationYearRangeInputFieldProps> =
+    React.memo(
+      ({ value, onChange, label }: MigrationYearRangeInputFieldProps) => (
+        <div className="p-1 border rounded bg-[#d1c6b1] flex gap-2 items-center border-2 border-[#9e9d89]">
+          <label className="text-sm">{label}</label>
+          <input
+            type="date"
+            value={value[0]}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange([e.target.value, value[1]])
+            }
+            className="border rounded px-2 py-1"
+            min="0000-01-01"
+            max="3000-12-31"
+          />
+          <span>~</span>
+          <input
+            type="date"
+            value={value[1]}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange([value[0], e.target.value])
+            }
+            className="border rounded px-2 py-1"
+            min="0000-01-01"
+            max="3000-12-31"
+          />
+        </div>
+      ),
+    )
 
   if (progress < 100) {
     return <Spinner progress={progress} />
