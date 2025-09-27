@@ -335,6 +335,18 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
     }
   }, [guideStep, networks, appliedGuideStep])
 
+  // 관계연월일/이동연월일 입력값이 변경될 때 1초 뒤에 필터링 트리거 (디바운싱)
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters((prev) => ({
+        ...prev,
+        yearRange: yearRangeInput,
+        migrationYearRange: migrationYearRangeInput,
+      }))
+    }, 1000)
+    return () => clearTimeout(handler)
+  }, [yearRangeInput, migrationYearRangeInput])
+
   // 관계연월일 입력값이 변경될 때 디바운싱 후 필터 적용
   useEffect(() => {
     const handler = setTimeout(() => {
