@@ -30,11 +30,11 @@ const MigrationYearRangeInput: React.FC<MigrationYearRangeInputProps> = ({
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       onChange([start, end])
-    }, 200)
+    }, 400)
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [start, end])
+  }, [start, end, onChange])
 
   return (
     <div className="flex items-center gap-2">
