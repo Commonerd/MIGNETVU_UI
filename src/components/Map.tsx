@@ -51,8 +51,6 @@ import { analyzeNetworkType } from "../utils/analyzeNetworkType"
 import { debounce } from "lodash"
 import SearchBar from "./SearchBar"
 import Spinner from "./Spinner"
-import YearRangeInput from "./YearRangeInput"
-import MigrationYearRangeInput from "./MigrationYearRangeInput"
 
 import { recommendConnections } from "../utils/recommendConnections"
 import AIStorytelling from "./AIStorytelling"
@@ -136,6 +134,24 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
   const [migrationYearRangeInput, setMigrationYearRangeInput] = useState<
     [string, string]
   >(["0001-01-01", "1945-12-31"])
+
+  // 관계연월일 입력 onChange 핸들러 (입력 반응 빠르게)
+  const handleYearRangeInputChange = (index: 0 | 1, value: string) => {
+    setYearRangeInput((prev: [string, string]) => {
+      const updated = [...prev]
+      updated[index] = value
+      return updated as [string, string]
+    })
+  }
+
+  // 이동연월일 입력 onChange 핸들러 (입력 반응 빠르게)
+  const handleMigrationYearRangeInputChange = (index: 0 | 1, value: string) => {
+    setMigrationYearRangeInput((prev: [string, string]) => {
+      const updated = [...prev]
+      updated[index] = value
+      return updated as [string, string]
+    })
+  }
   const [searchQuery, setSearchQuery] = useState("")
   const [triggerSearch, setTriggerSearch] = useState(false)
   const [is3DMode, setIs3DMode] = useState(false) // 3D 모드 상태 추가
@@ -1475,7 +1491,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   type="date"
                   value={yearRangeInput[0]}
                   onChange={(e) =>
-                    setYearRangeInput([e.target.value, yearRangeInput[1]])
+                    handleYearRangeInputChange(0, e.target.value)
                   }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
@@ -1486,7 +1502,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   type="date"
                   value={yearRangeInput[1]}
                   onChange={(e) =>
-                    setYearRangeInput([yearRangeInput[0], e.target.value])
+                    handleYearRangeInputChange(1, e.target.value)
                   }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
@@ -1555,10 +1571,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   type="date"
                   value={migrationYearRangeInput[0]}
                   onChange={(e) =>
-                    setMigrationYearRangeInput([
-                      e.target.value,
-                      migrationYearRangeInput[1],
-                    ])
+                    handleMigrationYearRangeInputChange(0, e.target.value)
                   }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
@@ -1569,10 +1582,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                   type="date"
                   value={migrationYearRangeInput[1]}
                   onChange={(e) =>
-                    setMigrationYearRangeInput([
-                      migrationYearRangeInput[0],
-                      e.target.value,
-                    ])
+                    handleMigrationYearRangeInputChange(1, e.target.value)
                   }
                   className="border rounded px-2 py-1"
                   min="0000-01-01"
@@ -1854,9 +1864,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <input
                 type="date"
                 value={yearRangeInput[0]}
-                onChange={(e) =>
-                  setYearRangeInput([e.target.value, yearRangeInput[1]])
-                }
+                onChange={(e) => handleYearRangeInputChange(0, e.target.value)}
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
                 max="3000-12-31"
@@ -1865,9 +1873,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
               <input
                 type="date"
                 value={yearRangeInput[1]}
-                onChange={(e) =>
-                  setYearRangeInput([yearRangeInput[0], e.target.value])
-                }
+                onChange={(e) => handleYearRangeInputChange(1, e.target.value)}
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
                 max="3000-12-31"
@@ -1984,10 +1990,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 type="date"
                 value={migrationYearRangeInput[0]}
                 onChange={(e) =>
-                  setMigrationYearRangeInput([
-                    e.target.value,
-                    migrationYearRangeInput[1],
-                  ])
+                  handleMigrationYearRangeInputChange(0, e.target.value)
                 }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
@@ -1998,10 +2001,7 @@ const Map: React.FC<{ guideStep?: number }> = ({ guideStep = 1 }) => {
                 type="date"
                 value={migrationYearRangeInput[1]}
                 onChange={(e) =>
-                  setMigrationYearRangeInput([
-                    migrationYearRangeInput[0],
-                    e.target.value,
-                  ])
+                  handleMigrationYearRangeInputChange(1, e.target.value)
                 }
                 className="border rounded px-2 py-1"
                 min="0000-01-01"
